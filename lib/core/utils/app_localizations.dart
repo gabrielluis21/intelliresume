@@ -17,6 +17,8 @@ class AppLocalizations {
     'en': {
       'appTitle': 'ItelliResume',
       'appSubtitle': 'Create your resume in seconds',
+      'homeTitle': 'Home',
+      'homeWelcomeMessage': 'Welcome to ItelliResume',
       'login': 'Login',
       'signup': 'Sign Up',
       'email': 'Email',
@@ -53,10 +55,14 @@ class AppLocalizations {
       'payment': 'Checkout',
       'premiumSuccess': 'You are now Premium!',
       'paymentError': 'Payment failed, try again.',
+      'socialName': 'Social Network',
+      'socialUrl': 'Social Link',
       // ... outras chaves
     },
     'pt': {
       'appTitle': 'Currículo Online',
+      'homeTitle': 'Início',
+      'homeWelcomeMessage': 'Bem-vindo ao Currículo Online',
       'login': 'Login',
       'signup': 'Cadastrar',
       'email': 'Email',
@@ -94,6 +100,8 @@ class AppLocalizations {
       'payment': 'Pagamento',
       'premiumSuccess': 'Você agora é Premium!',
       'paymentError': 'Pagamento falhou, tente novamente.',
+      'socialName': 'Rede Social',
+      'socialUrl': 'Link da Rede Social',
       // ... outras chaves
     },
   };
@@ -106,6 +114,8 @@ class AppLocalizations {
 
   // Helpers para uso mais conveniente:
   String get appTitle => translate('appTitle');
+  String get homeTitle => translate('homeTitle');
+  String get homeWelcomeMessage => translate('homeWelcomeMessage');
   String get appSubtitle => translate('appSubtitle');
   String get login => translate('login');
   String get signup => translate('signup');
@@ -138,6 +148,14 @@ class AppLocalizations {
   String get history => translate('history');
   String get delete => translate('delete');
   String get noHistory => translate('noHistory');
+  String get socialName => translate('socialName');
+  String get socialUrl => translate('socialUrl');
+  String get deleteConfirm => translate('deleteConfirm');
+  String get deleteSuccess => translate('deleteSuccess');
+  String get noHistoryDesc => translate('noHistoryDesc');
+  String get resumeForm => translate('resumeForm');
+  String get resumePreview => translate('resumePreview');
+  String get settings => translate('settings');
   //String get kay => translate('key');
   // ... e assim por diante para cada chave
 

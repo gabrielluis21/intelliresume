@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../services/auth_service.dart';
 import '../../routes/app_routes.dart';
 import '../../core/utils/app_localizations.dart';
@@ -20,7 +21,7 @@ class _LoginPageState extends State<LoginPage> {
     setState(() => _loading = true);
     try {
       await AuthService.instance.signIn(email: email, password: password);
-      AppRoutes.router.pushReplacementNamed('/form');
+      AppRoutes.router.pushReplacement('/home');
     } on Exception catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -84,7 +85,9 @@ class _LoginPageState extends State<LoginPage> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: _loading ? null : _login,
+                        onPressed: () {
+                          context.pushReplacementNamed('home');
+                        }, //_loading ? null : _login,
                         child:
                             _loading
                                 ? const CircularProgressIndicator.adaptive()
@@ -92,7 +95,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     TextButton(
-                      onPressed: () => AppRoutes.router.pushNamed('/signup'),
+                      onPressed: () => AppRoutes.router.pushNamed('signup'),
                       child: Text(t.signup),
                     ),
                   ],

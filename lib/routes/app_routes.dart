@@ -1,24 +1,45 @@
+import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intelliresume/presentation/notifiers/router_notify.dart';
-import '../../services/auth_service.dart';
+import 'package:intelliresume/presentation/pages/home_page.dart';
 import '../presentation/pages.dart';
 
 class AppRoutes {
   static final GoRouter router = GoRouter(
-    initialLocation: '/',
+    initialLocation: kIsWeb ? '/login' : '/',
     routes: [
-      GoRoute(path: '/', builder: (_, __) => const SplashPage()),
-      GoRoute(path: '/login', builder: (_, __) => const LoginPage()),
-      GoRoute(path: '/signup', builder: (_, __) => const SignupPage()),
-      GoRoute(path: '/profile', builder: (_, __) => const ProfilePage()),
-      GoRoute(path: '/payment', builder: (_, __) => const PaymentPage()),
       GoRoute(
+        name: 'splash',
+        path: '/',
+        builder: (context, state) => const SplashPage(),
+      ),
+      GoRoute(
+        name: 'login',
+        path: '/login',
+        builder: (context, state) => const LoginPage(),
+      ),
+      GoRoute(
+        name: 'signup',
+        path: '/signup',
+        builder: (context, state) => const SignupPage(),
+      ),
+      GoRoute(
+        name: 'profile',
+        path: '/profile',
+        builder: (context, state) => const ProfilePage(),
+      ),
+      GoRoute(
+        name: 'payment',
+        path: '/payment',
+        builder: (context, state) => const PaymentPage(),
+      ),
+      GoRoute(
+        name: 'form',
         path: '/form',
-        builder: (_, __) => const ResumeFormPage(),
+        builder: (context, state) => const ResumeFormPage(),
         routes: [
           GoRoute(
             path: 'preview',
-            builder: (_, state) {
+            builder: (context, state) {
               final args = state.extra as Map<String, dynamic>;
               return ResumePreviewPage(
                 about: args['about'],
@@ -29,17 +50,26 @@ class AppRoutes {
               );
             },
           ),
-          GoRoute(path: 'history', builder: (_, __) => const HistoryPage()),
+          GoRoute(
+            name: 'history',
+            path: '/history',
+            builder: (context, state) => const HistoryPage(),
+          ),
+          GoRoute(
+            name: 'home',
+            path: '/home',
+            builder: (context, state) => const HomePage(),
+          ),
         ],
       ),
     ],
-    redirect: (ctx, state) {
+    /*  redirect: (ctx, state) {
       final logged = AuthService.instance.currentUser != null;
       final loggingIn = state.path == '/login' || state.path == '/signup';
       if (!logged && !loggingIn) return '/login';
       if (logged && loggingIn) return '/form';
       return null;
     },
-    refreshListenable: RouterNotifier(AuthService.instance),
+    refreshListenable: RouterNotifier(AuthService.instance), */
   );
 }

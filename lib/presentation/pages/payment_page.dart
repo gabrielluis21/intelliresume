@@ -23,6 +23,7 @@ class _PaymentPageState extends State<PaymentPage> {
       // após confirmação, atualiza plano no perfil
       final user = AuthService.instance.currentUser!;
       var profile = await UpdatePlanUseCase().call(user.uid, PlanType.premium);
+      print(profile);
       // feedback
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(AppLocalizations.of(context).premiumSuccess)),
