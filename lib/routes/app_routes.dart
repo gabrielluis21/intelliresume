@@ -36,31 +36,16 @@ class AppRoutes {
         name: 'form',
         path: '/form',
         builder: (context, state) => const ResumeFormPage(),
-        routes: [
-          GoRoute(
-            path: 'preview',
-            builder: (context, state) {
-              final args = state.extra as Map<String, dynamic>;
-              return ResumePreviewPage(
-                about: args['about'],
-                experiences: args['experiences'],
-                educations: args['educations'],
-                skills: args['skills'],
-                socials: args['socials'],
-              );
-            },
-          ),
-          GoRoute(
-            name: 'history',
-            path: '/history',
-            builder: (context, state) => const HistoryPage(),
-          ),
-          GoRoute(
-            name: 'home',
-            path: '/home',
-            builder: (context, state) => const HomePage(),
-          ),
-        ],
+      ),
+      GoRoute(
+        name: 'history',
+        path: '/history',
+        builder: (context, state) => const HistoryPage(),
+      ),
+      GoRoute(
+        name: 'home',
+        path: '/home',
+        builder: (context, state) => const HomePage(),
       ),
     ],
     /*  redirect: (ctx, state) {

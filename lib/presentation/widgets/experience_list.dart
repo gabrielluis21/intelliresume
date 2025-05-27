@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 class ExperienceList extends StatelessWidget {
   final List<String> items;
-  const ExperienceList({super.key, required this.items});
+  final ThemeData theme;
+  const ExperienceList({super.key, required this.items, required this.theme});
+
   @override
   Widget build(BuildContext c) {
     if (items.isEmpty) return const Text('Nenhuma experiência');
@@ -14,7 +16,7 @@ class ExperienceList extends StatelessWidget {
       itemBuilder:
           (c, i) => ListTile(
             leading: const Icon(Icons.work_outline),
-            title: Text(items[i]),
+            title: Text(items[i], style: theme.textTheme.bodyLarge),
           ),
     );
   }

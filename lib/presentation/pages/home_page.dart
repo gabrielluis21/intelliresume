@@ -1,5 +1,6 @@
 // lib/pages/home_page.dart
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../widgets/cv_card.dart';
 import '../../data/models/cv_model.dart';
@@ -15,6 +16,7 @@ class _HomePageState extends State<HomePage> {
   final dynamic _cvService = Object();
   CVModel? _latestCV;
   List<dynamic> _history = [];
+  int _selectedIndex = 0;
 
   @override
   void initState() {
@@ -33,11 +35,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _createNewCV() {
-    Navigator.pushNamed(context, '/form');
+    context.goNamed('form');
   }
 
   void _editCV(dynamic cv) {
-    Navigator.pushNamed(context, '/form', arguments: cv);
+    Navigator.pushNamed(context, 'form', arguments: cv);
   }
 
   void _deleteCV(dynamic cv) async {
@@ -132,28 +134,42 @@ class _HomePageState extends State<HomePage> {
       container: true,
       label: 'Menu lateral',
       child: NavigationRail(
-        selectedIndex: 0,
+        selectedIndex: _selectedIndex,
         onDestinationSelected: (index) {
           switch (index) {
             case 0:
-              Navigator.pushNamed(context, '/profile');
+              context.goNamed('home');
+              setState(() {
+                _selectedIndex = index;
+              });
               break;
             case 1:
-              Navigator.pushNamed(context, '/history');
+              context.goNamed('profile');
+              //Navigator.pushNamed(context, 'profile');
+              setState(() {
+                _selectedIndex = index;
+              });
               break;
             case 2:
-              _createNewCV();
+              context.goNamed('history');
+              setState(() {
+                _selectedIndex = index;
+              });
               break;
             case 3:
-              Navigator.pushNamed(context, '/settings');
+              _createNewCV();
               break;
             case 4:
-              Navigator.pushNamed(context, '/logout');
+              context.go('Settings');
               break;
           }
         },
         labelType: NavigationRailLabelType.all,
         destinations: const [
+          NavigationRailDestination(
+            icon: Icon(Icons.home),
+            label: Text('Inicio'),
+          ),
           NavigationRailDestination(
             icon: Icon(Icons.person),
             label: Text('Perfil'),

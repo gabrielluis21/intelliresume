@@ -61,6 +61,8 @@ dependencies:
   flutter_stripe: ^11.5.0
   cloud_functions: ^5.5.1
   font_awesome_flutter: ^10.8.0
+  flutter_riverpod: ^2.6.1
+  google_fonts: ^6.2.1
 
 dev_dependencies:
   flutter_test:
