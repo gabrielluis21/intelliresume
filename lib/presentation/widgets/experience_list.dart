@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class ExperienceList extends StatelessWidget {
   final List<String> items;
-  final ThemeData theme;
+  final TextTheme theme;
   const ExperienceList({super.key, required this.items, required this.theme});
 
   @override
@@ -16,7 +16,15 @@ class ExperienceList extends StatelessWidget {
       itemBuilder:
           (c, i) => ListTile(
             leading: const Icon(Icons.work_outline),
-            title: Text(items[i], style: theme.textTheme.bodyLarge),
+            title: Text(
+              items[i],
+              style: theme.bodyMedium!.copyWith(
+                color:
+                    MediaQuery.of(c).platformBrightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black,
+              ),
+            ),
           ),
     );
   }

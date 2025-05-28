@@ -15,7 +15,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final dynamic _cvService = Object();
   CVModel? _latestCV;
-  List<dynamic> _history = [];
+  final List<dynamic> _history = [];
   int _selectedIndex = 0;
 
   @override

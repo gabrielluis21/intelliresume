@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class EducationList extends StatelessWidget {
   final List<String> items;
-  final ThemeData theme;
+  final TextTheme theme;
 
   const EducationList({super.key, required this.items, required this.theme});
 
@@ -17,7 +17,15 @@ class EducationList extends StatelessWidget {
       itemBuilder:
           (c, i) => ListTile(
             leading: const Icon(Icons.school_outlined),
-            title: Text(items[i], style: theme.textTheme.bodyLarge),
+            title: Text(
+              items[i],
+              style: theme.bodyMedium!.copyWith(
+                color:
+                    MediaQuery.of(c).platformBrightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black,
+              ),
+            ),
           ),
     );
   }

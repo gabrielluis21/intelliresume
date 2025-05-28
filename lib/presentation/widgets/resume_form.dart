@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intelliresume/core/providers/resume_template_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/utils/app_localizations.dart';
-//import '../widgets/header_section.dart';
 import '../widgets/section.dart';
 import '../widgets/experience_list.dart';
 import '../widgets/education_list.dart';
@@ -88,8 +88,15 @@ class _ResumeFormContentState extends ConsumerState<ResumeFormContent> {
     required Widget listWidget,
   }) {
     final t = AppLocalizations.of(context);
+    final template = ref.watch(selectedTemplateProvider);
     return Section(
       title: title,
+      titleStyle:
+          template.theme
+              .copyWith(
+                textTheme: GoogleFonts.getTextTheme(template.fontFamily),
+              )
+              .textTheme,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -127,14 +134,14 @@ class _ResumeFormContentState extends ConsumerState<ResumeFormContent> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             TextFormField(
-              initialValue: cvData.about,
-              decoration: InputDecoration(labelText: t.aboutMe),
+              initialValue: cvData.objective,
+              decoration: InputDecoration(labelText: t.objective),
               maxLines: 3,
               validator:
                   (v) =>
                       (v == null || v.trim().isEmpty) ? t.fieldRequired : null,
-              onChanged: (value) => cvData.about = value.trim(),
-              onSaved: (v) => cvData.about = v!.trim(),
+              onChanged: (value) => cvData.objective = value.trim(),
+              onSaved: (v) => cvData.objective = v!.trim(),
             ),
             const SizedBox(height: 16),
             _buildInputSection(
@@ -152,9 +159,14 @@ class _ResumeFormContentState extends ConsumerState<ResumeFormContent> {
               },
               listWidget: ExperienceList(
                 items: cvData.experiences,
-                theme: template.theme.copyWith(
-                  textTheme: GoogleFonts.getTextTheme(template.fontFamily),
-                ),
+                theme:
+                    template.theme
+                        .copyWith(
+                          textTheme: GoogleFonts.getTextTheme(
+                            template.fontFamily,
+                          ),
+                        )
+                        .textTheme,
               ),
             ),
             const SizedBox(height: 16),
@@ -173,9 +185,14 @@ class _ResumeFormContentState extends ConsumerState<ResumeFormContent> {
               },
               listWidget: EducationList(
                 items: cvData.educations,
-                theme: template.theme.copyWith(
-                  textTheme: GoogleFonts.getTextTheme(template.fontFamily),
-                ),
+                theme:
+                    template.theme
+                        .copyWith(
+                          textTheme: GoogleFonts.getTextTheme(
+                            template.fontFamily,
+                          ),
+                        )
+                        .textTheme,
               ),
             ),
             const SizedBox(height: 16),
@@ -199,11 +216,14 @@ class _ResumeFormContentState extends ConsumerState<ResumeFormContent> {
                         .map(
                           (s) => SkillChip(
                             label: s,
-                            theme: template.theme.copyWith(
-                              textTheme: GoogleFonts.getTextTheme(
-                                template.fontFamily,
-                              ),
-                            ),
+                            theme:
+                                template.theme
+                                    .copyWith(
+                                      textTheme: GoogleFonts.getTextTheme(
+                                        template.fontFamily,
+                                      ),
+                                    )
+                                    .textTheme,
                           ),
                         )
                         .toList(),
@@ -212,6 +232,14 @@ class _ResumeFormContentState extends ConsumerState<ResumeFormContent> {
             const SizedBox(height: 16),
             Section(
               title: t.socialLinks,
+              titleStyle:
+                  template.theme
+                      .copyWith(
+                        textTheme: GoogleFonts.getTextTheme(
+                          template.fontFamily,
+                        ),
+                      )
+                      .textTheme,
               child: Column(
                 children: [
                   Row(
@@ -254,6 +282,14 @@ class _ResumeFormContentState extends ConsumerState<ResumeFormContent> {
                           ctrlUrl.text.trim().isNotEmpty) {
                         setState(() {
                           cvData.socials.add({
+                            'icon':
+                                selectedSocial == 'GitHub'
+                                    ? Icons.code
+                                    : selectedSocial == 'LinkedIn'
+                                    ? FontAwesomeIcons.linkedin
+                                    : selectedSocial == 'Twitter'
+                                    ? FontAwesomeIcons.twitter
+                                    : Icons.web,
                             'name': selectedSocial,
                             'url': ctrlUrl.text.trim(),
                           });
@@ -268,8 +304,19 @@ class _ResumeFormContentState extends ConsumerState<ResumeFormContent> {
                     children:
                         cvData.socials
                             .map(
-                              (s) =>
-                                  SocialLink(name: s['name']!, url: s['url']!),
+                              (s) => SocialLink(
+                                icon: s['icon'],
+                                name: s['name']!,
+                                url: s['url']!,
+                                textTheme:
+                                    template.theme
+                                        .copyWith(
+                                          textTheme: GoogleFonts.getTextTheme(
+                                            template.fontFamily,
+                                          ),
+                                        )
+                                        .textTheme,
+                              ),
                             )
                             .toList(),
                   ),

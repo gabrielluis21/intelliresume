@@ -19,7 +19,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
     // tenta remoto, se falha, carrega local
     final rem = await remote.fetchProfile(uid);
     if (rem != null) {
-      await local.saveProfile(rem.uid, rem.toJson());
+      await local.saveProfile(rem.uid!, rem.toJson());
       return rem;
     }
     final loc = await local.fetchProfile(uid);
@@ -31,7 +31,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
 
   @override
   Future<void> saveProfile(UserProfile profile) async {
-    await local.saveProfile(profile.uid, profile.toJson());
+    await local.saveProfile(profile.uid!, profile.toJson());
     await remote.saveProfile(profile);
   }
 }

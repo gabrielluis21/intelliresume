@@ -57,6 +57,8 @@ class AppLocalizations {
       'paymentError': 'Payment failed, try again.',
       'socialName': 'Social Network',
       'socialUrl': 'Social Link',
+      'objective': 'Objective',
+      'contactInfo': 'Contact',
       // ... outras chaves
     },
     'pt': {
@@ -102,6 +104,8 @@ class AppLocalizations {
       'paymentError': 'Pagamento falhou, tente novamente.',
       'socialName': 'Rede Social',
       'socialUrl': 'Link da Rede Social',
+      'objective': 'Objetivo',
+      'contactInfo': 'Contato',
       // ... outras chaves
     },
   };
@@ -129,6 +133,8 @@ class AppLocalizations {
   String get previewPdf => translate('previewPdf');
   String get exportDocx => translate('exportDocx');
   String get aboutMe => translate('aboutMe');
+  String get objective => translate('objective');
+  String get contactInfo => translate('contactInfo');
   String get experiences => translate('experiences');
   String get educations => translate('educations');
   String get skills => translate('skills');
