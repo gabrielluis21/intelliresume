@@ -1,30 +1,44 @@
+// social_link.dart
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class SocialLink extends StatelessWidget {
-  final String name, url;
   final IconData icon;
+  final String name;
+  final String url;
   final TextTheme textTheme;
+  final VoidCallback? onDeleted;
+
+  const SocialLink.text({
+    super.key,
+    required this.icon,
+    required this.name,
+    required this.url,
+    required this.textTheme,
+    this.onDeleted,
+  });
+
   const SocialLink({
     super.key,
     required this.icon,
     required this.name,
     required this.url,
     required this.textTheme,
+    required this.onDeleted,
   });
 
-  Future<void> _launch() async {
-    final uri = Uri.tryParse(url);
-    if (uri != null && await canLaunchUrl(uri)) launchUrl(uri);
-  }
-
   @override
-  Widget build(BuildContext c) {
-    return ListTile(
-      leading: Icon(icon),
-      title: Text(name, style: textTheme.bodyLarge),
-      subtitle: Text(url, style: textTheme.bodyMedium),
-      onTap: _launch,
+  Widget build(BuildContext context) {
+    if (onDeleted != null) {
+      return Chip(
+        avatar: Icon(icon, size: 16),
+        label: Text(name),
+        deleteIcon: const Icon(Icons.close, size: 16),
+        onDeleted: onDeleted,
+      );
+    }
+    return Chip(
+      avatar: Icon(icon, size: 16),
+      label: Text(url, style: textTheme.bodyMedium),
     );
   }
 }

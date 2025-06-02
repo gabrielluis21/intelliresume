@@ -22,14 +22,22 @@ class ResumeFormContent extends ConsumerStatefulWidget {
 
 class _ResumeFormContentState extends ConsumerState<ResumeFormContent> {
   final _formKey = GlobalKey<FormState>();
+  String selectedSocial = 'Escolha';
+
+  final socialItems = ['Escolha', 'GitHub', 'LinkedIn', 'Twitter', 'Website'];
 
   final ctrlExp = TextEditingController();
   final ctrlEdu = TextEditingController();
   final ctrlSkill = TextEditingController();
   final ctrlUrl = TextEditingController();
-  String selectedSocial = 'Escolha';
 
-  final socialItems = ['Escolha', 'GitHub', 'LinkedIn', 'Twitter', 'Website'];
+  // Mapeamento de ícones para persistência
+  final Map<String, IconData> socialIcons = {
+    'GitHub': FontAwesomeIcons.github,
+    'LinkedIn': FontAwesomeIcons.linkedin,
+    'Twitter': FontAwesomeIcons.twitter,
+    'Website': FontAwesomeIcons.globe,
+  };
 
   Future<void> _loadData() async {
     final prefs = await SharedPreferences.getInstance();
@@ -53,13 +61,16 @@ class _ResumeFormContentState extends ConsumerState<ResumeFormContent> {
           .addAll(
             List<String>.from(jsonDecode(prefs.getString('skills') ?? '[]')),
           );
+
+      // Carregar redes sociais com tratamento de ícones
+      final socialData = jsonDecode(prefs.getString('socials') ?? '[]');
       ref
           .read(cvDataProvider)
           .socials
           .addAll(
-            List<Map<String, String>>.from(
-              jsonDecode(prefs.getString('socials') ?? '[]'),
-            ),
+            List<Map<String, String>>.from(socialData).map((social) {
+              return {'type': social['type'] ?? '', 'url': social['url'] ?? ''};
+            }).toList(),
           );
     });
   }
@@ -73,17 +84,27 @@ class _ResumeFormContentState extends ConsumerState<ResumeFormContent> {
     await prefs.setString('exp', jsonEncode(data.experiences));
     await prefs.setString('edu', jsonEncode(data.educations));
     await prefs.setString('skills', jsonEncode(data.skills));
-    await prefs.setString('socials', jsonEncode(data.socials));
+
+    // Salvar apenas tipo e URL (ícones são mapeados)
+    await prefs.setString(
+      'socials',
+      jsonEncode(
+        data.socials
+            .map((s) => {'type': s['type']!, 'url': s['url']!})
+            .toList(),
+      ),
+    );
 
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(t.save)));
   }
 
   Widget _buildInputSection({
+    Widget? input,
     required BuildContext context,
     required String title,
-    required TextEditingController controller,
-    required List<String> list,
+    required TextEditingController? controller,
+    required List<dynamic> list,
     required VoidCallback onAdd,
     required Widget listWidget,
   }) {
@@ -98,12 +119,14 @@ class _ResumeFormContentState extends ConsumerState<ResumeFormContent> {
               )
               .textTheme,
       child: Column(
+        mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          TextField(
-            controller: controller,
-            decoration: InputDecoration(labelText: t.add),
-          ),
+          input ??
+              TextField(
+                controller: controller,
+                decoration: InputDecoration(labelText: t.add),
+              ),
           const SizedBox(height: 4),
           ElevatedButton(onPressed: onAdd, child: Text(t.add)),
           const SizedBox(height: 4),
@@ -121,10 +144,10 @@ class _ResumeFormContentState extends ConsumerState<ResumeFormContent> {
 
   @override
   Widget build(BuildContext context) {
-    final ref = this.ref;
-    final t = AppLocalizations.of(context);
-    final cvData = ref.watch(cvDataProvider);
+    final cv = ref.watch(cvDataProvider);
+    final cvData = ref.read(cvDataProvider.notifier);
     final template = ref.watch(selectedTemplateProvider);
+    final t = AppLocalizations.of(context);
 
     return Form(
       key: _formKey,
@@ -133,32 +156,37 @@ class _ResumeFormContentState extends ConsumerState<ResumeFormContent> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // Campo de Objetivo
             TextFormField(
-              initialValue: cvData.objective,
+              initialValue: "Objetivos",
               decoration: InputDecoration(labelText: t.objective),
               maxLines: 3,
               validator:
                   (v) =>
                       (v == null || v.trim().isEmpty) ? t.fieldRequired : null,
-              onChanged: (value) => cvData.objective = value.trim(),
-              onSaved: (v) => cvData.objective = v!.trim(),
+              onChanged: (value) => cvData.updateObjective(value.trim()),
+              onSaved: (v) => cvData.updateObjective(v?.trim() ?? ''),
             ),
             const SizedBox(height: 16),
+
+            // Seção de Experiências
             _buildInputSection(
               context: context,
               title: t.experiences,
               controller: ctrlExp,
-              list: cvData.experiences,
+              list: cv.experiences,
               onAdd: () {
                 if (ctrlExp.text.trim().isNotEmpty) {
                   setState(() {
-                    cvData.experiences.add(ctrlExp.text.trim());
+                    cvData.updateExperiences(
+                      experiences: [...cv.experiences, ctrlExp.text.trim()],
+                    );
                     ctrlExp.clear();
                   });
                 }
               },
               listWidget: ExperienceList(
-                items: cvData.experiences,
+                items: cv.experiences,
                 theme:
                     template.theme
                         .copyWith(
@@ -170,21 +198,25 @@ class _ResumeFormContentState extends ConsumerState<ResumeFormContent> {
               ),
             ),
             const SizedBox(height: 16),
+
+            // Seção de Educação
             _buildInputSection(
               context: context,
               title: t.educations,
               controller: ctrlEdu,
-              list: cvData.educations,
+              list: cv.educations,
               onAdd: () {
                 if (ctrlEdu.text.trim().isNotEmpty) {
                   setState(() {
-                    cvData.educations.add(ctrlEdu.text.trim());
+                    cvData.updateEducations(
+                      educations: [...cv.educations, ctrlEdu.text.trim()],
+                    );
                     ctrlEdu.clear();
                   });
                 }
               },
               listWidget: EducationList(
-                items: cvData.educations,
+                items: cv.educations,
                 theme:
                     template.theme
                         .copyWith(
@@ -196,15 +228,19 @@ class _ResumeFormContentState extends ConsumerState<ResumeFormContent> {
               ),
             ),
             const SizedBox(height: 16),
+
+            // Seção de Habilidades
             _buildInputSection(
               context: context,
               title: t.skills,
               controller: ctrlSkill,
-              list: cvData.skills,
+              list: cv.skills,
               onAdd: () {
                 if (ctrlSkill.text.trim().isNotEmpty) {
                   setState(() {
-                    cvData.skills.add(ctrlSkill.text.trim());
+                    cvData.updateSkills(
+                      skills: [...cv.skills, ctrlSkill.text.trim()],
+                    );
                     ctrlSkill.clear();
                   });
                 }
@@ -212,7 +248,7 @@ class _ResumeFormContentState extends ConsumerState<ResumeFormContent> {
               listWidget: Wrap(
                 spacing: 6,
                 children:
-                    cvData.skills
+                    cv.skills
                         .map(
                           (s) => SkillChip(
                             label: s,
@@ -230,104 +266,100 @@ class _ResumeFormContentState extends ConsumerState<ResumeFormContent> {
               ),
             ),
             const SizedBox(height: 16),
-            Section(
+
+            // Seção de Redes Sociais (Modificada)
+            _buildInputSection(
+              context: context,
               title: t.socialLinks,
-              titleStyle:
-                  template.theme
-                      .copyWith(
-                        textTheme: GoogleFonts.getTextTheme(
-                          template.fontFamily,
-                        ),
-                      )
-                      .textTheme,
-              child: Column(
+              input: Row(
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        flex: 2,
-                        child: DropdownButtonFormField<String>(
-                          value: selectedSocial,
-                          items:
-                              socialItems
-                                  .map(
-                                    (item) => DropdownMenuItem(
-                                      value: item,
-                                      child: Text(item),
-                                    ),
-                                  )
-                                  .toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              selectedSocial = value ?? 'Escolha';
-                            });
-                          },
-                          decoration: InputDecoration(labelText: t.socialName),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        flex: 3,
-                        child: TextFormField(
-                          controller: ctrlUrl,
-                          decoration: InputDecoration(labelText: t.socialUrl),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (selectedSocial != 'Escolha' &&
-                          ctrlUrl.text.trim().isNotEmpty) {
+                  Expanded(
+                    flex: 2,
+                    child: DropdownButtonFormField<String>(
+                      value: selectedSocial,
+                      items:
+                          socialItems
+                              .map(
+                                (item) => DropdownMenuItem(
+                                  value: item,
+                                  child: Text(item),
+                                ),
+                              )
+                              .toList(),
+                      onChanged: (value) {
                         setState(() {
-                          cvData.socials.add({
-                            'icon':
-                                selectedSocial == 'GitHub'
-                                    ? Icons.code
-                                    : selectedSocial == 'LinkedIn'
-                                    ? FontAwesomeIcons.linkedin
-                                    : selectedSocial == 'Twitter'
-                                    ? FontAwesomeIcons.twitter
-                                    : Icons.web,
-                            'name': selectedSocial,
-                            'url': ctrlUrl.text.trim(),
-                          });
-                          selectedSocial = 'Escolha';
-                          ctrlUrl.clear();
+                          selectedSocial = value ?? 'Escolha';
                         });
-                      }
-                    },
-                    child: Text(t.add),
+                      },
+                      decoration: InputDecoration(labelText: t.socialName),
+                    ),
                   ),
-                  Column(
-                    children:
-                        cvData.socials
-                            .map(
-                              (s) => SocialLink(
-                                icon: s['icon'],
-                                name: s['name']!,
-                                url: s['url']!,
-                                textTheme:
-                                    template.theme
-                                        .copyWith(
-                                          textTheme: GoogleFonts.getTextTheme(
-                                            template.fontFamily,
-                                          ),
-                                        )
-                                        .textTheme,
-                              ),
-                            )
-                            .toList(),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    flex: 3,
+                    child: TextFormField(
+                      controller: ctrlUrl,
+                      decoration: InputDecoration(labelText: t.socialUrl),
+                    ),
                   ),
                 ],
               ),
+              controller: ctrlUrl,
+              list: cv.socials,
+              onAdd: () {
+                if (selectedSocial != 'Escolha' &&
+                    ctrlUrl.text.trim().isNotEmpty) {
+                  setState(() {
+                    cvData.updateSocials(
+                      socials: [
+                        ...cv.socials,
+                        {'type': selectedSocial, 'url': ctrlUrl.text.trim()},
+                      ],
+                    );
+                    selectedSocial = 'Escolha';
+                    ctrlUrl.clear();
+                  });
+                }
+              },
+              // Layout horizontal com Wrap
+              listWidget: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children:
+                    cv.socials.asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final s = entry.value;
+                      return SocialLink(
+                        icon: socialIcons[s['type']] ?? FontAwesomeIcons.link,
+                        name: s['type']!,
+                        url: s['url']!,
+                        textTheme:
+                            template.theme
+                                .copyWith(
+                                  textTheme: GoogleFonts.getTextTheme(
+                                    template.fontFamily,
+                                  ),
+                                )
+                                .textTheme,
+                        onDeleted: () {
+                          setState(() {
+                            final newSocials = List<Map<String, String>>.from(
+                              cv.socials,
+                            );
+                            newSocials.removeAt(index);
+                            cvData.updateSocials(socials: newSocials);
+                          });
+                        },
+                      );
+                    }).toList(),
+              ),
             ),
+
             const SizedBox(height: 24),
             ElevatedButton.icon(
               icon: const Icon(Icons.save),
               label: Text(t.save),
-              onPressed: () => _saveData(context, cvData, t),
+              onPressed: () => _saveData(context, cv, t),
             ),
           ],
         ),
