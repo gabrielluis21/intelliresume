@@ -19,4 +19,11 @@ class AuthService {
           .then((c) => c.user!);
 
   Future<void> signOut() => _auth.signOut();
+
+  Future<void> verifyUserEmail() async {
+    final user = _auth.currentUser;
+    if (user != null && !user.emailVerified) {
+      await user.sendEmailVerification();
+    }
+  }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:intelliresume/services/auth_service.dart';
+import 'package:intelliresume/data/datasources/remote/auth_resume_ds.dart';
 
 class RouterNotifier extends ChangeNotifier {
   RouterNotifier(this._authMethods) {

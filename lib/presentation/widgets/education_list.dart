@@ -19,12 +19,7 @@ class EducationList extends StatelessWidget {
             leading: const Icon(Icons.school_outlined),
             title: Text(
               items[i],
-              style: theme.bodyMedium!.copyWith(
-                color:
-                    MediaQuery.of(c).platformBrightness == Brightness.dark
-                        ? Colors.white
-                        : Colors.black,
-              ),
+              style: theme.bodyMedium?.copyWith(height: 1.5),
             ),
           ),
     );

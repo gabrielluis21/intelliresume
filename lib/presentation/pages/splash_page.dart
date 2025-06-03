@@ -4,8 +4,8 @@ import 'dart:async';
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
+import 'package:intelliresume/data/datasources/remote/auth_resume_ds.dart';
 import '../../routes/app_routes.dart';
-import '../../services/auth_service.dart';
 import '../../core/utils/app_localizations.dart';
 
 class SplashPage extends StatefulWidget {

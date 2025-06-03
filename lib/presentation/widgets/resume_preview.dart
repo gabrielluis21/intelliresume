@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intelliresume/core/providers/resume_template_provider.dart';
 import 'package:intelliresume/core/providers/user_provider.dart';
 import '../../domain/entities/user_profile.dart';
+import 'header_section.dart';
 import 'section.dart';
 import 'experience_list.dart';
 import 'education_list.dart';
@@ -51,7 +52,7 @@ class ResumePreview extends ConsumerWidget {
                         child: _buildSidebar(
                           context,
                           textTheme,
-                          user,
+                          user.value,
                           cvData,
                           socialIcons,
                         ),
@@ -61,14 +62,19 @@ class ResumePreview extends ConsumerWidget {
                         child: _buildMainContent(
                           context,
                           textTheme,
-                          user,
+                          user.value,
                           cvData,
                         ),
                       ),
                     ],
                   )
                   : SingleChildScrollView(
-                    child: _buildMainContent(context, textTheme, user!, cvData),
+                    child: _buildMainContent(
+                      context,
+                      textTheme,
+                      user.value,
+                      cvData,
+                    ),
                   ),
         ),
       ),
@@ -88,6 +94,11 @@ class ResumePreview extends ConsumerWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        Align(
+          alignment: Alignment.centerLeft,
+          child: HeaderSection(title: user?.name ?? '', textTheme: textTheme),
+        ),
+        Divider(),
         Section(
           title: t.contactInfo,
           titleStyle: textTheme,
@@ -95,10 +106,10 @@ class ResumePreview extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 8),
-              Text(user?.email ?? '', style: textTheme.bodyMedium),
+              Text(user!.email ?? '', style: textTheme.bodyMedium),
               const SizedBox(height: 4),
               Text(
-                'Telefone: ${user?.phone ?? '(00) 00000-0000'}',
+                'Telefone: ${user.phone ?? '(00) 00000-0000'}',
                 style: textTheme.bodyMedium,
               ),
               const SizedBox(height: 12),
@@ -157,37 +168,33 @@ class ResumePreview extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          user?.name ?? '',
-          style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-        ),
         const SizedBox(height: 8),
-        if (data.objective.isNotEmpty) ...[
-          Section(
-            title: t.objective,
-            titleStyle: textTheme,
-            child: Text(
-              data.objective,
-              style: textTheme.bodyMedium?.copyWith(height: 1.5),
-            ),
+        Section(
+          title: t.objective,
+          titleStyle: textTheme,
+          child: Text(
+            data.objective.isEmpty ? t.noObjectives : data.objective,
+            style: textTheme.bodyMedium?.copyWith(height: 1.5),
           ),
-          const SizedBox(height: 16),
-        ],
-        if (data.experiences.isNotEmpty) ...[
-          Section(
-            title: t.experiences,
-            titleStyle: textTheme,
-            child: ExperienceList(items: data.experiences, theme: textTheme),
-          ),
-          const SizedBox(height: 16),
-        ],
-        if (data.educations.isNotEmpty) ...[
-          Section(
-            title: t.educations,
-            titleStyle: textTheme,
-            child: EducationList(items: data.educations, theme: textTheme),
-          ),
-        ],
+        ),
+        const SizedBox(height: 16),
+        Section(
+          title: t.experiences,
+          titleStyle: textTheme,
+          child:
+              data.experiences.isEmpty
+                  ? Text('Sem experiencias adicionadas')
+                  : ExperienceList(items: data.experiences, theme: textTheme),
+        ),
+        const SizedBox(height: 16),
+        Section(
+          title: t.educations,
+          titleStyle: textTheme,
+          child:
+              data.educations.isEmpty
+                  ? Text('Sem escolaridade adicionada')
+                  : EducationList(items: data.educations, theme: textTheme),
+        ),
       ],
     );
   }

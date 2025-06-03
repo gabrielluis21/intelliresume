@@ -1,43 +1,59 @@
+// lib/pages/profile_page.dart
 import 'package:flutter/material.dart';
-import '../../routes/app_routes.dart';
-import '../../services/auth_service.dart';
-import '../../core/utils/app_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:intelliresume/core/providers/user_provider.dart';
 
-class ProfilePage extends StatelessWidget {
+import '../widgets/layout_template.dart';
+
+class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context);
-    final user = AuthService.instance.currentUser;
-    return Scaffold(
-      appBar: AppBar(title: Text(t.profile)),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            children: [
-              CircleAvatar(
-                radius: 48,
-                child: Text(user?.email?[0].toUpperCase() ?? '?'),
-              ),
-              const SizedBox(height: 16),
-              ListTile(
-                leading: const Icon(Icons.email),
-                title: Text(user?.email ?? ''),
-                subtitle: Text(t.email),
-              ),
-              const Spacer(),
-              ElevatedButton.icon(
-                onPressed: () async {
-                  await AuthService.instance.signOut();
-                  AppRoutes.router.pushReplacementNamed('/login');
-                },
-                icon: const Icon(Icons.logout),
-                label: Text(t.logout),
-              ),
-            ],
-          ),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(userProfileProvider);
+
+    return LayoutTemplate(
+      selectedIndex: 1,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 50,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  child: Text(
+                    user.value?.profilePictureUrl?.substring(0, 1) ?? 'U',
+                    style: const TextStyle(fontSize: 40, color: Colors.white),
+                  ),
+                ),
+                const SizedBox(width: 20),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      user.value?.name ?? 'Usuário',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      user.value?.email ?? 'email@exemplo.com',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 32),
+            ElevatedButton.icon(
+              onPressed: () => context.goNamed('edit-profile'),
+              icon: const Icon(Icons.edit),
+              label: const Text('Editar Perfil'),
+            ),
+          ],
         ),
       ),
     );

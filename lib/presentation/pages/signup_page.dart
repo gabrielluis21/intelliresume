@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../services/auth_service.dart';
+import 'package:intelliresume/data/datasources/remote/auth_resume_ds.dart';
 import '../../routes/app_routes.dart';
 import '../../core/utils/app_localizations.dart';
 
@@ -13,16 +13,24 @@ class _SignupPageState extends State<SignupPage> {
   final _formKey = GlobalKey<FormState>();
   String email = '', password = '', confirm = '';
   bool _loading = false;
+  bool _obscurePassword = true;
+  bool _obscureConfirm = true;
 
   Future<void> _signup() async {
     if (!_formKey.currentState!.validate()) return;
     _formKey.currentState!.save();
+
+    // Validação de igualdade de senhas
     if (password != confirm) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).fieldRequired)),
+        SnackBar(
+          content: Text(AppLocalizations.of(context).passwordsDontMatch),
+          behavior: SnackBarBehavior.floating,
+        ),
       );
       return;
     }
+
     setState(() => _loading = true);
     try {
       await AuthService.instance.signUp(email: email, password: password);
@@ -30,8 +38,9 @@ class _SignupPageState extends State<SignupPage> {
     } on Exception catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(e.toString()),
+          content: Text(e.toString().replaceFirst('Exception: ', '')),
           behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 5),
         ),
       );
     } finally {
@@ -60,48 +69,73 @@ class _SignupPageState extends State<SignupPage> {
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     const SizedBox(height: 24),
+                    // Campo de email
                     TextFormField(
                       decoration: InputDecoration(
                         labelText: t.email,
                         prefixIcon: const Icon(Icons.email),
                       ),
                       keyboardType: TextInputType.emailAddress,
-                      validator:
-                          (v) =>
-                              (v?.contains('@') == true)
-                                  ? null
-                                  : t.fieldRequired,
+                      validator: (v) {
+                        if (v == null || v.isEmpty) return t.fieldRequired;
+                        if (!v.contains('@')) return t.invalidEmail;
+                        return null;
+                      },
                       onSaved: (v) => email = v!.trim(),
                     ),
                     const SizedBox(height: 16),
+                    // Campo de senha
                     TextFormField(
                       decoration: InputDecoration(
                         labelText: t.password,
                         prefixIcon: const Icon(Icons.lock),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
+                          onPressed:
+                              () => setState(
+                                () => _obscurePassword = !_obscurePassword,
+                              ),
+                        ),
                       ),
-                      obscureText: true,
-                      validator:
-                          (v) =>
-                              (v != null && v.length >= 6)
-                                  ? null
-                                  : t.fieldRequired,
+                      obscureText: _obscurePassword,
+                      validator: (v) {
+                        if (v == null || v.isEmpty) return t.fieldRequired;
+                        if (v.length < 6) return t.passwordTooShort;
+                        return null;
+                      },
                       onSaved: (v) => password = v!,
                     ),
                     const SizedBox(height: 16),
+                    // Campo de confirmação de senha
                     TextFormField(
                       decoration: InputDecoration(
-                        labelText: t.password,
+                        labelText: t.confirmPassword,
                         prefixIcon: const Icon(Icons.lock),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscureConfirm
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
+                          onPressed:
+                              () => setState(
+                                () => _obscureConfirm = !_obscureConfirm,
+                              ),
+                        ),
                       ),
-                      obscureText: true,
-                      validator:
-                          (v) =>
-                              (v != null && v == password)
-                                  ? null
-                                  : t.fieldRequired,
+                      obscureText: _obscureConfirm,
+                      validator: (v) {
+                        if (v == null || v.isEmpty) return t.fieldRequired;
+                        return null;
+                      },
                       onSaved: (v) => confirm = v!,
                     ),
                     const SizedBox(height: 24),
+                    // Botão de cadastro
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(

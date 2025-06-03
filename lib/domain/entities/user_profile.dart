@@ -7,26 +7,35 @@ class UserProfile {
   final String? email;
   final String? phone;
   final String? name;
-  final String? profielePictureUrl;
+  final String? profilePictureUrl;
+  final bool emailVerified;
   final PlanType plan;
 
   UserProfile({
-    required this.uid,
-    required this.email,
-    required this.phone,
-    required this.name,
-    required this.profielePictureUrl,
+    this.uid,
+    this.email,
+    this.phone,
+    this.name,
+    this.profilePictureUrl,
     this.plan = PlanType.free,
+    this.emailVerified = false,
   });
 
-  UserProfile copyWith({PlanType? plan}) {
+  UserProfile copyWith({
+    String? name,
+    String? email,
+    String? phone,
+    String? profilePictureUrl,
+    bool? emailVerified,
+    PlanType? plan,
+  }) {
     return UserProfile(
-      uid: uid,
-      email: email,
-      name: name,
-      phone: phone,
-      profielePictureUrl: profielePictureUrl,
+      email: email ?? this.email,
+      name: name ?? this.name,
+      phone: phone ?? this.phone,
+      profilePictureUrl: profilePictureUrl ?? this.profilePictureUrl,
       plan: plan ?? this.plan,
+      emailVerified: emailVerified ?? this.emailVerified,
     );
   }
 
@@ -35,7 +44,8 @@ class UserProfile {
     'email': email,
     'phone': phone,
     'name': name,
-    'profielePictureUrl': profielePictureUrl,
+    'profilePictureUrl': profilePictureUrl,
+    'emailVerified': emailVerified,
     'plan': plan.toString(),
   };
 
@@ -45,7 +55,7 @@ class UserProfile {
       email: j['email'],
       phone: j['phone'],
       name: j['name'],
-      profielePictureUrl: j['profielePictureUrl'],
+      profilePictureUrl: j['profielePictureUrl'],
       plan: j['plan'] == 'PlanType.premium' ? PlanType.premium : PlanType.free,
     );
   }

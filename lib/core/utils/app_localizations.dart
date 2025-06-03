@@ -62,6 +62,10 @@ class AppLocalizations {
       // ... outras chaves
     },
     'pt': {
+      'noObjectives': 'Nenhum objetivo definido',
+      "passwordsDontMatch": "As senhas não coincidem",
+      "invalidEmail": "Email inválido",
+      "passwordTooShort": "Senha deve ter pelo menos 6 caracteres",
       'appTitle': 'Currículo Online',
       'homeTitle': 'Início',
       'homeWelcomeMessage': 'Bem-vindo ao Currículo Online',
@@ -162,6 +166,11 @@ class AppLocalizations {
   String get resumeForm => translate('resumeForm');
   String get resumePreview => translate('resumePreview');
   String get settings => translate('settings');
+  String get invalidEmail => translate('invalidEmail');
+  String get passwordsDontMatch => translate('passwordsDontMatch');
+  String get passwordTooShort => translate('passwordTooShort');
+  String get noObjectives => translate('noObjectives');
+
   //String get kay => translate('key');
   // ... e assim por diante para cada chave
 

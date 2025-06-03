@@ -1,19 +1,20 @@
 // lib/pages/payment_page.dart
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/providers/user_provider.dart';
 import '../../services/payment_service.dart';
 import '../../core/utils/app_localizations.dart';
 import '../../domain/entities/user_profile.dart';
 import '../../domain/usecases/update_plan_usecase.dart';
-import '../../services/auth_service.dart';
 
-class PaymentPage extends StatefulWidget {
+class PaymentPage extends ConsumerStatefulWidget {
   const PaymentPage({super.key});
   @override
-  State<PaymentPage> createState() => _PaymentPageState();
+  ConsumerState<PaymentPage> createState() => _PaymentPageState();
 }
 
-class _PaymentPageState extends State<PaymentPage> {
+class _PaymentPageState extends ConsumerState<PaymentPage> {
   bool _loading = false;
 
   Future<void> _upgrade() async {
@@ -21,8 +22,11 @@ class _PaymentPageState extends State<PaymentPage> {
     try {
       await PaymentService.instance.purchasePremium();
       // após confirmação, atualiza plano no perfil
-      final user = AuthService.instance.currentUser!;
-      var profile = await UpdatePlanUseCase().call(user.uid, PlanType.premium);
+      final user = ref.read(userProfileProvider).value;
+      var profile = await UpdatePlanUseCase().call(
+        user!.uid!,
+        PlanType.premium,
+      );
       print(profile);
       // feedback
       ScaffoldMessenger.of(context).showSnackBar(
