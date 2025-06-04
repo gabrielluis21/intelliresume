@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'routes/app_routes.dart';
 import 'core/themes.dart';
 import 'core/utils/app_localizations.dart';
 
-class App extends StatelessWidget {
+class App extends ConsumerWidget {
   const App({super.key});
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(routerProvider);
+
     return MaterialApp.router(
       title: 'IntelliResume',
       debugShowCheckedModeBanner: false,
       theme: lightTheme,
       darkTheme: darkTheme,
+      themeMode: ThemeMode.light,
       localeResolutionCallback: _localeResolution,
-      routerConfig: AppRoutes.router,
+      routerConfig: router,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
     );

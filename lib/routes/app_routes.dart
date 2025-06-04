@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intelliresume/data/datasources/remote/auth_resume_ds.dart';
 import 'package:intelliresume/presentation/pages/edit_profile.dart';
@@ -7,9 +7,10 @@ import 'package:intelliresume/presentation/widgets/layout_template.dart';
 import '../presentation/notifiers/router_notify.dart';
 import '../presentation/pages.dart';
 
-class AppRoutes {
-  static final GoRouter router = GoRouter(
-    initialLocation: kIsWeb ? '/login' : '/',
+final routerProvider = Provider<GoRouter>((ref) {
+  return GoRouter(
+    initialLocation: '/',
+    debugLogDiagnostics: true,
     routes: [
       GoRoute(
         name: 'splash',
@@ -21,11 +22,7 @@ class AppRoutes {
         path: '/login',
         builder: (context, state) => const LoginPage(),
       ),
-      GoRoute(
-        name: 'signup',
-        path: '/signup',
-        builder: (context, state) => const SignupPage(),
-      ),
+
       GoRoute(
         name: 'profile',
         path: '/profile',
@@ -68,13 +65,13 @@ class AppRoutes {
             ),
       ),
     ],
-    redirect: (ctx, state) {
+    /* redirect: (ctx, state) {
       final logged = AuthService.instance.currentUser != null;
       final loggingIn = state.path == '/login' || state.path == '/signup';
-      if (!logged && !loggingIn) return '/login';
-      if (logged && loggingIn) return '/form';
+      if (!logged && !loggingIn) return '/';
+      if (logged && loggingIn) return '/home';
       return null;
     },
-    refreshListenable: RouterNotifier(AuthService.instance),
+    refreshListenable: RouterNotifier(AuthService.instance), */
   );
-}
+});

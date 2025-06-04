@@ -1,18 +1,19 @@
 // lib/pages/history_page.dart
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../../core/utils/app_localizations.dart';
 import '../../routes/app_routes.dart';
 
-class HistoryPage extends StatefulWidget {
+class HistoryPage extends ConsumerStatefulWidget {
   const HistoryPage({super.key});
   @override
-  State<HistoryPage> createState() => _HistoryPageState();
+  ConsumerState<HistoryPage> createState() => _HistoryPageState();
 }
 
-class _HistoryPageState extends State<HistoryPage> {
+class _HistoryPageState extends ConsumerState<HistoryPage> {
   List<Map<String, dynamic>> _history = [];
 
   @override
@@ -68,11 +69,13 @@ class _HistoryPageState extends State<HistoryPage> {
                         onPressed: () => _delete(i),
                       ),
                       onTap: () {
-                        AppRoutes.router.pushNamed(
-                          '/form',
-                          // passe item como argumento para pré-carregar o formulário
-                          extra: item['data'],
-                        );
+                        ref
+                            .watch(routerProvider)
+                            .goNamed(
+                              'form',
+                              // passe item como argumento para pré-carregar o formulário
+                              extra: item['data'],
+                            );
                       },
                     );
                   },

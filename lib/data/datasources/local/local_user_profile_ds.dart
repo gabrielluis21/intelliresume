@@ -23,6 +23,7 @@ class HiveUserProfileDataSource implements LocalUserProfileDataSource {
     return box.get(uid)?.cast<String, dynamic>();
   }
 
+  @override
   Stream<UserProfile> watchProfile(String uid) async* {
     // Emite o valor atual imediatamente
     final data = await Hive.openBox(_boxName);

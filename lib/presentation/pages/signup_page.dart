@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intelliresume/data/datasources/remote/auth_resume_ds.dart';
 import '../../routes/app_routes.dart';
 import '../../core/utils/app_localizations.dart';
 
-class SignupPage extends StatefulWidget {
+class SignupPage extends ConsumerStatefulWidget {
   const SignupPage({super.key});
   @override
-  State<SignupPage> createState() => _SignupPageState();
+  ConsumerState<SignupPage> createState() => _SignupPageState();
 }
 
-class _SignupPageState extends State<SignupPage> {
+class _SignupPageState extends ConsumerState<SignupPage> {
   final _formKey = GlobalKey<FormState>();
   String email = '', password = '', confirm = '';
   bool _loading = false;
@@ -34,7 +35,7 @@ class _SignupPageState extends State<SignupPage> {
     setState(() => _loading = true);
     try {
       await AuthService.instance.signUp(email: email, password: password);
-      AppRoutes.router.pushReplacement('/form');
+      ref.watch(routerProvider).goNamed('home');
     } on Exception catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

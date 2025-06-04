@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/datasources/remote/auth_resume_ds.dart';
 import '../../routes/app_routes.dart';
 import '../../core/utils/app_localizations.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  ConsumerState<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends ConsumerState<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   String email = '', password = '';
   bool _loading = false;
@@ -21,7 +21,7 @@ class _LoginPageState extends State<LoginPage> {
     setState(() => _loading = true);
     try {
       await AuthService.instance.signIn(email: email, password: password);
-      context.goNamed('home');
+      ref.watch(routerProvider).goNamed('home');
     } on Exception catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -93,7 +93,8 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     TextButton(
-                      onPressed: () => AppRoutes.router.pushNamed('signup'),
+                      onPressed:
+                          () => ref.watch(routerProvider).goNamed('signup'),
                       child: Text(t.signup),
                     ),
                   ],

@@ -1,62 +1,86 @@
-// lib/pages/splash_page.dart
-
-import 'dart:async';
-import 'package:flutter/foundation.dart'
-    show defaultTargetPlatform, TargetPlatform;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:intelliresume/data/datasources/remote/auth_resume_ds.dart';
-import '../../routes/app_routes.dart';
-import '../../core/utils/app_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intelliresume/routes/app_routes.dart';
+import 'web_landing_page.dart'; // Nova página para web
 
-class SplashPage extends StatefulWidget {
+class SplashPage extends ConsumerStatefulWidget {
   const SplashPage({super.key});
+
   @override
-  State<SplashPage> createState() => _SplashPageState();
+  ConsumerState<SplashPage> createState() => _SplashPageState();
 }
 
-class _SplashPageState extends State<SplashPage> {
+class _SplashPageState extends ConsumerState<SplashPage>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
   @override
   void initState() {
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    );
+
+    _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
+
+    _controller.forward();
+    // Redirecionamento automático apenas para mobile
+    if (!kIsWeb) {
+      Future.delayed(const Duration(seconds: 3), () {
+        ref.read(routerProvider).goNamed('login');
+      });
+    }
     super.initState();
-    // Delay de 2s e depois navegar
-    Timer(const Duration(seconds: 2), _goNext);
   }
 
-  void _goNext() {
-    final isMobile =
-        defaultTargetPlatform == TargetPlatform.android ||
-        defaultTargetPlatform == TargetPlatform.iOS;
-    if (!isMobile) {
-      // em Web, vamos direto para o form (ou splash não aparece)
-      AppRoutes.router.pushReplacementNamed('/form');
-      return;
-    }
-    final user = AuthService.instance.currentUser;
-    AppRoutes.router.pushReplacementNamed(user != null ? '/form' : '/login');
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context);
-    final primary = Theme.of(context).colorScheme.primary;
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.article, size: 72, color: primary),
-            const SizedBox(height: 16),
-            Text(
-              t.appTitle,
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(color: primary),
+    // Exibir landing page para web
+    if (!kIsWeb) {
+      return Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        body: Center(
+          child: ScaleTransition(
+            scale: _animation,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Hero(
+                  tag: 'app-logo',
+                  child: Image.asset(
+                    'images/logo.png', // Substituir pelo seu asset
+                    width: 150,
+                    height: 150,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                FadeTransition(
+                  opacity: _animation,
+                  child: Text(
+                    'IntelliResume',
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 32),
-            const CircularProgressIndicator(),
-          ],
+          ),
         ),
-      ),
-    );
+      );
+    }
+
+    return const WebLandingPage();
+    // SplashScreen animada para mobile
   }
 }

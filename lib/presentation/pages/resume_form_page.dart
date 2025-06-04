@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intelliresume/data/datasources/remote/auth_resume_ds.dart';
-import 'package:intelliresume/presentation/widgets/layout_template.dart';
 import 'package:intelliresume/presentation/widgets/resume_preview.dart';
 import 'package:intelliresume/presentation/widgets/side_menu.dart';
 import '../../core/providers/resume_template_provider.dart';

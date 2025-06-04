@@ -1,23 +1,23 @@
 // lib/pages/home_page.dart
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intelliresume/routes/app_routes.dart';
 
 import '../widgets/layout_template.dart';
 import '../widgets/cv_card.dart';
 import '../../data/models/cv_model.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends ConsumerState<HomePage> {
   final dynamic _cvService = Object();
   CVModel? _latestCV;
   final List<dynamic> _history = [];
-
   @override
   void initState() {
     super.initState();
@@ -29,11 +29,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _createNewCV() {
-    context.goNamed('form');
+    ref.watch(routerProvider).goNamed('form');
   }
 
   void _editCV(dynamic cv) {
-    context.goNamed('form', extra: cv);
+    ref.watch(routerProvider).goNamed('form', extra: cv);
   }
 
   void _deleteCV(dynamic cv) async {
