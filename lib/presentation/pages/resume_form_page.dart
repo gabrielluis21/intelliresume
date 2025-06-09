@@ -1,20 +1,11 @@
-// Melhorias aplicadas:
-// - Separação de responsabilidades (SOLID)
-// - Extração de widgets para limpeza de código
-// - Validações mais robustas
-// - Melhor UX para mobile e PWA (scroll suave, botões fixos, feedback claro)
-// - Internationalization support mantido
-// - Padding e espaçamento consistente para acessibilidade
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intelliresume/data/datasources/remote/auth_resume_ds.dart';
-import 'package:intelliresume/presentation/widgets/resume_preview.dart';
+import 'package:intelliresume/presentation/widgets/preview/resume_preview.dart';
 import 'package:intelliresume/presentation/widgets/side_menu.dart';
-import '../../core/providers/resume_template_provider.dart';
 import '../../core/utils/app_localizations.dart';
-import '../widgets/resume_form.dart';
+import '../widgets/form/resume_form.dart';
 
 class ResumeFormPage extends ConsumerStatefulWidget {
   const ResumeFormPage({super.key});
@@ -68,59 +59,86 @@ class _ResumeFormPageState extends ConsumerState<ResumeFormPage> {
           if (isWide) {
             return Row(
               children: [
-                Expanded(child: ResumeFormContent()),
+                Expanded(child: ResumeForm()),
                 const VerticalDivider(),
-                Expanded(child: ResumePreview()),
+                Expanded(
+                  child: InkWell(
+                    onTap:
+                        () => showAdaptiveDialog(
+                          context: context,
+                          builder:
+                              (_) => AlertDialog.adaptive(
+                                content: ResumePreview(),
+                                title: Text("Preview"),
+                                actions: [
+                                  ElevatedButton(
+                                    onPressed: () {},
+                                    child: Text("Exportar PDF"),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {},
+                                    child: Text("Exportar DOCX"),
+                                  ),
+                                  IconButton(
+                                    onPressed: () {},
+                                    icon: Icon(Icons.print, color: Colors.blue),
+                                  ),
+                                  IconButton(
+                                    onPressed:
+                                        () => Navigator.of(context).pop(),
+                                    icon: Icon(Icons.close, color: Colors.red),
+                                  ),
+                                ],
+                              ),
+                        ),
+                    child: ResumePreview(),
+                  ),
+                ),
               ],
             );
           } else {
             return SingleChildScrollView(
               child: Column(
                 children: [
-                  ResumeFormContent(),
+                  ResumeForm(),
                   const Divider(),
-                  ResumePreview(),
+                  InkWell(
+                    onTap:
+                        () => showAdaptiveDialog(
+                          context: context,
+                          builder:
+                              (_) => AlertDialog.adaptive(
+                                content: ResumePreview(),
+                                title: Text("Preview"),
+                                actions: [
+                                  ElevatedButton(
+                                    onPressed: () {},
+                                    child: Text("Exportar PDF"),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {},
+                                    child: Text("Exportar DOCX"),
+                                  ),
+                                  IconButton(
+                                    onPressed: () {},
+                                    icon: Icon(Icons.print, color: Colors.blue),
+                                  ),
+                                  IconButton(
+                                    onPressed:
+                                        () => Navigator.of(context).pop(),
+                                    icon: Icon(Icons.close, color: Colors.red),
+                                  ),
+                                ],
+                              ),
+                        ),
+                    child: ResumePreview(),
+                  ),
                 ],
               ),
             );
           }
         },
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showTemplateDialog(context, ref),
-        icon: Icon(Icons.palette),
-        label: Text('Select Theme'),
-        backgroundColor: Theme.of(context).primaryColor,
-      ),
-    );
-  }
-
-  void _showTemplateDialog(BuildContext context, WidgetRef ref) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Escolha um modelo de currículo'),
-          content: SingleChildScrollView(
-            child: Column(
-              children:
-                  resumeTemplates.map((template) {
-                    return ListTile(
-                      title: Text(template.name),
-                      subtitle: Text(
-                        'Fonte: ${template.fontFamily}, Colunas: ${template.columns}',
-                      ),
-                      onTap: () {
-                        ref.read(selectedTemplateProvider.notifier).state =
-                            template;
-                        Navigator.of(context).pop();
-                      },
-                    );
-                  }).toList(),
-            ),
-          ),
-        );
-      },
     );
   }
 }

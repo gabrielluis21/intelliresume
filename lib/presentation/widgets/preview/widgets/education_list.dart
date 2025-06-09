@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../../../data/models/cv_data.dart';
+
 class EducationList extends StatelessWidget {
-  final List<String> items;
+  final List<Education> items;
   final TextTheme theme;
 
   const EducationList({super.key, required this.items, required this.theme});
@@ -18,8 +20,12 @@ class EducationList extends StatelessWidget {
           (c, i) => ListTile(
             leading: const Icon(Icons.school_outlined),
             title: Text(
-              items[i],
+              "${items[i].school} - ${items[i].degree}",
               style: theme.bodyMedium?.copyWith(height: 1.5),
+            ),
+            subtitle: Text(
+              "${items[i].startDate} - ${items[i].endDate ?? 'Atual'}",
+              style: theme.bodySmall?.copyWith(height: 1.2),
             ),
           ),
     );

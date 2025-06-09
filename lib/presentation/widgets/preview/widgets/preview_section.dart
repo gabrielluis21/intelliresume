@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class Section extends StatelessWidget {
+class PreviewSection extends StatelessWidget {
   final String title;
   final Widget child;
   final TextTheme titleStyle;
 
-  const Section({
+  const PreviewSection({
     super.key,
     required this.title,
     required this.titleStyle,

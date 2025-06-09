@@ -15,7 +15,7 @@ class AppLocalizations {
   // Chave‐valor de todas as strings
   static final Map<String, Map<String, String>> _localizedValues = {
     'en': {
-      'appTitle': 'ItelliResume',
+      'appTitle': 'IntelliResume',
       'appSubtitle': 'Create your resume in seconds',
       'homeTitle': 'Home',
       'homeWelcomeMessage': 'Welcome to ItelliResume',
@@ -62,11 +62,17 @@ class AppLocalizations {
       // ... outras chaves
     },
     'pt': {
+      'company': 'Empresa',
+      'job': 'Cargo',
+      'degree': 'Grau',
+      'institution': 'Instituição',
+      'startDate': 'Data de Início',
+      'endDate': 'Data de Término',
       'noObjectives': 'Nenhum objetivo definido',
       "passwordsDontMatch": "As senhas não coincidem",
       "invalidEmail": "Email inválido",
       "passwordTooShort": "Senha deve ter pelo menos 6 caracteres",
-      'appTitle': 'Currículo Online',
+      'appTitle': 'IntelliResume',
       'homeTitle': 'Início',
       'homeWelcomeMessage': 'Bem-vindo ao Currículo Online',
       'login': 'Login',
@@ -122,6 +128,12 @@ class AppLocalizations {
 
   // Helpers para uso mais conveniente:
   String get appTitle => translate('appTitle');
+  String get company => translate('company');
+  String get job => translate('job');
+  String get degree => translate('degree');
+  String get institution => translate('institution');
+  String get startDate => translate('startDate');
+  String get endDate => translate('endDate');
   String get homeTitle => translate('homeTitle');
   String get homeWelcomeMessage => translate('homeWelcomeMessage');
   String get appSubtitle => translate('appSubtitle');

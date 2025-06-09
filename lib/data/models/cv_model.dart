@@ -1,7 +1,10 @@
+import 'cv_data.dart';
+
 /// Modelo de dados de um currículo
 class CVModel {
   final String id;
   final String title;
+  final ResumeData data;
   final DateTime dateCreated;
   final String? evaluation;
   final String? translation;
@@ -10,6 +13,7 @@ class CVModel {
   CVModel({
     required this.id,
     required this.title,
+    required this.data,
     required this.dateCreated,
     this.evaluation,
     this.translation,
@@ -21,6 +25,7 @@ class CVModel {
     return CVModel(
       id: json['id'] as String,
       title: json['title'] as String,
+      data: ResumeData.fromJson(json['data']),
       dateCreated: DateTime.parse(json['dateCreated'] as String),
       evaluation: json['evaluation'] as String?,
       translation: json['translation'] as String?,

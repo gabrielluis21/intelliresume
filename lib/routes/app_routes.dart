@@ -37,6 +37,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'form',
         path: '/form',
         builder: (context, state) => const ResumeFormPage(),
+        routes: [
+          GoRoute(
+            name: 'preview',
+            path: '/preview',
+            builder: (context, state) => const ResumePreview(),
+          ),
+        ],
       ),
       GoRoute(
         name: 'home',

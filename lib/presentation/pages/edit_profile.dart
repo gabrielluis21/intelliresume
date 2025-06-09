@@ -111,6 +111,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     final userProfile = ref.watch(userProfileProvider);
     final user = userProfile.value;
     final email = user?.email ?? '';
+    final phone = user?.phone ?? '';
     final emailVerified = user?.emailVerified ?? false;
     final photoUrl = user?.profilePictureUrl;
 
@@ -223,7 +224,15 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                     ),
                     const SizedBox(height: 16),
                   ],
-
+                  // Campo de Email (read-only)
+                  TextFormField(
+                    initialValue: phone ?? '',
+                    decoration: InputDecoration(
+                      labelText: 'Telfone',
+                      prefixIcon: const Icon(Icons.phone),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                   // Botão de Salvar
                   SizedBox(
                     width: double.infinity,
