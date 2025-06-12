@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intelliresume/core/providers/user_provider.dart';
 import 'package:intelliresume/data/datasources/remote/auth_resume_ds.dart';
+import 'package:intelliresume/presentation/widgets/export_buttons.dart';
 import 'package:intelliresume/presentation/widgets/preview/resume_preview.dart';
 import 'package:intelliresume/presentation/widgets/side_menu.dart';
+//import 'package:printing/printing.dart';
+import '../../core/providers/cv_provider.dart';
 import '../../core/utils/app_localizations.dart';
 import '../widgets/form/resume_form.dart';
 
@@ -47,6 +51,10 @@ class _ResumeFormPageState extends ConsumerState<ResumeFormPage> {
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
     final isWide = MediaQuery.of(context).size.width > 600;
+    final current = ref.watch(userProfileProvider);
+    final resumeData = ref.watch(resumeProvider);
+    var resume = resumeData.copyWith(personalInfo: current.value);
+    print(resume.toMap());
 
     return Scaffold(
       appBar: AppBar(title: Text(t.appTitle)),
@@ -57,44 +65,36 @@ class _ResumeFormPageState extends ConsumerState<ResumeFormPage> {
       body: LayoutBuilder(
         builder: (context, constraints) {
           if (isWide) {
-            return Row(
-              children: [
-                Expanded(child: ResumeForm()),
-                const VerticalDivider(),
-                Expanded(
-                  child: InkWell(
-                    onTap:
-                        () => showAdaptiveDialog(
-                          context: context,
-                          builder:
-                              (_) => AlertDialog.adaptive(
-                                content: ResumePreview(),
-                                title: Text("Preview"),
-                                actions: [
-                                  ElevatedButton(
-                                    onPressed: () {},
-                                    child: Text("Exportar PDF"),
-                                  ),
-                                  ElevatedButton(
-                                    onPressed: () {},
-                                    child: Text("Exportar DOCX"),
-                                  ),
-                                  IconButton(
-                                    onPressed: () {},
-                                    icon: Icon(Icons.print, color: Colors.blue),
-                                  ),
-                                  IconButton(
-                                    onPressed:
-                                        () => Navigator.of(context).pop(),
-                                    icon: Icon(Icons.close, color: Colors.red),
-                                  ),
-                                ],
-                              ),
+            return InkWell(
+              onTap:
+                  () => showAdaptiveDialog(
+                    context: context,
+                    builder:
+                        (_) => AlertDialog.adaptive(
+                          content: SizedBox(
+                            height: MediaQuery.of(context).size.height * .8,
+                            width: MediaQuery.of(context).size.width / 2,
+                            child: SingleChildScrollView(
+                              child: ResumePreview(),
+                            ),
+                          ),
+                          title: Text("Preview"),
+                          actions: [
+                            ExportButtons(resumeData: resume),
+                            IconButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              icon: Icon(Icons.close, color: Colors.red),
+                            ),
+                          ],
                         ),
-                    child: ResumePreview(),
                   ),
-                ),
-              ],
+              child: Row(
+                children: [
+                  Expanded(child: ResumeForm()),
+                  const VerticalDivider(),
+                  Expanded(child: ResumePreview()),
+                ],
+              ),
             );
           } else {
             return SingleChildScrollView(
@@ -112,11 +112,15 @@ class _ResumeFormPageState extends ConsumerState<ResumeFormPage> {
                                 title: Text("Preview"),
                                 actions: [
                                   ElevatedButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      context.pushNamed('preview-pdf');
+                                    },
                                     child: Text("Exportar PDF"),
                                   ),
                                   ElevatedButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      context.pushNamed('preview-docx');
+                                    },
                                     child: Text("Exportar DOCX"),
                                   ),
                                   IconButton(

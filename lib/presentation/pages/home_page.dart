@@ -24,9 +24,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     _loadData();
   }
 
-  Future<void> _loadData() async {
-    // Implementação existente
-  }
+  Future<void> _loadData() async {}
 
   void _createNewCV() {
     ref.watch(routerProvider).goNamed('form');

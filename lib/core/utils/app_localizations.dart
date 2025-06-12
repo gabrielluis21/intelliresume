@@ -116,6 +116,11 @@ class AppLocalizations {
       'socialUrl': 'Link da Rede Social',
       'objective': 'Objetivo',
       'contactInfo': 'Contato',
+      'noSocialLinks': 'Nenhum link social adicionado',
+      'noSkills': 'Nenhuma habilidade adicionada',
+      'noExperiences': 'Nenhuma experiência adicionada',
+      'noEducations': 'Nenhuma formação adicionada',
+      'noProjects': 'Nenhum projeto adicionado',
       // ... outras chaves
     },
   };
@@ -182,7 +187,11 @@ class AppLocalizations {
   String get passwordsDontMatch => translate('passwordsDontMatch');
   String get passwordTooShort => translate('passwordTooShort');
   String get noObjectives => translate('noObjectives');
-
+  String get noSocialLinks => translate('noSocialLinks');
+  String get noSkills => translate('noSkills');
+  String get noExperiences => translate('noExperiences');
+  String get noEducations => translate('noEducations');
+  String get noProjects => translate('noProjects');
   //String get kay => translate('key');
   // ... e assim por diante para cada chave
 

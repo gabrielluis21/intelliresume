@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intelliresume/core/providers/cv_provider.dart';
 
 import '../../core/providers/user_provider.dart';
 import '../widgets/layout_template.dart';
@@ -18,6 +19,7 @@ class EditProfilePage extends ConsumerStatefulWidget {
 class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
+  final _phoneController = TextEditingController();
   final _picker = ImagePicker();
   File? _imageFile;
   bool _loading = false;
@@ -63,12 +65,14 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
           name: _nameController.text,
           profilePictureUrl:
               _imageFile != null ? _imageFile!.path : profile.profilePictureUrl,
+          phone: _phoneController.text, // Preservar o telefone atual
         ),
       );
 
       // Forçar refresh do provider
       ref.invalidate(userProfileProvider);
-
+      ref.read(resumeProvider.notifier).updatePersonalInfo(profile);
+      ref.invalidate(resumeProvider);
       // Mostrar mensagem de sucesso
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Perfil atualizado com sucesso!')),
@@ -226,7 +230,9 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                   ],
                   // Campo de Email (read-only)
                   TextFormField(
-                    initialValue: phone ?? '',
+                    controller: _phoneController,
+                    keyboardType: TextInputType.phone,
+                    initialValue: phone,
                     decoration: InputDecoration(
                       labelText: 'Telfone',
                       prefixIcon: const Icon(Icons.phone),

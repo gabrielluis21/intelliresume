@@ -23,6 +23,7 @@ class SocialLink extends StatelessWidget {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Could not open URL: ${social.url}')),
             );
+            return false;
           });
         }
       },

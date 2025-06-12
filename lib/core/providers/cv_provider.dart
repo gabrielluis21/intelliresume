@@ -6,27 +6,22 @@ import '../../domain/entities/user_profile.dart';
 class ResumeState extends StateNotifier<ResumeData> {
   ResumeState() : super(ResumeData.initial());
 
-  void updatePersonalInfo(Map<String, dynamic> personalInfo) {
-    state = state.copyWith(
-      personalInfo: UserProfile.fromJson(personalInfo['personalInfo']),
-      about: personalInfo['about'],
-      objective: personalInfo['objective'],
-      experiences: List<Experience>.from(
-        personalInfo['experiences'].map((x) => Experience.fromJson(x)),
-      ),
-      educations: List<Education>.from(
-        personalInfo['educations'].map((x) => Education.fromJson(x)),
-      ),
-      skills: List<Skill>.from(
-        personalInfo['skills'].map((x) => Skill.fromJson(x)),
-      ),
-      socials: List<Social>.from(
-        personalInfo['socials'].map((x) => Social.fromJson(x)),
-      ),
-      projects: List<Project>.from(
-        personalInfo['projects'].map((x) => Project.fromJson(x)),
-      ),
-    );
+  void updatePersonalInfo(UserProfile userProfile) {
+    print(userProfile.toJson());
+    state = state.copyWith(personalInfo: userProfile);
+  }
+
+  // Objetivos
+  void addObjective() {
+    state = state.copyWith(objective: '');
+  }
+
+  void updateObjective(String objective) {
+    state = state.copyWith(objective: objective);
+  }
+
+  void removeObjective() {
+    state = state.copyWith(objective: '');
   }
 
   // Experiências

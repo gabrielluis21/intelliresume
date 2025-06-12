@@ -1,10 +1,13 @@
+import 'dart:typed_data';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intelliresume/data/datasources/remote/auth_resume_ds.dart';
 import 'package:intelliresume/presentation/pages/edit_profile.dart';
+import 'package:intelliresume/presentation/pages/export/export_docx_page.dart';
+import 'package:intelliresume/presentation/pages/export/export_pdf_page.dart';
 import 'package:intelliresume/presentation/pages/home_page.dart';
 import 'package:intelliresume/presentation/widgets/layout_template.dart';
-import '../presentation/notifiers/router_notify.dart';
+import 'package:pdf/widgets.dart';
 import '../presentation/pages.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -42,6 +45,20 @@ final routerProvider = Provider<GoRouter>((ref) {
             name: 'preview',
             path: '/preview',
             builder: (context, state) => const ResumePreview(),
+          ),
+          GoRoute(
+            name: 'preview-pdf',
+            path: '/preview-pdf',
+            builder:
+                (context, state) =>
+                    PreviewPdfScreen(pdf: state.extra as Document),
+          ),
+          GoRoute(
+            name: 'preview-docx',
+            path: '/preview-docx',
+            builder:
+                (context, state) =>
+                    PreviewDocxScreen(docxBytes: state.extra as Uint8List),
           ),
         ],
       ),

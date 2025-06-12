@@ -20,7 +20,7 @@ class RemoteUserProfileDataSource implements UserProfileDataSource {
 
   @override
   Future<UserProfile?> fetchProfile(String uid) async {
-    final doc = await _firestore.collection('user_profiles').doc(uid).get();
+    final doc = await _firestore.collection('users').doc(uid).get();
     if (doc.exists && doc.data() != null) {
       return UserProfile.fromJson(doc.data()!);
     }
@@ -29,15 +29,12 @@ class RemoteUserProfileDataSource implements UserProfileDataSource {
 
   @override
   Future<void> saveProfile(UserProfile profile) async {
-    await _firestore
-        .collection('user_profiles')
-        .doc(profile.uid)
-        .set(profile.toJson());
+    await _firestore.collection('users').doc(profile.uid).set(profile.toJson());
   }
 
   @override
   Future<void> deleteProfile(String uid) async {
-    await _firestore.collection('user_profiles').doc(uid).delete();
+    await _firestore.collection('users').doc(uid).delete();
   }
 
   @override

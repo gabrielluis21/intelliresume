@@ -2,8 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intelliresume/core/providers/resume_template_provider.dart';
 import 'package:intelliresume/core/providers/user_provider.dart';
 import '../../../data/models/cv_data.dart';
 import '../../../domain/entities/user_profile.dart';
@@ -22,44 +20,39 @@ class ResumePreview extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final template = ref.watch(selectedTemplateProvider);
-    final cvData = ref.watch(resumeProvider);
     final user = ref.watch(userProfileProvider);
+    final cvData = ref.watch(resumeProvider);
 
     final textTheme = GoogleFonts.getTextTheme(
-      template.fontFamily,
-    ).apply(bodyColor: Colors.black, displayColor: Colors.black);
-
+      "Roboto",
+      Theme.of(context).textTheme,
+    );
     // Mapa de ícones para redes sociais
-    final socialIcons = {
+    /* final socialIcons = {
       'GitHub': FontAwesomeIcons.github,
       'LinkedIn': FontAwesomeIcons.linkedin,
       'Twitter': FontAwesomeIcons.twitter,
       'Website': FontAwesomeIcons.globe,
-    };
+    }; */
 
     return user.when(
-      data:
-          (user) =>
-              user == null
-                  ? Center(child: Text('Nenhum dado disponível'))
-                  : Theme(
-                    data: template.theme.copyWith(textTheme: textTheme),
-                    child: Container(
-                      color: Colors.white,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: SingleChildScrollView(
-                          child: _buildMainContent(
-                            context,
-                            textTheme,
-                            user,
-                            cvData,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+      data: (user) {
+        if (user == null) {
+          return Center(child: Text('Nenhum dado disponível'));
+        }
+        return Theme(
+          data: Theme.of(context),
+          child: Container(
+            color: Colors.white,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SingleChildScrollView(
+                child: _buildMainContent(context, textTheme, user, cvData),
+              ),
+            ),
+          ),
+        );
+      },
       error: (error, stack) => Center(child: Text('Erro: $error')),
       loading: () => Center(child: CircularProgressIndicator()),
     );

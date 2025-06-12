@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intelliresume/core/providers/cv_provider.dart';
+import '../../core/providers/user_provider.dart';
 import '../../data/datasources/remote/auth_resume_ds.dart';
 import '../../routes/app_routes.dart';
 import '../../core/utils/app_localizations.dart';
@@ -20,7 +22,17 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     _formKey.currentState!.save();
     setState(() => _loading = true);
     try {
-      await AuthService.instance.signIn(email: email, password: password);
+      final logged = await AuthService.instance.signIn(
+        email: email,
+        password: password,
+      );
+
+      final userProfileRepository = ref.read(userProfileRepositoryProvider);
+      final user = await userProfileRepository.watchProfile(logged.uid).first;
+      print(user.toJson());
+      ref.read(resumeProvider.notifier).updatePersonalInfo(user);
+      //ref.(resumeProvider);
+
       ref.watch(routerProvider).goNamed('home');
     } on Exception catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

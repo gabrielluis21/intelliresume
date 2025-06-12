@@ -7,8 +7,7 @@ class SkillForm extends ConsumerStatefulWidget {
   final int index;
   final Skill skill;
 
-  const SkillForm({Key? key, required this.index, required this.skill})
-    : super(key: key);
+  const SkillForm({super.key, required this.index, required this.skill});
 
   @override
   _SkillFormState createState() => _SkillFormState();

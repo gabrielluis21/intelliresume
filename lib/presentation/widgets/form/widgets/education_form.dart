@@ -7,8 +7,11 @@ class EducationForm extends ConsumerStatefulWidget {
   final int index;
   final Education education;
 
-  const EducationForm({Key? key, required this.index, required this.education})
-    : super(key: key);
+  const EducationForm({
+    super.key,
+    required this.index,
+    required this.education,
+  });
 
   @override
   _EducationFormState createState() => _EducationFormState();
@@ -80,7 +83,6 @@ class _EducationFormState extends ConsumerState<EducationForm> {
                 labelText: 'Instituição *',
                 border: OutlineInputBorder(),
               ),
-              onChanged: (_) => _updateEducation(),
             ),
             const SizedBox(height: 16),
             TextField(
@@ -89,7 +91,6 @@ class _EducationFormState extends ConsumerState<EducationForm> {
                 labelText: 'Curso *',
                 border: OutlineInputBorder(),
               ),
-              onChanged: (_) => _updateEducation(),
             ),
             const SizedBox(height: 16),
             Row(
@@ -101,7 +102,6 @@ class _EducationFormState extends ConsumerState<EducationForm> {
                       labelText: 'Data Início *',
                       border: OutlineInputBorder(),
                     ),
-                    onChanged: (_) => _updateEducation(),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -112,19 +112,26 @@ class _EducationFormState extends ConsumerState<EducationForm> {
                       labelText: 'Data Término',
                       border: OutlineInputBorder(),
                     ),
-                    onChanged: (_) => _updateEducation(),
                   ),
                 ),
               ],
             ),
             Align(
               alignment: Alignment.centerRight,
-              child: IconButton(
-                icon: const Icon(Icons.delete, color: Colors.red),
-                onPressed:
-                    () => ref
-                        .read(resumeProvider.notifier)
-                        .removeEducation(widget.index),
+              child: Row(
+                children: [
+                  ElevatedButton(
+                    onPressed: _updateEducation,
+                    child: const Text('Salvar'),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    onPressed:
+                        () => ref
+                            .read(resumeProvider.notifier)
+                            .removeEducation(widget.index),
+                  ),
+                ],
               ),
             ),
           ],

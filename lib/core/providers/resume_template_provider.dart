@@ -1,100 +1,64 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
+
+import 'package:docx_template/docx_template.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intelliresume/core/providers/cv_provider.dart';
-import '../../data/models/cv_data.dart';
-import '../../data/models/resume_template.dart';
-import '../../services/export/export_services.dart'; // Nova importação
+import 'package:intelliresume/core/templates/resume_template.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/widgets.dart' as pw;
 
-// Provedor para a lista de templates
-final resumeTemplatesProvider = Provider<List<ResumeTemplate>>((ref) {
-  return [
-    ResumeTemplate(
-      name: 'Clássico',
-      theme: ThemeData(
-        colorScheme: ColorScheme.light(primary: Colors.blue),
-        textTheme: TextTheme(bodyMedium: TextStyle(fontSize: 14)),
-      ),
-      fontFamily: 'Noto Sans',
-      columns: 1,
-    ),
-    ResumeTemplate(
-      name: 'Moderno',
-      theme: ThemeData(
-        colorScheme: ColorScheme.light(primary: Colors.blue),
-        textTheme: TextTheme(bodyMedium: TextStyle(fontSize: 14)),
-      ),
-      fontFamily: 'Roboto',
-      columns: 2,
-    ),
-    ResumeTemplate(
-      name: 'Elegante',
-      theme: ThemeData(
-        colorScheme: ColorScheme.light(primary: Colors.teal),
-        textTheme: TextTheme(bodyMedium: TextStyle(fontSize: 15)),
-      ),
-      fontFamily: 'Times New Roman',
-      columns: 2,
-    ),
-    // ... outros 8 templates
-  ];
+final templateListProvider = Provider<List<Template>>(
+  (ref) => [
+    Template(id: 'clean', name: 'Clean', fontFamily: 'Roboto'),
+    Template(id: 'modern', name: 'Modern', fontFamily: 'OpenSans'),
+  ],
+);
+
+final selectedTemplateProvider = StateProvider<Template>(
+  (ref) => ref.watch(templateListProvider)[0],
+);
+
+final pdfFileProvider = FutureProvider<File>((ref) async {
+  final template = ref.watch(selectedTemplateProvider);
+  return await generatePdf(template);
 });
 
-// Provedor para o template selecionado
-final selectedTemplateProvider = StateProvider<ResumeTemplate>((ref) {
-  return ref.watch(resumeTemplatesProvider)[0];
+final docxFileProvider = FutureProvider<File>((ref) async {
+  final template = ref.watch(selectedTemplateProvider);
+  return await generateDocx(template);
 });
 
-// Provedor para serviços de exportação (Novo)
-final exportServiceProvider = Provider<ExportService>((ref) {
-  return ExportService();
-});
-
-// Provedor para controlar a visualização/exportação (Novo)
-final resumeControllerProvider = ChangeNotifierProvider((ref) {
-  return ResumeController(
-    exportService: ref.watch(exportServiceProvider),
-    template: ref.watch(selectedTemplateProvider),
-    data: ref.watch(resumeProvider.notifier).state, // Obtém os dados do CV
+// --- Generation Functions ---
+Future<File> generatePdf(Template template) async {
+  final pdf = pw.Document();
+  // Exemplo de layout simples; customize por template
+  pdf.addPage(
+    pw.Page(
+      build:
+          (context) =>
+              pw.Center(child: pw.Text('Currículo - Template: \$template')),
+    ),
   );
-});
+  final dir = await getTemporaryDirectory();
+  final file = File('\${dir.path}/resume_${template.name}.pdf');
+  await file.writeAsBytes(await pdf.save());
+  return file;
+}
 
-// Controlador para exportação (Novo)
-class ResumeController extends ChangeNotifier {
-  final ExportService _exportService;
-  ResumeTemplate _template;
-  ResumeData _data;
+Future<File> generateDocx(Template template) async {
+  // Carrega o modelo DOCX embutido em assets
+  final bytes = await rootBundle.load('assets/templates/${template.name}.docx');
+  final docx = await DocxTemplate.fromBytes(bytes.buffer.asUint8List());
 
-  ResumeTemplate get template => _template;
+  // Exemplo de contexto para substituição
+  final content =
+      Content()
+        ..add(TextContent('name', 'Seu Nome'))
+        ..add(TextContent('email', 'seunome@email.com'));
 
-  ResumeController({
-    required ExportService exportService,
-    required ResumeTemplate template,
-    required ResumeData data,
-  }) : _exportService = exportService,
-       _template = template,
-       _data = data;
-
-  /*
-  Future<void> exportToPdf(BuildContext context) async {
-    final result = await _exportService.exportToPdf(
-      context: context,
-      template: _template,
-      resumeData: _data,
-    );
-    // Tratar resultado da exportação
-  }
-
-  Future<void> exportToDocx(BuildContext context) async {
-    final result = await _exportService.exportToDocx(
-      context: context,
-      template: _template,
-      resumeData: _data,
-    );
-    // Tratar resultado da exportação
-  } */
-
-  void updateTemplate(ResumeTemplate newTemplate) {
-    _template = newTemplate;
-    notifyListeners();
-  }
+  final d = await docx.generate(content);
+  final dir = await getTemporaryDirectory();
+  final file = File('\${dir.path}/resume_\${template}.docx');
+  if (d != null) await file.writeAsBytes(d, flush: true);
+  return file;
 }

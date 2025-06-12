@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intelliresume/presentation/widgets/form/widgets/objective_form.dart';
 
 import '../../../core/providers/cv_provider.dart';
 import 'widgets/education_form.dart';
 import 'widgets/experience_form.dart';
-import 'widgets/form_section.dart';
 import 'widgets/skill_form.dart';
 import 'widgets/social_form.dart';
 
@@ -26,7 +26,12 @@ class ResumeForm extends ConsumerWidget {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24),
-
+          // Seção de objetivos
+          _buildSingleSection(
+            title: 'Objetivo',
+            onAdd: _updateObjective,
+            child: ObjectiveForm(objective: resume.objective ?? ''),
+          ),
           // Seção de Experiências
           _buildSection(
             title: 'Experiências Profissionais',
@@ -91,6 +96,30 @@ class ResumeForm extends ConsumerWidget {
     );
   }
 
+  Widget _buildSingleSection({
+    required String title,
+    required VoidCallback onAdd,
+    required Widget child,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 32),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        child,
+      ],
+    );
+  }
+
   Widget _buildSection({
     required String title,
     required VoidCallback onAdd,
@@ -122,5 +151,10 @@ class ResumeForm extends ConsumerWidget {
         ...children,
       ],
     );
+  }
+
+  _updateObjective() {
+    // Implementar lógica para atualizar o objetivo
+    // Pode ser uma chamada ao provider ou outro método
   }
 }

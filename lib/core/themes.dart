@@ -18,7 +18,7 @@ final lightTheme = ThemeData(
     elevation: 0,
     centerTitle: true,
   ),
-  cardTheme: CardTheme(
+  cardTheme: CardThemeData(
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     elevation: 2,
     margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -67,7 +67,7 @@ final darkTheme = ThemeData(
       fontWeight: FontWeight.w600,
     ),
   ),
-  cardTheme: CardTheme(
+  cardTheme: CardThemeData(
     color: Colors.grey.shade900,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     elevation: 2,

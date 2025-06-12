@@ -1,8 +1,9 @@
 // lib/widgets/side_menu.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intelliresume/data/datasources/remote/auth_resume_ds.dart';
 
-class SideMenu extends StatelessWidget {
+class SideMenu extends ConsumerWidget {
   final int selectedIndex;
   final ValueChanged<int> onDestinationSelected;
 
@@ -13,7 +14,7 @@ class SideMenu extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final currentUser = AuthService.instance.currentUser;
 
     return Container(

@@ -44,7 +44,7 @@ class UserProfile {
     'email': email,
     'phone': phone,
     'name': name,
-    'profilePictureUrl': profilePictureUrl,
+    'photoURL': profilePictureUrl,
     'emailVerified': emailVerified,
     'plan': plan.toString(),
   };
@@ -54,8 +54,8 @@ class UserProfile {
       uid: j['uid'],
       email: j['email'],
       phone: j['phone'],
-      name: j['name'],
-      profilePictureUrl: j['profielePictureUrl'],
+      name: j['displayName'],
+      profilePictureUrl: j['photoURL'],
       plan: j['plan'] == 'PlanType.premium' ? PlanType.premium : PlanType.free,
     );
   }

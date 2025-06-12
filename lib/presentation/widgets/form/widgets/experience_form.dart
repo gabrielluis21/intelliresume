@@ -8,10 +8,10 @@ class ExperienceForm extends ConsumerStatefulWidget {
   final Experience experience;
 
   const ExperienceForm({
-    Key? key,
+    super.key,
     required this.index,
     required this.experience,
-  }) : super(key: key);
+  });
 
   @override
   _ExperienceFormState createState() => _ExperienceFormState();
