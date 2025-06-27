@@ -1,64 +1,39 @@
-import 'dart:io';
-
-import 'package:docx_template/docx_template.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intelliresume/core/providers/user_provider.dart';
 import 'package:intelliresume/core/templates/resume_template.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:pdf/widgets.dart' as pw;
+import 'package:intelliresume/data/models/cv_data.dart';
+import 'package:intelliresume/domain/entities/user_profile.dart';
+import 'package:riverpod/riverpod.dart';
 
-final templateListProvider = Provider<List<Template>>(
-  (ref) => [
-    Template(id: 'clean', name: 'Clean', fontFamily: 'Roboto'),
-    Template(id: 'modern', name: 'Modern', fontFamily: 'OpenSans'),
-  ],
-);
-
-final selectedTemplateProvider = StateProvider<Template>(
-  (ref) => ref.watch(templateListProvider)[0],
-);
-
-final pdfFileProvider = FutureProvider<File>((ref) async {
-  final template = ref.watch(selectedTemplateProvider);
-  return await generatePdf(template);
+/// Provider que expõe templates disponíveis conforme o plano do usuário
+final availableTemplatesProvider = Provider<List<ResumeTemplate>>((ref) {
+  // Obtém plano e filtra
+  final plan = ref.watch(userProfileProvider).value?.plan ?? PlanType.free;
+  return ResumeTemplate.templatesByPlan(plan);
 });
 
-final docxFileProvider = FutureProvider<File>((ref) async {
-  final template = ref.watch(selectedTemplateProvider);
-  return await generateDocx(template);
+final selectedTemplateIndexProvider = StateProvider<int>((ref) => 0);
+
+/// Provider com o template selecionado atualmente
+final selectedTemplateProvider = StateProvider<ResumeTemplate?>((ref) {
+  final list = ref.watch(availableTemplatesProvider);
+  return list.isNotEmpty ? list.first : null;
 });
 
-// --- Generation Functions ---
-Future<File> generatePdf(Template template) async {
-  final pdf = pw.Document();
-  // Exemplo de layout simples; customize por template
-  pdf.addPage(
-    pw.Page(
-      build:
-          (context) =>
-              pw.Center(child: pw.Text('Currículo - Template: \$template')),
+final resumeDataProvider = Provider<ResumeData>((ref) {
+  // Aqui você preenche com os dados vindos do Firebase ou formulário
+  return ResumeData(
+    personalInfo: UserProfile(
+      email: '',
+      name: '',
+      phone: '',
+      profilePictureUrl: '',
     ),
+    about: '',
+    objective: '',
+    experiences: [],
+    educations: [],
+    skills: [],
+    socials: [],
+    projects: [],
   );
-  final dir = await getTemporaryDirectory();
-  final file = File('\${dir.path}/resume_${template.name}.pdf');
-  await file.writeAsBytes(await pdf.save());
-  return file;
-}
-
-Future<File> generateDocx(Template template) async {
-  // Carrega o modelo DOCX embutido em assets
-  final bytes = await rootBundle.load('assets/templates/${template.name}.docx');
-  final docx = await DocxTemplate.fromBytes(bytes.buffer.asUint8List());
-
-  // Exemplo de contexto para substituição
-  final content =
-      Content()
-        ..add(TextContent('name', 'Seu Nome'))
-        ..add(TextContent('email', 'seunome@email.com'));
-
-  final d = await docx.generate(content);
-  final dir = await getTemporaryDirectory();
-  final file = File('\${dir.path}/resume_\${template}.docx');
-  if (d != null) await file.writeAsBytes(d, flush: true);
-  return file;
-}
+});

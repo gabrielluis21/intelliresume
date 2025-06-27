@@ -22,18 +22,10 @@ class ResumePreview extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(userProfileProvider);
     final cvData = ref.watch(resumeProvider);
-
     final textTheme = GoogleFonts.getTextTheme(
       "Roboto",
       Theme.of(context).textTheme,
     );
-    // Mapa de ícones para redes sociais
-    /* final socialIcons = {
-      'GitHub': FontAwesomeIcons.github,
-      'LinkedIn': FontAwesomeIcons.linkedin,
-      'Twitter': FontAwesomeIcons.twitter,
-      'Website': FontAwesomeIcons.globe,
-    }; */
 
     return user.when(
       data: (user) {
@@ -47,7 +39,11 @@ class ResumePreview extends ConsumerWidget {
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: SingleChildScrollView(
-                child: _buildMainContent(context, textTheme, user, cvData),
+                child: Column(
+                  children: [
+                    _buildMainContent(context, textTheme, user, cvData),
+                  ],
+                ),
               ),
             ),
           ),

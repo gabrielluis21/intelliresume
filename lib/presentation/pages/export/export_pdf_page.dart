@@ -30,7 +30,7 @@ class PreviewPdfScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: Expanded(child: PdfPreview(build: (format) => pdf.save())),
+      body: PdfPreview(build: (format) => pdf.save()),
     );
   }
 }
