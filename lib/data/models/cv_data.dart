@@ -9,6 +9,8 @@ class ResumeData {
   List<Skill>? skills;
   List<Social>? socials;
   List<Project>? projects;
+  List<Certificate>? certificates;
+  List<Language>? languages;
 
   ResumeData({
     this.personalInfo,
@@ -19,6 +21,8 @@ class ResumeData {
     this.skills,
     this.socials,
     this.projects,
+    this.certificates,
+    this.languages,
   });
 
   ResumeData.initial()
@@ -29,7 +33,9 @@ class ResumeData {
       educations = [],
       skills = [],
       socials = [],
-      projects = [];
+      projects = [],
+      certificates = [],
+      languages = [];
 
   factory ResumeData.fromJson(Map<String, dynamic> json) {
     return ResumeData(
@@ -49,6 +55,12 @@ class ResumeData {
       projects: List<Project>.from(
         json['projects'].map((x) => Project.fromJson(x)),
       ),
+      certificates: List<Certificate>.from(
+        json['certificates'].map((x) => Certificate.fromJson(x)),
+      ),
+      languages: List<Language>.from(
+        json['languages'].map((x) => Language.fromJson(x)),
+      ),
     );
   }
 
@@ -57,11 +69,13 @@ class ResumeData {
       'personalInfo': personalInfo?.toJson(),
       'about': about,
       'objective': objective,
-      'experiences': experiences?.map((e) => e).toList(),
-      'education': educations?.map((e) => e).toList(),
-      'skills': skills?.map((e) => e),
-      'socials': socials?.map((e) => e).toList(),
-      'projects': projects,
+      'experiences': experiences?.map((e) => e.toJson()).toList(),
+      'education': educations?.map((e) => e.toJson()).toList(),
+      'skills': skills?.map((e) => e.toJson()),
+      'socials': socials?.map((e) => e.toJson()).toList(),
+      'projects': projects?.map((e) => e.toJson()).toList(),
+      'certificates': certificates?.map((e) => e.toJson()).toList(),
+      'languages': languages?.map((e) => e.toJson()).toList(),
     };
   }
 
@@ -219,27 +233,115 @@ class Social {
 class Project {
   String? name;
   String? description;
+  List<String>? technologies;
   String? url;
 
-  Project({this.name, this.description, this.url});
+  Project({this.name, this.description, this.technologies, this.url});
 
   Map<String, dynamic> toJson() {
-    return {'name': name, 'description': description, 'url': url};
+    return {
+      'name': name,
+      'description': description,
+      'technologies': technologies != null ? technologies?.map((e) => e) : [],
+      'url': url,
+    };
   }
 
   factory Project.fromJson(Map<String, dynamic> json) {
     return Project(
       name: json['name'] as String,
       description: json['description'] as String,
+      technologies:
+          json['tecnologies'] != null
+              ? List<String>.of(json['technologies'].map((e) => e))
+              : List<String>.empty(growable: true),
       url: json['url'] as String,
     );
   }
 
-  Project copyWith({String? name, String? description, String? url}) {
+  Project copyWith({
+    String? name,
+    String? description,
+    List<String>? technologies,
+    String? url,
+  }) {
     return Project(
       name: name ?? this.name,
       description: description ?? this.description,
+      technologies: technologies ?? this.technologies,
       url: url ?? this.url,
     );
   }
+}
+
+class Certificate {
+  String? courseName;
+  String? institution;
+  String? issueDate;
+  String? certificateUrl;
+  bool? isOnline;
+
+  Certificate({
+    this.courseName,
+    this.institution,
+    this.issueDate,
+    this.certificateUrl,
+    this.isOnline,
+  });
+
+  Certificate copyWith({
+    String? courseName,
+    String? institution,
+    String? issueDate,
+    String? certificateUrl,
+    bool? isOnline,
+  }) {
+    return Certificate(
+      courseName: courseName ?? this.courseName,
+      institution: institution ?? this.institution,
+      issueDate: issueDate ?? this.issueDate,
+      certificateUrl: certificateUrl ?? this.certificateUrl,
+      isOnline: isOnline ?? this.isOnline,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'courseName': courseName,
+    'institution': institution,
+    'issueDate': issueDate,
+    'certificateUrl': certificateUrl,
+    'isOnline': isOnline,
+  };
+
+  factory Certificate.fromJson(Map<String, dynamic> json) => Certificate(
+    courseName: json['courseName'],
+    institution: json['institution'],
+    issueDate: json['issueDate'],
+    certificateUrl: json['certificateUrl'],
+    isOnline: json['isOnline'],
+  );
+}
+
+class Language {
+  String? language;
+  String? proficiencyLevel;
+
+  Language({this.language, this.proficiencyLevel});
+
+  Language copyWith({String? language, String? proficiencyLevel}) {
+    return Language(
+      language: language ?? this.language,
+      proficiencyLevel: proficiencyLevel ?? this.proficiencyLevel,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'language': language,
+    'proficiencyLevel': proficiencyLevel,
+  };
+
+  factory Language.fromJson(Map<String, dynamic> json) => Language(
+    language: json['language'],
+    proficiencyLevel: json['proficiencyLevel'],
+  );
 }

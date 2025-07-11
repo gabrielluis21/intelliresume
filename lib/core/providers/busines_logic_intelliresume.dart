@@ -54,15 +54,19 @@ class BusinessLogicService {
   static const freeTemplates = <String>{
     'intelli_resume',
     'classic_minimal',
-    'modern_side',
+    'studant',
+    '',
   };
   static const paidTemplates = <String>{
     'intelli_resume',
     'classic_minimal',
     'modern_side',
-    'creative_portfolio',
+    'studant',
     'executive',
     'infographic',
+    'international',
+    'tech_developer',
+    'timeline_template',
   };
 
   UserProfile? get _profile => ref.watch(userProfileProvider).value;

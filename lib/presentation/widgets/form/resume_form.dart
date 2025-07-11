@@ -153,7 +153,7 @@ class ResumeForm extends ConsumerWidget {
     );
   }
 
-  _updateObjective() {
+  void _updateObjective() {
     // Implementar lógica para atualizar o objetivo
     // Pode ser uma chamada ao provider ou outro método
   }

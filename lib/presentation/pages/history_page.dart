@@ -57,7 +57,7 @@ class _HistoryPageState extends ConsumerState<HistoryPage> {
                 )
                 : ListView.separated(
                   itemCount: _history.length,
-                  separatorBuilder: (_, __) => const Divider(),
+                  separatorBuilder: (_, i) => const Divider(),
                   itemBuilder: (ctx, i) {
                     final item = _history[i];
                     final date = DateTime.parse(item['savedAt'] as String);

@@ -3,7 +3,7 @@
 enum PlanType { free, premium }
 
 class UserProfile {
-  final String? uid;
+  String? uid;
   final String? email;
   final String? phone;
   final String? name;

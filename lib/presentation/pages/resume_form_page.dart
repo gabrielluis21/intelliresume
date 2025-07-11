@@ -71,21 +71,25 @@ class _ResumeFormPageState extends ConsumerState<ResumeFormPage> {
                     context: context,
                     builder:
                         (_) => AlertDialog.adaptive(
+                          contentPadding: EdgeInsets.all(4),
+                          actionsPadding: EdgeInsets.all(15),
+                          scrollable: true,
                           content: SizedBox(
-                            height: MediaQuery.of(context).size.height * .8,
-                            width: MediaQuery.of(context).size.width / 2,
-                            child: SingleChildScrollView(
-                              child: ResumePreview(),
-                            ),
+                            height: MediaQuery.of(context).size.height * .90,
+                            width: MediaQuery.of(context).size.width * .80,
+                            child: ResumePreview(),
                           ),
-                          title: Text("Preview"),
-                          actions: [
-                            ExportButtons(resumeData: resume),
-                            IconButton(
-                              onPressed: () => Navigator.of(context).pop(),
-                              icon: Icon(Icons.close, color: Colors.red),
-                            ),
-                          ],
+                          title: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text("Preview"),
+                              IconButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                icon: Icon(Icons.close, color: Colors.red),
+                              ),
+                            ],
+                          ),
+                          actions: [ExportButtons(resumeData: resume)],
                         ),
                   ),
               child: Row(

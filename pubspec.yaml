@@ -70,6 +70,7 @@ dependencies:
   url_launcher: ^6.3.1
   web: ^1.0.0 
   xml: ^6.5.0 
+  google_adsense: ^0.1.2
 
 
 dev_dependencies:

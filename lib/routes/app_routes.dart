@@ -29,9 +29,9 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const ProfilePage(),
       ),
       GoRoute(
-        name: 'payment',
-        path: '/payment',
-        builder: (context, state) => const PaymentPage(),
+        name: 'buy',
+        path: '/buy',
+        builder: (context, state) => const BuyPage(),
       ),
       GoRoute(
         name: 'form',

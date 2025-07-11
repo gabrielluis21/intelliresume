@@ -1,6 +1,6 @@
 export './pages/history_page.dart';
 export './pages/login_page.dart';
-export './pages/payment_page.dart';
+export './pages/buy_page.dart';
 export './pages/profile_page.dart';
 export './pages/resume_form_page.dart';
 export 'widgets/preview/resume_preview.dart';

@@ -15,7 +15,7 @@ class EducationList extends StatelessWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: items.length,
-      separatorBuilder: (_, __) => const Divider(),
+      separatorBuilder: (_, i) => const Divider(),
       itemBuilder:
           (c, i) => ListTile(
             leading: const Icon(Icons.school_outlined),

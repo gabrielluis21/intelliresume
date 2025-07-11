@@ -1,4 +1,3 @@
-import 'package:intelliresume/core/providers/user_provider.dart';
 import 'package:intelliresume/core/templates/resume_template.dart';
 import 'package:intelliresume/data/models/cv_data.dart';
 import 'package:intelliresume/domain/entities/user_profile.dart';
@@ -7,8 +6,7 @@ import 'package:riverpod/riverpod.dart';
 /// Provider que expõe templates disponíveis conforme o plano do usuário
 final availableTemplatesProvider = Provider<List<ResumeTemplate>>((ref) {
   // Obtém plano e filtra
-  final plan = ref.watch(userProfileProvider).value?.plan ?? PlanType.free;
-  return ResumeTemplate.templatesByPlan(plan);
+  return ResumeTemplate.allTemplates;
 });
 
 final selectedTemplateIndexProvider = StateProvider<int>((ref) => 0);

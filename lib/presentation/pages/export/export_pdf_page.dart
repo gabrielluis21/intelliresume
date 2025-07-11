@@ -1,6 +1,7 @@
 // --- PDF Preview Screen ---
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intelliresume/core/providers/export_provider.dart';
 import 'package:printing/printing.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -8,10 +9,10 @@ class PreviewPdfScreen extends ConsumerWidget {
   final dynamic pdf;
   const PreviewPdfScreen({super.key, required this.pdf});
 
-  get exportService => null;
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final exportService = ref.read(exportProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Preview PDF'),

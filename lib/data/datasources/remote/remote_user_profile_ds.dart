@@ -22,7 +22,9 @@ class RemoteUserProfileDataSource implements UserProfileDataSource {
   Future<UserProfile?> fetchProfile(String uid) async {
     final doc = await _firestore.collection('users').doc(uid).get();
     if (doc.exists && doc.data() != null) {
-      return UserProfile.fromJson(doc.data()!);
+      var user = UserProfile.fromJson(doc.data()!);
+      user.uid = uid;
+      return user;
     }
     return null;
   }

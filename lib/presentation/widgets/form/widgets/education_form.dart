@@ -14,7 +14,7 @@ class EducationForm extends ConsumerStatefulWidget {
   });
 
   @override
-  _EducationFormState createState() => _EducationFormState();
+  ConsumerState<EducationForm> createState() => _EducationFormState();
 }
 
 class _EducationFormState extends ConsumerState<EducationForm> {

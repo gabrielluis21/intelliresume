@@ -8,7 +8,7 @@ class ObjectiveForm extends ConsumerStatefulWidget {
   const ObjectiveForm({super.key, required this.objective});
 
   @override
-  _ObjectiveFormState createState() => _ObjectiveFormState();
+  ConsumerState<ObjectiveForm> createState() => _ObjectiveFormState();
 }
 
 class _ObjectiveFormState extends ConsumerState<ObjectiveForm> {

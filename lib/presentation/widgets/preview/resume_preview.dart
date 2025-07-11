@@ -98,14 +98,10 @@ class ResumePreview extends ConsumerWidget {
         PreviewSection(
           title: t.skills,
           titleStyle: textTheme,
-          child: Wrap(
-            spacing: 6,
-            runSpacing: 6,
-            children:
-                data.skills!
-                    .map((skill) => SkillChip(skill: skill, theme: textTheme))
-                    .toList(),
-          ),
+          child:
+              data.skills!.isEmpty
+                  ? Text('Nenhuma habilidade adicionada')
+                  : SkillChip(skills: data.skills!),
         ),
         const SizedBox(height: 16),
         PreviewSection(
@@ -115,11 +111,14 @@ class ResumePreview extends ConsumerWidget {
             spacing: 6,
             runSpacing: 6,
             children:
-                data.socials!
-                    .map(
-                      (social) => SocialLink(social: social, theme: textTheme),
-                    )
-                    .toList(),
+                data.socials != null
+                    ? data.socials!
+                        .map(
+                          (social) =>
+                              SocialLink(social: social, theme: textTheme),
+                        )
+                        .toList()
+                    : [Text('Nenhuma rede social adicionada')],
           ),
         ),
       ],

@@ -10,7 +10,7 @@ class SocialForm extends ConsumerStatefulWidget {
   const SocialForm({super.key, required this.index, required this.social});
 
   @override
-  _SocialFormState createState() => _SocialFormState();
+  ConsumerState<SocialForm> createState() => _SocialFormState();
 }
 
 class _SocialFormState extends ConsumerState<SocialForm> {
