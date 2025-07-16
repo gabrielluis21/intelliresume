@@ -1,8 +1,6 @@
-import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:web/web.dart' as web;
 
 class AdBanner extends StatelessWidget {
   const AdBanner({super.key});
@@ -18,9 +16,10 @@ class WebAdBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!kIsWeb) return const SizedBox(); // Evita erro fora da Web
+    //if (!kIsWeb) return const SizedBox(); // Evita erro fora da Web
+    return const SizedBox(); // Evita erro fora da Web
 
-    const adUrl = 'https://meus-anuncios.web.app/ads.html'; // sua URL
+    /* const adUrl = 'https://meus-anuncios.web.app/ads.html'; // sua URL
 
     // Garantir que está sendo executado no web
     final iframe =
@@ -42,7 +41,7 @@ class WebAdBanner extends StatelessWidget {
       width: 300,
       height: 250,
       child: HtmlElementView(viewType: 'adview'),
-    );
+    ); */
   }
 }
 

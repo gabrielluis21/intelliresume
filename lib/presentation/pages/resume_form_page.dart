@@ -70,27 +70,57 @@ class _ResumeFormPageState extends ConsumerState<ResumeFormPage> {
                   () => showAdaptiveDialog(
                     context: context,
                     builder:
-                        (_) => AlertDialog.adaptive(
-                          contentPadding: EdgeInsets.all(4),
-                          actionsPadding: EdgeInsets.all(15),
-                          scrollable: true,
-                          content: SizedBox(
-                            height: MediaQuery.of(context).size.height * .90,
-                            width: MediaQuery.of(context).size.width * .80,
-                            child: ResumePreview(),
-                          ),
-                          title: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text("Preview"),
-                              IconButton(
-                                onPressed: () => Navigator.of(context).pop(),
-                                icon: Icon(Icons.close, color: Colors.red),
-                              ),
-                            ],
-                          ),
-                          actions: [ExportButtons(resumeData: resume)],
-                        ),
+                        (_) =>
+                            resume.isEmpty
+                                ? AlertDialog.adaptive(
+                                  title: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text("Preview/Imprmir"),
+                                      IconButton(
+                                        onPressed:
+                                            () => Navigator.of(context).pop(),
+                                        icon: Icon(
+                                          Icons.close,
+                                          color: Colors.red,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  content: Text(
+                                    "Preencha o CV antes de imprimir/pré visualizar",
+                                  ),
+                                )
+                                : AlertDialog.adaptive(
+                                  contentPadding: EdgeInsets.all(4),
+                                  actionsPadding: EdgeInsets.all(15),
+                                  scrollable: true,
+                                  content: SizedBox(
+                                    height:
+                                        MediaQuery.of(context).size.height *
+                                        .90,
+                                    width:
+                                        MediaQuery.of(context).size.width * .80,
+                                    child: ResumePreview(),
+                                  ),
+                                  title: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text("Preview/Imprmir"),
+                                      IconButton(
+                                        onPressed:
+                                            () => Navigator.of(context).pop(),
+                                        icon: Icon(
+                                          Icons.close,
+                                          color: Colors.red,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  actions: [ExportButtons(resumeData: resume)],
+                                ),
                   ),
               child: Row(
                 children: [

@@ -33,6 +33,7 @@ class TemplateSelector extends ConsumerWidget {
                 .toList(),
         onChanged: (idx) {
           if (idx != null) {
+            print(idx);
             ref.read(selectedTemplateProvider.notifier).state = idx;
           }
         },

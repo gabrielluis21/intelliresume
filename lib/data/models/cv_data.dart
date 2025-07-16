@@ -29,13 +29,13 @@ class ResumeData {
     : personalInfo = UserProfile(),
       about = '',
       objective = '',
-      experiences = [],
-      educations = [],
-      skills = [],
-      socials = [],
-      projects = [],
-      certificates = [],
-      languages = [];
+      experiences = List<Experience>.empty(growable: true),
+      educations = List<Education>.empty(growable: true),
+      skills = List<Skill>.empty(growable: true),
+      socials = List<Social>.empty(growable: true),
+      projects = List<Project>.empty(growable: true),
+      certificates = List<Certificate>.empty(growable: true),
+      languages = List<Language>.empty(growable: true);
 
   factory ResumeData.fromJson(Map<String, dynamic> json) {
     return ResumeData(
@@ -79,6 +79,20 @@ class ResumeData {
     };
   }
 
+  bool get isEmpty =>
+      (about == null || about!.isEmpty) &&
+      (experiences == null || experiences!.isEmpty) &&
+      (educations == null || educations!.isEmpty) &&
+      (skills == null || skills!.isEmpty) &&
+      (socials == null || socials!.isEmpty) &&
+      (objective == null || objective!.isEmpty) &&
+      (projects == null || projects!.isEmpty) &&
+      (languages == null || languages!.isEmpty) &&
+      (certificates == null || certificates!.isEmpty);
+
+  bool get isNotEmpty =>
+      !isEmpty; // Simplesmente negamos o resultado de isEmpty para isNotEmpty
+
   ResumeData copyWith({
     UserProfile? personalInfo,
     String? about,
@@ -88,6 +102,8 @@ class ResumeData {
     List<Skill>? skills,
     List<Social>? socials,
     List<Project>? projects,
+    List<Certificate>? certificates,
+    List<Language>? languages,
   }) {
     return ResumeData(
       personalInfo: personalInfo ?? this.personalInfo,
@@ -98,6 +114,8 @@ class ResumeData {
       skills: skills ?? this.skills,
       socials: socials ?? this.socials,
       projects: projects ?? this.projects,
+      certificates: certificates ?? this.certificates,
+      languages: languages ?? this.languages,
     );
   }
 }

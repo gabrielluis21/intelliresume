@@ -6,6 +6,7 @@ import 'package:intelliresume/data/models/cv_data.dart';
 import 'package:intelliresume/domain/entities/user_profile.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 
 abstract class ResumeTemplate {
   String get id;
@@ -37,7 +38,15 @@ abstract class ResumeTemplate {
 class IntelliResumePatternTemplate implements ResumeTemplate {
   late dynamic _profileImage;
 
-  IntelliResumePatternTemplate();
+  pw.Font? fontsLight;
+  pw.Font? fontsRegular;
+  pw.Font? fontsBold;
+
+  void loadFonts() async {
+    fontsLight = await PdfGoogleFonts.nunitoSansLight();
+    fontsRegular = await PdfGoogleFonts.nunitoSansRegular();
+    fontsBold = await PdfGoogleFonts.nunitoSansBold();
+  }
 
   @override
   pw.Document buildPdf(ResumeData data, BuildContext context) {
@@ -112,7 +121,11 @@ class IntelliResumePatternTemplate implements ResumeTemplate {
       children: [
         pw.Text(
           title,
-          style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
+          style: pw.TextStyle(
+            fontSize: 18,
+            fontWeight: pw.FontWeight.bold,
+            font: fontsBold,
+          ),
         ),
         pw.SizedBox(height: 8),
         pw.Text(content.isNotEmpty ? content : t.noObjectives),
@@ -130,7 +143,11 @@ class IntelliResumePatternTemplate implements ResumeTemplate {
       children: [
         pw.Text(
           'Experiências',
-          style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
+          style: pw.TextStyle(
+            fontSize: 18,
+            fontWeight: pw.FontWeight.bold,
+            font: fontsBold,
+          ),
         ),
         pw.SizedBox(height: 8),
         experiences.isEmpty
@@ -150,8 +167,14 @@ class IntelliResumePatternTemplate implements ResumeTemplate {
           pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              pw.Text('- ${exp.company} - ${exp.position}'),
-              pw.Text('   ${exp.startDate} - ${exp.endDate}'),
+              pw.Text(
+                '- ${exp.company} - ${exp.position}',
+                style: pw.TextStyle(font: fontsLight),
+              ),
+              pw.Text(
+                '   ${exp.startDate} - ${exp.endDate}',
+                style: pw.TextStyle(font: fontsLight),
+              ),
               pw.SizedBox(height: 8),
             ],
           ),
@@ -168,11 +191,15 @@ class IntelliResumePatternTemplate implements ResumeTemplate {
       children: [
         pw.Text(
           'Educação',
-          style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
+          style: pw.TextStyle(
+            fontSize: 18,
+            fontWeight: pw.FontWeight.bold,
+            font: fontsBold,
+          ),
         ),
         pw.SizedBox(height: 8),
         educations.isEmpty
-            ? pw.Text(t.noEducations)
+            ? pw.Text(t.noEducations, style: pw.TextStyle(font: fontsRegular))
             : _buildEduList(educations),
         pw.SizedBox(height: 20),
       ],
@@ -187,8 +214,14 @@ class IntelliResumePatternTemplate implements ResumeTemplate {
           pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              pw.Text('- ${edu.school} - ${edu.degree}'),
-              pw.Text('   ${edu.startDate} - ${edu.endDate}'),
+              pw.Text(
+                '- ${edu.school} - ${edu.degree}',
+                style: pw.TextStyle(font: fontsLight),
+              ),
+              pw.Text(
+                '   ${edu.startDate} - ${edu.endDate}',
+                style: pw.TextStyle(font: fontsLight),
+              ),
               pw.SizedBox(height: 8),
             ],
           ),
@@ -202,10 +235,16 @@ class IntelliResumePatternTemplate implements ResumeTemplate {
       children: [
         pw.Text(
           'Experiências',
-          style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
+          style: pw.TextStyle(
+            fontSize: 18,
+            fontWeight: pw.FontWeight.bold,
+            font: fontsBold,
+          ),
         ),
         pw.SizedBox(height: 8),
-        skills.isEmpty ? pw.Text(t.noSkills) : _buildSkillList(skills),
+        skills.isEmpty
+            ? pw.Text(t.noSkills, style: pw.TextStyle(font: fontsRegular))
+            : _buildSkillList(skills),
         pw.SizedBox(height: 20),
       ],
     );
@@ -219,7 +258,7 @@ class IntelliResumePatternTemplate implements ResumeTemplate {
               .map(
                 (skill) => pw.Text(
                   '- ${skill.name} (${skill.level})',
-                  style: pw.TextStyle(fontSize: 12),
+                  style: pw.TextStyle(fontSize: 12, font: fontsLight),
                 ),
               )
               .toList(),
@@ -235,7 +274,9 @@ class IntelliResumePatternTemplate implements ResumeTemplate {
           style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
         ),
         pw.SizedBox(height: 8),
-        socials.isEmpty ? pw.Text(t.noSocialLinks) : _buildSocialList(socials),
+        socials.isEmpty
+            ? pw.Text(t.noSocialLinks, style: pw.TextStyle(font: fontsRegular))
+            : _buildSocialList(socials),
         pw.SizedBox(height: 20),
       ],
     );
@@ -249,7 +290,7 @@ class IntelliResumePatternTemplate implements ResumeTemplate {
               .map(
                 (social) => pw.Text(
                   '- ${social.platform} (${social.url})',
-                  style: pw.TextStyle(fontSize: 12),
+                  style: pw.TextStyle(fontSize: 12, font: fontsLight),
                 ),
               )
               .toList(),
@@ -268,12 +309,23 @@ class ClassicMinimalTemplate implements ResumeTemplate {
   @override
   String get displayName => 'Clássico Minimalista';
 
+  pw.Font? fontsLight;
+  pw.Font? fontsRegular;
+  pw.Font? fontsBold;
+
+  void loadFonts() async {
+    fontsLight = await PdfGoogleFonts.nunitoSansLight();
+    fontsRegular = await PdfGoogleFonts.nunitoSansRegular();
+    fontsBold = await PdfGoogleFonts.nunitoSansBold();
+  }
+
   @override
   pw.Document buildPdf(ResumeData data, BuildContext context) {
     //final translated = AppLocalizations.of(context);
     final doc = pw.Document();
     doc.addPage(
       pw.Page(
+        theme: pw.ThemeData(),
         pageFormat: PdfPageFormat.a4,
         margin: pw.EdgeInsets.all(32),
         build: (context) {
@@ -285,6 +337,7 @@ class ClassicMinimalTemplate implements ResumeTemplate {
                 style: pw.TextStyle(
                   fontSize: 32,
                   fontWeight: pw.FontWeight.bold,
+                  font: fontsBold,
                 ),
               ),
               pw.SizedBox(height: 16),
@@ -292,6 +345,7 @@ class ClassicMinimalTemplate implements ResumeTemplate {
                 'Objetivo',
                 style: pw.TextStyle(
                   fontSize: 18,
+                  font: fontsBold,
                   fontWeight: pw.FontWeight.bold,
                 ),
               ),
@@ -300,6 +354,7 @@ class ClassicMinimalTemplate implements ResumeTemplate {
               pw.Text(
                 'Experiências',
                 style: pw.TextStyle(
+                  font: fontsBold,
                   fontSize: 18,
                   fontWeight: pw.FontWeight.bold,
                 ),
@@ -315,13 +370,18 @@ class ClassicMinimalTemplate implements ResumeTemplate {
                               pw.Text(
                                 '${e.position}',
                                 style: pw.TextStyle(
+                                  font: fontsBold,
                                   fontWeight: pw.FontWeight.bold,
                                 ),
                               ),
                               pw.Text(
                                 '${e.company} | ${e.startDate} - ${e.endDate}',
+                                style: pw.TextStyle(font: fontsLight),
                               ),
-                              pw.Text(e.description ?? ''),
+                              pw.Text(
+                                e.description ?? '',
+                                style: pw.TextStyle(font: fontsRegular),
+                              ),
                             ],
                           ),
                         ),
@@ -334,6 +394,7 @@ class ClassicMinimalTemplate implements ResumeTemplate {
                 style: pw.TextStyle(
                   fontSize: 18,
                   fontWeight: pw.FontWeight.bold,
+                  font: fontsBold,
                 ),
               ),
               ...(data.educations != null && data.educations!.isNotEmpty
@@ -348,12 +409,17 @@ class ClassicMinimalTemplate implements ResumeTemplate {
                                 '${e.degree}',
                                 style: pw.TextStyle(
                                   fontWeight: pw.FontWeight.bold,
+                                  font: fontsBold,
                                 ),
                               ),
                               pw.Text(
                                 '${e.school} | ${e.startDate} - ${e.endDate}',
+                                style: pw.TextStyle(font: fontsLight),
                               ),
-                              pw.Text(e.description ?? ''),
+                              pw.Text(
+                                e.description ?? '',
+                                style: pw.TextStyle(font: fontsRegular),
+                              ),
                             ],
                           ),
                         ),
@@ -388,6 +454,16 @@ class ClassicMinimalTemplate implements ResumeTemplate {
 class ModernSidebarTemplate implements ResumeTemplate {
   @override
   String get displayName => 'Moderno com Sidebar';
+
+  pw.Font? fontsLight;
+  pw.Font? fontsRegular;
+  pw.Font? fontsBold;
+
+  void loadFonts() async {
+    fontsLight = await PdfGoogleFonts.nunitoSansLight();
+    fontsRegular = await PdfGoogleFonts.nunitoSansRegular();
+    fontsBold = await PdfGoogleFonts.nunitoSansBold();
+  }
 
   @override
   pw.Document buildPdf(ResumeData data, BuildContext context) {
@@ -452,6 +528,7 @@ class ModernSidebarTemplate implements ResumeTemplate {
                         style: pw.TextStyle(
                           fontSize: 18,
                           fontWeight: pw.FontWeight.bold,
+                          font: fontsBold,
                         ),
                       ),
                       ...(data.experiences != null &&
@@ -468,6 +545,7 @@ class ModernSidebarTemplate implements ResumeTemplate {
                                         '${e.position}',
                                         style: pw.TextStyle(
                                           fontWeight: pw.FontWeight.bold,
+                                          font: fontsBold,
                                         ),
                                       ),
                                       pw.Text(
@@ -485,6 +563,7 @@ class ModernSidebarTemplate implements ResumeTemplate {
                         style: pw.TextStyle(
                           fontSize: 18,
                           fontWeight: pw.FontWeight.bold,
+                          font: fontsBold,
                         ),
                       ),
                       ...(data.educations != null && data.educations!.isNotEmpty
@@ -500,6 +579,7 @@ class ModernSidebarTemplate implements ResumeTemplate {
                                         '${e.degree}',
                                         style: pw.TextStyle(
                                           fontWeight: pw.FontWeight.bold,
+                                          font: fontsBold,
                                         ),
                                       ),
                                       pw.Text(
@@ -535,6 +615,16 @@ class TimelineTemplate implements ResumeTemplate {
   @override
   String get displayName => 'Linha do Tempo';
 
+  pw.Font? fontsLight;
+  pw.Font? fontsRegular;
+  pw.Font? fontsBold;
+
+  void loadFonts() async {
+    fontsLight = await PdfGoogleFonts.nunitoSansLight();
+    fontsRegular = await PdfGoogleFonts.nunitoSansRegular();
+    fontsBold = await PdfGoogleFonts.nunitoSansBold();
+  }
+
   @override
   pw.Document buildPdf(ResumeData data, BuildContext context) {
     final doc = pw.Document();
@@ -551,6 +641,7 @@ class TimelineTemplate implements ResumeTemplate {
                 style: pw.TextStyle(
                   fontSize: 28,
                   fontWeight: pw.FontWeight.bold,
+                  font: fontsBold,
                 ),
               ),
               pw.SizedBox(height: 16),
@@ -583,6 +674,7 @@ class TimelineTemplate implements ResumeTemplate {
                 style: pw.TextStyle(
                   fontSize: 18,
                   fontWeight: pw.FontWeight.bold,
+                  font: fontsBold,
                 ),
               ),
               ...(data.educations != null && data.educations!.isNotEmpty
@@ -597,6 +689,7 @@ class TimelineTemplate implements ResumeTemplate {
                                 '${e.degree}',
                                 style: pw.TextStyle(
                                   fontWeight: pw.FontWeight.bold,
+                                  font: fontsBold,
                                 ),
                               ),
                               pw.Text(
@@ -627,6 +720,16 @@ class TimelineTemplate implements ResumeTemplate {
 class InfographicTemplate implements ResumeTemplate {
   @override
   String get displayName => 'Infográfico Visual';
+
+  pw.Font? fontsLight;
+  pw.Font? fontsRegular;
+  pw.Font? fontsBold;
+
+  void loadFonts() async {
+    fontsLight = await PdfGoogleFonts.nunitoSansLight();
+    fontsRegular = await PdfGoogleFonts.nunitoSansRegular();
+    fontsBold = await PdfGoogleFonts.nunitoSansBold();
+  }
 
   @override
   pw.Document buildPdf(ResumeData data, BuildContext context) {
@@ -662,11 +765,15 @@ class InfographicTemplate implements ResumeTemplate {
                       style: pw.TextStyle(
                         fontSize: 18,
                         fontWeight: pw.FontWeight.bold,
+                        font: fontsBold,
                       ),
                     ),
                     pw.Text(
                       "Contato",
-                      style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                      style: pw.TextStyle(
+                        fontWeight: pw.FontWeight.bold,
+                        font: fontsBold,
+                      ),
                     ),
                     pw.Text('${data.personalInfo?.email}'),
                     pw.Text('${data.personalInfo?.phone}'),
@@ -675,7 +782,10 @@ class InfographicTemplate implements ResumeTemplate {
                     pw.SizedBox(height: 12),
                     pw.Text(
                       "Habilidades",
-                      style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                      style: pw.TextStyle(
+                        fontWeight: pw.FontWeight.bold,
+                        font: fontsBold,
+                      ),
                     ),
                     ...data.skills!.map((skill) => _buildSkillBar(skill)),
                   ],
@@ -696,7 +806,10 @@ class InfographicTemplate implements ResumeTemplate {
                         children: [
                           pw.Text(
                             "Resumo",
-                            style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                            style: pw.TextStyle(
+                              fontWeight: pw.FontWeight.bold,
+                              font: fontsBold,
+                            ),
                           ),
                           pw.SizedBox(height: 4),
                           pw.Text('${data.objective}'),
@@ -710,7 +823,10 @@ class InfographicTemplate implements ResumeTemplate {
                         children: [
                           pw.Text(
                             "Experiência Profissional",
-                            style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                            style: pw.TextStyle(
+                              fontWeight: pw.FontWeight.bold,
+                              font: fontsBold,
+                            ),
                           ),
                           pw.SizedBox(height: 8),
                           ...data.experiences!.map(
@@ -725,7 +841,10 @@ class InfographicTemplate implements ResumeTemplate {
                           pw.SizedBox(height: 16),
                           pw.Text(
                             "Formação Acadêmica",
-                            style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                            style: pw.TextStyle(
+                              fontWeight: pw.FontWeight.bold,
+                              font: fontsBold,
+                            ),
                           ),
                           pw.SizedBox(height: 8),
                           ...data.educations!.map(
@@ -781,7 +900,11 @@ class InfographicTemplate implements ResumeTemplate {
         children: [
           pw.Text(
             "${exp.period} - ${exp.role} @ ${exp.company}",
-            style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold),
+            style: pw.TextStyle(
+              fontSize: 12,
+              fontWeight: pw.FontWeight.bold,
+              font: fontsBold,
+            ),
           ),
           if (exp.description.isNotEmpty)
             pw.Padding(
@@ -807,6 +930,16 @@ class CorporateTemplate implements ResumeTemplate {
   @override
   String get displayName => 'Corporativo Elegante';
 
+  pw.Font? fontsLight;
+  pw.Font? fontsRegular;
+  pw.Font? fontsBold;
+
+  void loadFonts() async {
+    fontsLight = await PdfGoogleFonts.nunitoSansLight();
+    fontsRegular = await PdfGoogleFonts.nunitoSansRegular();
+    fontsBold = await PdfGoogleFonts.nunitoSansBold();
+  }
+
   @override
   pw.Document buildPdf(ResumeData data, BuildContext context) {
     final doc = pw.Document();
@@ -823,6 +956,7 @@ class CorporateTemplate implements ResumeTemplate {
                 style: pw.TextStyle(
                   fontSize: 24,
                   fontWeight: pw.FontWeight.bold,
+                  font: fontsBold,
                 ),
               ),
               pw.SizedBox(height: 8),
@@ -830,7 +964,10 @@ class CorporateTemplate implements ResumeTemplate {
               pw.Divider(),
               pw.Text(
                 'Educação',
-                style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                style: pw.TextStyle(
+                  fontWeight: pw.FontWeight.bold,
+                  font: fontsBold,
+                ),
               ),
               ...data.educations!.map(
                 (e) =>
@@ -839,7 +976,10 @@ class CorporateTemplate implements ResumeTemplate {
               pw.SizedBox(height: 12),
               pw.Text(
                 'Experiências',
-                style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                style: pw.TextStyle(
+                  fontWeight: pw.FontWeight.bold,
+                  font: fontsBold,
+                ),
               ),
               ...data.experiences!.map(
                 (e) => pw.Column(
@@ -847,7 +987,10 @@ class CorporateTemplate implements ResumeTemplate {
                   children: [
                     pw.Text(
                       '${e.position}',
-                      style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                      style: pw.TextStyle(
+                        fontWeight: pw.FontWeight.bold,
+                        font: fontsBold,
+                      ),
                     ),
                     pw.Text('\${e.company} | \${e.period}'),
                     pw.Text(e.description ?? ''),
@@ -871,6 +1014,16 @@ class CorporateTemplate implements ResumeTemplate {
 }
 
 class TechDeveloper implements ResumeTemplate {
+  pw.Font? fontsLight;
+  pw.Font? fontsRegular;
+  pw.Font? fontsBold;
+
+  void loadFonts() async {
+    fontsLight = await PdfGoogleFonts.nunitoSansLight();
+    fontsRegular = await PdfGoogleFonts.nunitoSansRegular();
+    fontsBold = await PdfGoogleFonts.nunitoSansBold();
+  }
+
   @override
   pw.Document buildPdf(ResumeData data, BuildContext context) {
     final doc = pw.Document();
@@ -896,13 +1049,27 @@ class TechDeveloper implements ResumeTemplate {
               _buildSkillsGrid(data),
               pw.SizedBox(height: 16),
               _buildSectionTitle('Projetos'),
-              ...data.projects!.map(_buildProjectItem),
+              data.projects != null || data.projects!.isNotEmpty
+                  ? pw.SizedBox(height: 16)
+                  : pw.Wrap(
+                    children: data.projects!.map(_buildProjectItem).toList(),
+                  ),
               pw.SizedBox(height: 16),
               _buildSectionTitle('Experiência Profissional'),
-              ...data.experiences!.map(_buildExperienceItem),
+              data.experiences != null || data.experiences!.isNotEmpty
+                  ? pw.SizedBox(height: 16)
+                  : pw.Wrap(
+                    children:
+                        data.experiences!.map(_buildExperienceItem).toList(),
+                  ),
               pw.SizedBox(height: 16),
               _buildSectionTitle('Formação Acadêmica'),
-              ...data.educations!.map(_buildEducationItem),
+              data.educations != null || data.educations!.isNotEmpty
+                  ? pw.SizedBox(height: 16)
+                  : pw.Wrap(
+                    children:
+                        data.educations!.map(_buildEducationItem).toList(),
+                  ),
             ],
           );
         },
@@ -918,7 +1085,11 @@ class TechDeveloper implements ResumeTemplate {
       children: [
         pw.Text(
           '${resume.personalInfo!.name}',
-          style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold),
+          style: pw.TextStyle(
+            fontSize: 20,
+            fontWeight: pw.FontWeight.bold,
+            font: fontsBold,
+          ),
         ),
         pw.SizedBox(height: 4),
         pw.Text(
@@ -942,33 +1113,36 @@ class TechDeveloper implements ResumeTemplate {
       style: pw.TextStyle(
         fontSize: 14,
         fontWeight: pw.FontWeight.bold,
+        font: fontsBold,
         color: PdfColors.blue,
       ),
     );
   }
 
   pw.Widget _buildSkillsGrid(ResumeData resume) {
-    return pw.Wrap(
-      spacing: 6,
-      runSpacing: 6,
-      children:
-          resume.skills!.map((s) {
-            return pw.Container(
-              padding: const pw.EdgeInsets.symmetric(
-                horizontal: 8,
-                vertical: 4,
-              ),
-              decoration: pw.BoxDecoration(
-                color: PdfColors.grey200,
-                borderRadius: pw.BorderRadius.circular(4),
-              ),
-              child: pw.Text(
-                '${s.name}',
-                style: const pw.TextStyle(fontSize: 10),
-              ),
-            );
-          }).toList(),
-    );
+    return resume.skills != null && resume.skills!.isNotEmpty
+        ? pw.Text('Nenhuma Skill adicionada')
+        : pw.Wrap(
+          spacing: 6,
+          runSpacing: 6,
+          children:
+              resume.skills!.map((s) {
+                return pw.Container(
+                  padding: const pw.EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: pw.BoxDecoration(
+                    color: PdfColors.grey200,
+                    borderRadius: pw.BorderRadius.circular(4),
+                  ),
+                  child: pw.Text(
+                    '${s.name}',
+                    style: const pw.TextStyle(fontSize: 10),
+                  ),
+                );
+              }).toList(),
+        );
   }
 
   pw.Widget _buildProjectItem(Project p) {
@@ -979,7 +1153,10 @@ class TechDeveloper implements ResumeTemplate {
         children: [
           pw.Text(
             '${p.name}',
-            style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+            style: pw.TextStyle(
+              fontWeight: pw.FontWeight.bold,
+              font: fontsBold,
+            ),
           ),
           if (p.technologies != null && p.technologies!.isNotEmpty)
             pw.Text(
@@ -1004,7 +1181,10 @@ class TechDeveloper implements ResumeTemplate {
         children: [
           pw.Text(
             '${e.position}',
-            style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+            style: pw.TextStyle(
+              fontWeight: pw.FontWeight.bold,
+              font: fontsBold,
+            ),
           ),
           pw.Text(
             '${e.company} • ${e.startDate}-${e.endDate}',
@@ -1041,6 +1221,16 @@ class TechDeveloper implements ResumeTemplate {
 }
 
 class StudantTemplate implements ResumeTemplate {
+  pw.Font? fontsLight;
+  pw.Font? fontsRegular;
+  pw.Font? fontsBold;
+
+  void loadFonts() async {
+    fontsLight = await PdfGoogleFonts.nunitoSansLight();
+    fontsRegular = await PdfGoogleFonts.nunitoSansRegular();
+    fontsBold = await PdfGoogleFonts.nunitoSansBold();
+  }
+
   @override
   pw.Document buildPdf(ResumeData data, BuildContext context) {
     final doc = pw.Document();
@@ -1097,7 +1287,11 @@ class StudantTemplate implements ResumeTemplate {
       children: [
         pw.Text(
           '${resume.personalInfo?.name}',
-          style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold),
+          style: pw.TextStyle(
+            fontSize: 20,
+            fontWeight: pw.FontWeight.bold,
+            font: fontsBold,
+          ),
         ),
         pw.SizedBox(height: 4),
         pw.Text(
@@ -1121,6 +1315,7 @@ class StudantTemplate implements ResumeTemplate {
       style: pw.TextStyle(
         fontSize: 13,
         fontWeight: pw.FontWeight.bold,
+        font: fontsBold,
         color: PdfColors.indigo,
       ),
     );
@@ -1153,7 +1348,10 @@ class StudantTemplate implements ResumeTemplate {
         children: [
           pw.Text(
             '${p.name}',
-            style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+            style: pw.TextStyle(
+              fontWeight: pw.FontWeight.bold,
+              font: fontsBold,
+            ),
           ),
           if (p.technologies != null && p.technologies!.isNotEmpty)
             pw.Text(
@@ -1215,6 +1413,16 @@ class StudantTemplate implements ResumeTemplate {
 }
 
 class InternationalTemplate implements ResumeTemplate {
+  pw.Font? fontsLight;
+  pw.Font? fontsRegular;
+  pw.Font? fontsBold;
+
+  void loadFonts() async {
+    fontsLight = await PdfGoogleFonts.nunitoSansLight();
+    fontsRegular = await PdfGoogleFonts.nunitoSansRegular();
+    fontsBold = await PdfGoogleFonts.nunitoSansBold();
+  }
+
   @override
   pw.Document buildPdf(ResumeData data, BuildContext context) {
     final doc = pw.Document();
@@ -1266,7 +1474,11 @@ class InternationalTemplate implements ResumeTemplate {
       children: [
         pw.Text(
           '${resume.personalInfo?.name}',
-          style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold),
+          style: pw.TextStyle(
+            fontSize: 20,
+            fontWeight: pw.FontWeight.bold,
+            font: fontsBold,
+          ),
         ),
         pw.SizedBox(height: 4),
         pw.Text(
@@ -1290,6 +1502,7 @@ class InternationalTemplate implements ResumeTemplate {
       style: pw.TextStyle(
         fontSize: 13,
         fontWeight: pw.FontWeight.bold,
+        font: fontsBold,
         color: PdfColors.blue,
       ),
     );
@@ -1303,7 +1516,10 @@ class InternationalTemplate implements ResumeTemplate {
         children: [
           pw.Text(
             '${e.position}',
-            style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+            style: pw.TextStyle(
+              fontWeight: pw.FontWeight.bold,
+              font: fontsBold,
+            ),
           ),
           pw.Text(
             '${e.company} • ${e.startDate}-${e.endDate}',

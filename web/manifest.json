@@ -1,11 +1,11 @@
 {
-    "name": "intelliresume",
-    "short_name": "intelliresume",
+    "name": "IntelliResume",
+    "short_name": "IntelliResume",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Crie, gerencie e aprimore seus currículos com o poder da Inteligência Artificial. Avalie, traduza e corrija seu CV de forma inteligente.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

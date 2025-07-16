@@ -17,7 +17,7 @@ class ExportButtons extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final exportService = ref.read(exportProvider);
-    int idx = 0;
+    int idx;
 
     return Row(
       children: [
@@ -26,9 +26,7 @@ class ExportButtons extends ConsumerWidget {
           icon: Icon(Icons.picture_as_pdf),
           label: Text('PDF'),
           onPressed: () {
-            idx = ref.read(selectedTemplateIndexProvider);
-            final template = ref.read(availableTemplatesProvider)[idx];
-            //var pdf = DocumentBuilder.buildPDF(context, resumeData);
+            final template = ref.read(selectedTemplateProvider);
             final pdf = DocumentBuilder(template).generate(resumeData, context);
             context.goNamed('preview-pdf', extra: pdf);
 
@@ -51,9 +49,9 @@ class ExportButtons extends ConsumerWidget {
         SizedBox(width: 5),
         TemplateSelector(),
         SizedBox(width: 5),
-        ref.read(availableTemplatesProvider)[idx].id == 'international'
+        /* ref.read(availableTemplatesProvider)[idx].id == 'international'
             ? LanguageSelector(resume: resumeData)
-            : SizedBox.shrink(),
+            : SizedBox.shrink(), */
       ],
     );
   }

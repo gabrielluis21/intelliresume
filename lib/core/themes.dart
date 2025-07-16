@@ -1,6 +1,7 @@
 // lib/core/themes.dart
 
 import 'package:flutter/material.dart';
+import 'package:intelliresume/core/providers/accessibility_provider.dart';
 
 /// Tema baseado em Material 3 com esquema de cores calmante.
 /// Usa verde-água como seed para passar sensação de tranquilidade.
@@ -40,10 +41,10 @@ final lightTheme = ThemeData(
     ),
   ),
   textTheme: const TextTheme(
-    titleLarge: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-    titleMedium: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-    bodyLarge: TextStyle(fontSize: 16),
-    bodyMedium: TextStyle(fontSize: 14),
+    titleLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+    titleMedium: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+    bodyLarge: TextStyle(fontSize: 18),
+    bodyMedium: TextStyle(fontSize: 16),
   ),
 );
 
@@ -63,7 +64,7 @@ final darkTheme = ThemeData(
     iconTheme: IconThemeData(color: Colors.white),
     titleTextStyle: TextStyle(
       color: Colors.white,
-      fontSize: 20,
+      fontSize: 22,
       fontWeight: FontWeight.w600,
     ),
   ),
@@ -93,16 +94,82 @@ final darkTheme = ThemeData(
   ),
   textTheme: TextTheme(
     titleLarge: const TextStyle(
-      fontSize: 22,
+      fontSize: 24,
       fontWeight: FontWeight.bold,
       color: Colors.white,
     ),
     titleMedium: const TextStyle(
-      fontSize: 18,
+      fontSize: 20,
       fontWeight: FontWeight.w600,
       color: Colors.white70,
     ),
-    bodyLarge: TextStyle(fontSize: 16, color: Colors.grey.shade200),
-    bodyMedium: TextStyle(fontSize: 14, color: Colors.grey.shade400),
+    bodyLarge: TextStyle(fontSize: 18, color: Colors.grey.shade200),
+    bodyMedium: TextStyle(fontSize: 16, color: Colors.grey.shade400),
   ),
 );
+
+/// Tema acessível baseado nas preferências do usuário.
+ThemeData buildAccessibleTheme(
+  AccessibilityState state,
+  Brightness brightness,
+) {
+  final isDark = brightness == Brightness.dark;
+
+  if (state.readerMode) {
+    return ThemeData(
+      brightness: brightness,
+      scaffoldBackgroundColor: isDark ? Colors.grey[900] : Colors.grey[100],
+      textTheme: const TextTheme(
+        bodyLarge: TextStyle(fontSize: 20, fontFamily: 'Roboto'),
+        bodyMedium: TextStyle(fontSize: 18, fontFamily: 'Roboto'),
+      ),
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: Colors.brown,
+        brightness: brightness,
+      ),
+    );
+  }
+
+  if (state.highContrast) {
+    return ThemeData(
+      brightness: brightness,
+      scaffoldBackgroundColor: isDark ? Colors.black : Colors.white,
+      textTheme: TextTheme(
+        bodyLarge: TextStyle(
+          color: isDark ? Colors.white : Colors.black,
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+        ),
+        bodyMedium: TextStyle(
+          color: isDark ? Colors.white : Colors.black87,
+          fontSize: 16,
+        ),
+      ),
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: Colors.yellow,
+        brightness: brightness,
+      ).copyWith(
+        primary: Colors.yellow[800],
+        onPrimary: Colors.black,
+        surface: isDark ? Colors.black : Colors.white,
+        onSurface: isDark ? Colors.white : Colors.black,
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.yellow[800],
+          foregroundColor: Colors.black,
+        ),
+      ),
+    );
+  }
+
+  // Tema padrão do app
+  return ThemeData(
+    brightness: brightness,
+    useMaterial3: true,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: Colors.teal,
+      brightness: brightness,
+    ),
+  );
+}

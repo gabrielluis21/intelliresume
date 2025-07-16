@@ -19,17 +19,18 @@ class ResumeForm extends ConsumerWidget {
       padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
-          // Adicione um título geral
-          const Text(
-            'Preencha seu currículo',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            textAlign: TextAlign.center,
+          Semantics(
+            header: true,
+            child: const Text(
+              'Preencha seu currículo',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
           ),
           const SizedBox(height: 24),
           // Seção de objetivos
           _buildSingleSection(
             title: 'Objetivo',
-            onAdd: _updateObjective,
             child: ObjectiveForm(objective: resume.objective ?? ''),
           ),
           // Seção de Experiências
@@ -96,27 +97,32 @@ class ResumeForm extends ConsumerWidget {
     );
   }
 
-  Widget _buildSingleSection({
-    required String title,
-    required VoidCallback onAdd,
-    required Widget child,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 32),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        child,
-      ],
+  Widget _buildSingleSection({required String title, required Widget child}) {
+    return Semantics(
+      container: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 32),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Semantics(
+                header: true,
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          child,
+        ],
+      ),
     );
   }
 
@@ -125,36 +131,40 @@ class ResumeForm extends ConsumerWidget {
     required VoidCallback onAdd,
     required List<Widget> children,
   }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 32),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.add),
-              label: const Text('Adicionar'),
-              onPressed: onAdd,
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: Colors.blue,
+    return Semantics(
+      container: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 32),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Semantics(
+                header: true,
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        ...children,
-      ],
+              ElevatedButton.icon(
+                icon: const Icon(Icons.add),
+                label: const Text('Adicionar'),
+                onPressed: onAdd,
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.blue,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          ...children,
+        ],
+      ),
     );
-  }
-
-  void _updateObjective() {
-    // Implementar lógica para atualizar o objetivo
-    // Pode ser uma chamada ao provider ou outro método
   }
 }
