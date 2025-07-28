@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intelliresume/core/utils/app_localizations.dart';
 import 'package:intelliresume/data/models/cv_data.dart';
-import 'package:intelliresume/domain/entities/user_profile.dart';
+import 'package:intelliresume/domain/entities/plan_type.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
@@ -13,7 +13,13 @@ abstract class ResumeTemplate {
   String get displayName;
   PlanType get minPlan;
 
-  pw.Document buildPdf(ResumeData data, BuildContext context);
+  /// Constrói o PDF. Pode receber um [targetLanguage] opcional para templates
+  /// que suportam tradução automática.
+  Future<pw.Document> buildPdf(
+    ResumeData data,
+    BuildContext context, {
+    String? targetLanguage,
+  });
 
   static final List<ResumeTemplate> allTemplates = [
     IntelliResumePatternTemplate(),
@@ -42,17 +48,23 @@ class IntelliResumePatternTemplate implements ResumeTemplate {
   pw.Font? fontsRegular;
   pw.Font? fontsBold;
 
-  void loadFonts() async {
+  Future<void> _loadFonts() async {
     fontsLight = await PdfGoogleFonts.nunitoSansLight();
     fontsRegular = await PdfGoogleFonts.nunitoSansRegular();
     fontsBold = await PdfGoogleFonts.nunitoSansBold();
   }
 
   @override
-  pw.Document buildPdf(ResumeData data, BuildContext context) {
+  Future<pw.Document> buildPdf(
+    ResumeData data,
+    BuildContext context, {
+    String? targetLanguage,
+  }) async {
     final pdf = pw.Document();
     final translated = AppLocalizations.of(context);
-    final headerPdf = _buildHeader(data);
+
+    await _loadFonts(); // Garante que as fontes estão carregadas
+    final headerPdf = await _buildHeader(data); // Agora espera a imagem
 
     pdf.addPage(
       pw.Page(
@@ -80,12 +92,12 @@ class IntelliResumePatternTemplate implements ResumeTemplate {
   String get displayName => 'Padrão IntelliResume';
 
   Future<void> _buildProfileImage(String? picUrl) async {
-    if (picUrl != null && picUrl.isNotEmpty) {
+    if (picUrl != null && picUrl.isNotEmpty && Uri.tryParse(picUrl) != null) {
       try {
         final uri = Uri.parse(picUrl);
         final response = await http.get(uri);
         if (response.statusCode == 200) {
-          _profileImage = response.bodyBytes;
+          _profileImage = pw.MemoryImage(response.bodyBytes);
         }
       } catch (e) {
         print("falha no Download");
@@ -97,13 +109,13 @@ class IntelliResumePatternTemplate implements ResumeTemplate {
     }
   }
 
-  pw.Widget _buildHeader(ResumeData data) {
-    _buildProfileImage(data.personalInfo?.profilePictureUrl);
+  Future<pw.Widget> _buildHeader(ResumeData data) async {
+    await _buildProfileImage(data.personalInfo?.profilePictureUrl);
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
-        data.personalInfo!.profilePictureUrl != null
-            ? pw.Image(pw.MemoryImage(_profileImage!), width: 100, height: 100)
+        _profileImage != null
+            ? pw.Image(_profileImage, width: 100, height: 100)
             : pw.SizedBox.shrink(),
         pw.Text(
           data.personalInfo!.name!,
@@ -313,14 +325,19 @@ class ClassicMinimalTemplate implements ResumeTemplate {
   pw.Font? fontsRegular;
   pw.Font? fontsBold;
 
-  void loadFonts() async {
+  Future<void> _loadFonts() async {
     fontsLight = await PdfGoogleFonts.nunitoSansLight();
     fontsRegular = await PdfGoogleFonts.nunitoSansRegular();
     fontsBold = await PdfGoogleFonts.nunitoSansBold();
   }
 
   @override
-  pw.Document buildPdf(ResumeData data, BuildContext context) {
+  Future<pw.Document> buildPdf(
+    ResumeData data,
+    BuildContext context, {
+    String? targetLanguage,
+  }) async {
+    await _loadFonts();
     //final translated = AppLocalizations.of(context);
     final doc = pw.Document();
     doc.addPage(
@@ -459,14 +476,19 @@ class ModernSidebarTemplate implements ResumeTemplate {
   pw.Font? fontsRegular;
   pw.Font? fontsBold;
 
-  void loadFonts() async {
+  Future<void> _loadFonts() async {
     fontsLight = await PdfGoogleFonts.nunitoSansLight();
     fontsRegular = await PdfGoogleFonts.nunitoSansRegular();
     fontsBold = await PdfGoogleFonts.nunitoSansBold();
   }
 
   @override
-  pw.Document buildPdf(ResumeData data, BuildContext context) {
+  Future<pw.Document> buildPdf(
+    ResumeData data,
+    BuildContext context, {
+    String? targetLanguage,
+  }) async {
+    await _loadFonts();
     //final translated = AppLocalizations.of(context);
     final doc = pw.Document();
     doc.addPage(
@@ -619,14 +641,19 @@ class TimelineTemplate implements ResumeTemplate {
   pw.Font? fontsRegular;
   pw.Font? fontsBold;
 
-  void loadFonts() async {
+  Future<void> _loadFonts() async {
     fontsLight = await PdfGoogleFonts.nunitoSansLight();
     fontsRegular = await PdfGoogleFonts.nunitoSansRegular();
     fontsBold = await PdfGoogleFonts.nunitoSansBold();
   }
 
   @override
-  pw.Document buildPdf(ResumeData data, BuildContext context) {
+  Future<pw.Document> buildPdf(
+    ResumeData data,
+    BuildContext context, {
+    String? targetLanguage,
+  }) async {
+    await _loadFonts();
     final doc = pw.Document();
     doc.addPage(
       pw.Page(
@@ -725,15 +752,20 @@ class InfographicTemplate implements ResumeTemplate {
   pw.Font? fontsRegular;
   pw.Font? fontsBold;
 
-  void loadFonts() async {
+  Future<void> _loadFonts() async {
     fontsLight = await PdfGoogleFonts.nunitoSansLight();
     fontsRegular = await PdfGoogleFonts.nunitoSansRegular();
     fontsBold = await PdfGoogleFonts.nunitoSansBold();
   }
 
   @override
-  pw.Document buildPdf(ResumeData data, BuildContext context) {
+  Future<pw.Document> buildPdf(
+    ResumeData data,
+    BuildContext context, {
+    String? targetLanguage,
+  }) async {
     final pdf = pw.Document();
+    await _loadFonts();
 
     pdf.addPage(
       pw.Page(
@@ -934,14 +966,19 @@ class CorporateTemplate implements ResumeTemplate {
   pw.Font? fontsRegular;
   pw.Font? fontsBold;
 
-  void loadFonts() async {
+  Future<void> _loadFonts() async {
     fontsLight = await PdfGoogleFonts.nunitoSansLight();
     fontsRegular = await PdfGoogleFonts.nunitoSansRegular();
     fontsBold = await PdfGoogleFonts.nunitoSansBold();
   }
 
   @override
-  pw.Document buildPdf(ResumeData data, BuildContext context) {
+  Future<pw.Document> buildPdf(
+    ResumeData data,
+    BuildContext context, {
+    String? targetLanguage,
+  }) async {
+    await _loadFonts();
     final doc = pw.Document();
     doc.addPage(
       pw.Page(
@@ -1018,14 +1055,19 @@ class TechDeveloper implements ResumeTemplate {
   pw.Font? fontsRegular;
   pw.Font? fontsBold;
 
-  void loadFonts() async {
+  Future<void> _loadFonts() async {
     fontsLight = await PdfGoogleFonts.nunitoSansLight();
     fontsRegular = await PdfGoogleFonts.nunitoSansRegular();
     fontsBold = await PdfGoogleFonts.nunitoSansBold();
   }
 
   @override
-  pw.Document buildPdf(ResumeData data, BuildContext context) {
+  Future<pw.Document> buildPdf(
+    ResumeData data,
+    BuildContext context, {
+    String? targetLanguage,
+  }) async {
+    await _loadFonts();
     final doc = pw.Document();
 
     doc.addPage(
@@ -1225,14 +1267,19 @@ class StudantTemplate implements ResumeTemplate {
   pw.Font? fontsRegular;
   pw.Font? fontsBold;
 
-  void loadFonts() async {
+  Future<void> _loadFonts() async {
     fontsLight = await PdfGoogleFonts.nunitoSansLight();
     fontsRegular = await PdfGoogleFonts.nunitoSansRegular();
     fontsBold = await PdfGoogleFonts.nunitoSansBold();
   }
 
   @override
-  pw.Document buildPdf(ResumeData data, BuildContext context) {
+  Future<pw.Document> buildPdf(
+    ResumeData data,
+    BuildContext context, {
+    String? targetLanguage,
+  }) async {
+    await _loadFonts();
     final doc = pw.Document();
 
     doc.addPage(
@@ -1417,16 +1464,25 @@ class InternationalTemplate implements ResumeTemplate {
   pw.Font? fontsRegular;
   pw.Font? fontsBold;
 
-  void loadFonts() async {
+  Future<void> _loadFonts() async {
     fontsLight = await PdfGoogleFonts.nunitoSansLight();
     fontsRegular = await PdfGoogleFonts.nunitoSansRegular();
     fontsBold = await PdfGoogleFonts.nunitoSansBold();
   }
 
   @override
-  pw.Document buildPdf(ResumeData data, BuildContext context) {
-    final doc = pw.Document();
+  Future<pw.Document> buildPdf(
+    ResumeData data,
+    BuildContext context, {
+    String? targetLanguage,
+  }) async {
+    await _loadFonts();
 
+    // A responsabilidade de traduzir os dados foi movida para a camada de apresentação (UI).
+    // Este template agora apenas renderiza os dados que recebe, sejam eles originais ou traduzidos.
+    final ResumeData dataToBuild = data;
+
+    final doc = pw.Document();
     doc.addPage(
       pw.Page(
         pageFormat: PdfPageFormat.a4,
@@ -1435,29 +1491,31 @@ class InternationalTemplate implements ResumeTemplate {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              _buildHeader(data),
+              _buildHeader(dataToBuild),
               pw.SizedBox(height: 16),
               _buildSectionTitle('Profile'),
-              if (data.objective!.isNotEmpty)
+              if (dataToBuild.objective!.isNotEmpty)
                 pw.Text(
-                  "${data.objective}",
+                  "${dataToBuild.objective}",
                   style: const pw.TextStyle(fontSize: 11),
                 ),
               pw.SizedBox(height: 16),
               _buildSectionTitle('Work Experience'),
-              ...data.experiences!.map(_buildExperienceItem),
+              ...dataToBuild.experiences!.map(_buildExperienceItem),
               pw.SizedBox(height: 16),
               _buildSectionTitle('Education'),
-              ...data.educations!.map(_buildEducationItem),
+              ...dataToBuild.educations!.map(_buildEducationItem),
               pw.SizedBox(height: 16),
-              if (data.languages!.isNotEmpty) ...[
-                _buildSectionTitle('Languages'),
-                ...data.languages!.map(_buildLanguageItem),
+              if (dataToBuild.languages!.isNotEmpty) ...[
+                _buildSectionTitle(
+                  'Languages',
+                ), // Note: a seção de idiomas não deve ser traduzida
+                ...dataToBuild.languages!.map(_buildLanguageItem),
                 pw.SizedBox(height: 16),
               ],
-              if (data.skills!.isNotEmpty) ...[
+              if (dataToBuild.skills!.isNotEmpty) ...[
                 _buildSectionTitle('Skills'),
-                _buildSkillList(data.skills!),
+                _buildSkillList(dataToBuild.skills!),
               ],
             ],
           );

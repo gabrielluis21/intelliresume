@@ -11,7 +11,9 @@ class BuyPage extends ConsumerWidget {
     final prefs = await SharedPreferences.getInstance();
     final isPro = prefs.getBool('isProUser') ?? false;
     if (isPro) {
-      ref.read(purchaseControllerProvider.notifier).markAsPremium();
+      ref
+          .read(purchaseControllerProvider.notifier)
+          .updatePlan(PlanType.premium);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Versão PREMIUM ativada!')));
@@ -106,11 +108,8 @@ class BuyPage extends ConsumerWidget {
               },
             ),
             const SizedBox(height: 16),
-            if (state.errorMessage != null)
-              Text(
-                state.errorMessage!,
-                style: const TextStyle(color: Colors.red),
-              ),
+            if (state.error != null)
+              Text(state.error!, style: const TextStyle(color: Colors.red)),
           ],
         ),
       ),

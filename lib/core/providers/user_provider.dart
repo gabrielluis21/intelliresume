@@ -5,6 +5,7 @@ import 'package:intelliresume/data/datasources/local/local_user_profile_ds.dart'
 import 'package:intelliresume/data/datasources/remote/remote_user_profile_ds.dart';
 import 'package:intelliresume/data/repositories/user_profile_repository.dart';
 import 'package:intelliresume/domain/entities/user_profile.dart';
+import 'package:intelliresume/domain/entities/plan_type.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 // Provider para o repositório

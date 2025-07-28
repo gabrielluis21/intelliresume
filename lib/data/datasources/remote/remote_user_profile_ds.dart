@@ -1,6 +1,6 @@
 import '../../../domain/entities/user_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:intelliresume/domain/entities/plan_type.dart';
 import '../../datasources/remote/auth_resume_ds.dart';
 
 abstract class UserProfileDataSource {

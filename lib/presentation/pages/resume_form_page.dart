@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intelliresume/core/providers/user_provider.dart';
 import 'package:intelliresume/data/datasources/remote/auth_resume_ds.dart';
-import 'package:intelliresume/presentation/widgets/export_buttons.dart';
 import 'package:intelliresume/presentation/widgets/preview/resume_preview.dart';
+import 'package:intelliresume/presentation/widgets/preview_dialog.dart';
 import 'package:intelliresume/presentation/widgets/side_menu.dart';
 //import 'package:printing/printing.dart';
 import '../../core/providers/cv_provider.dart';
@@ -69,58 +69,7 @@ class _ResumeFormPageState extends ConsumerState<ResumeFormPage> {
               onTap:
                   () => showAdaptiveDialog(
                     context: context,
-                    builder:
-                        (_) =>
-                            resume.isEmpty
-                                ? AlertDialog.adaptive(
-                                  title: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text("Preview/Imprmir"),
-                                      IconButton(
-                                        onPressed:
-                                            () => Navigator.of(context).pop(),
-                                        icon: Icon(
-                                          Icons.close,
-                                          color: Colors.red,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  content: Text(
-                                    "Preencha o CV antes de imprimir/pré visualizar",
-                                  ),
-                                )
-                                : AlertDialog.adaptive(
-                                  contentPadding: EdgeInsets.all(4),
-                                  actionsPadding: EdgeInsets.all(15),
-                                  scrollable: true,
-                                  content: SizedBox(
-                                    height:
-                                        MediaQuery.of(context).size.height *
-                                        .90,
-                                    width:
-                                        MediaQuery.of(context).size.width * .80,
-                                    child: ResumePreview(),
-                                  ),
-                                  title: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text("Preview/Imprmir"),
-                                      IconButton(
-                                        onPressed:
-                                            () => Navigator.of(context).pop(),
-                                        icon: Icon(
-                                          Icons.close,
-                                          color: Colors.red,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  actions: [ExportButtons(resumeData: resume)],
-                                ),
+                    builder: (_) => PreviewDialog(resume: resume),
                   ),
               child: Row(
                 children: [

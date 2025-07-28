@@ -48,7 +48,8 @@ dependencies:
   flutter_stripe: ^11.5.0
   flutter_riverpod: ^2.6.1
   flutter_archive: ^6.0.3
-  flutter_widget_from_html: ^0.16.0
+  #webview_flutter: ^4.13.0
+  accessibility_tools: ^2.6.0
   font_awesome_flutter: ^10.8.0
   file_saver:
   go_router: ^15.1.2
@@ -71,6 +72,7 @@ dependencies:
   web: ^1.0.0 
   xml: ^6.5.0 
   google_adsense: ^0.1.2
+  carousel_slider: ^5.1.1
 
 
 dev_dependencies:

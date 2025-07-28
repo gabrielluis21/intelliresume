@@ -1,5 +1,7 @@
 // lib/domain/usecases/update_plan_usecase.dart
 
+import 'package:intelliresume/domain/entities/plan_type.dart';
+
 import '../../data/repositories/user_profile_repository.dart';
 import '../../data/datasources/remote/remote_user_profile_ds.dart';
 import '../../data/datasources/local/local_user_profile_ds.dart';

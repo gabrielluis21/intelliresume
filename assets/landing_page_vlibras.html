@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Versão Acessível - IntelliResume</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      background-color: #f5f5f5;
+      color: #333;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1, h2 {
+      color: #007BFF;
+    }
+    .vlibras-widget {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      z-index: 9999;
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header>
+      <h1>Bem-vindo ao IntelliResume</h1>
+      <p>Esta é a versão acessível do site para uso com o plugin VLibras.</p>
+    </header>
+
+    <section aria-labelledby="features-title">
+      <h2 id="features-title">Monte seu currículo com inteligência!</h2>
+      <p>Use inteligência artificial para montar, traduzir e melhorar seu currículo com base no país desejado.</p>
+    </section>
+
+    <section aria-labelledby="templates-title">
+      <h2 id="templates-title">Modelos de Currículos</h2>
+      <ul>
+        <li>Modelo 1: Estudante</li>
+        <li>Modelo 2: Desenvolvedor</li>
+        <li>Modelo 3: Europass Internacional</li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="plans-title">
+      <h2 id="plans-title">Planos Disponíveis</h2>
+      <ul>
+        <li><strong>Free</strong>: 5 currículos, 3 interações com IA por dia, modelos básicos. – R$ 0/mês</li>
+        <li><strong>Premium</strong>: Currículos e IA ilimitados, todos os modelos premium. – R$ 29/mês</li>
+        <li><strong>Pro</strong>: Tudo do Premium + <strong>Modo Estúdio</strong> para edição avançada dos modelos. – R$ 59/mês</li>
+      </ul>
+    </section>
+  </main>
+
+  <!-- VLibras Plugin -->
+  <div vw class="vlibras-widget">
+    <div vw-access-button class="active"></div>
+    <div vw-plugin-wrapper>
+      <div class="vw-plugin-top-wrapper"></div>
+    </div>
+  </div>
+  <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+  <script>
+    new window.VLibras.Widget('https://vlibras.gov.br/app');
+  </script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 // lib/domain/entities/user_profile.dart
 
-enum PlanType { free, premium }
+import 'package:intelliresume/domain/entities/plan_type.dart';
 
 class UserProfile {
   String? uid;

@@ -4,6 +4,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intelliresume/core/providers/user_provider.dart';
 import 'package:intelliresume/domain/entities/user_profile.dart';
+import 'package:intelliresume/domain/entities/plan_type.dart';
 
 /// Modelagem do uso de recursos pelo usuário
 class UsageTracker {
@@ -69,6 +70,12 @@ class BusinessLogicService {
     'timeline_template',
   };
 
+  // Defina aqui os templates que são exclusivos do plano Pro, se houver.
+  // Se o Pro incluir todos os do Premium mais alguns, liste apenas os extras.
+  static const proTemplates = <String>{
+    // 'pro_exclusive_template'
+  };
+
   UserProfile? get _profile => ref.watch(userProfileProvider).value;
   PlanType get _plan => _profile?.plan ?? PlanType.free;
   int get _usedAI => ref.watch(usageTrackerProvider).aiInteractions;
@@ -80,7 +87,15 @@ class BusinessLogicService {
     if (_plan == PlanType.free) {
       return freeTemplates.contains(templateId);
     }
-    return true; // premium pode usar todos
+    if (_plan == PlanType.premium) {
+      // Premium pode usar os gratuitos e os pagos
+      return freeTemplates.contains(templateId) ||
+          paidTemplates.contains(templateId);
+    }
+    if (_plan == PlanType.pro) {
+      return true; // Pro pode usar todos
+    }
+    return false; // Por padrão, bloqueia se o plano for desconhecido
   }
 
   /// Registro de uso de template (chamar após checar canUseTemplate)
@@ -93,9 +108,11 @@ class BusinessLogicService {
 
   /// Verifica se usuário pode usar um recurso de IA
   bool canUseAI() {
+    // A lógica pode ser expandida aqui para diferentes limites por plano
     if (_plan == PlanType.free) {
       return _usedAI < 3;
     }
+    // Premium e Pro têm uso ilimitado
     return true; // premium ilimitado
   }
 
@@ -112,12 +129,12 @@ class BusinessLogicService {
   /// Verifica se pode exportar (sempre permitido)
   bool canExport() => true;
 
-  /// Solicita upgrade de plano (delegado ao provider)
-  void upgradeToPremium() {
+  /// Atualiza o plano do usuário no perfil principal
+  void upgradePlan(PlanType newPlan) {
     final notifier = ref.read(userProfileProvider.notifier);
     final profile = _profile;
     if (profile == null) throw Exception('Usuário não autenticado');
-    final updated = profile.copyWith(plan: PlanType.premium);
+    final updated = profile.copyWith(plan: newPlan);
     notifier.updateUser(updated);
     // opcional: resetar UsageTracker
     ref.read(usageTrackerProvider.notifier).reset();

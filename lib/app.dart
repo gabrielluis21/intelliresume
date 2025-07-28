@@ -1,5 +1,7 @@
+import 'package:accessibility_tools/accessibility_tools.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intelliresume/core/providers/locale_provider.dart';
 import 'routes/app_routes.dart';
 import 'core/themes.dart';
 import 'core/utils/app_localizations.dart';
@@ -9,6 +11,10 @@ class App extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
+    // 1. Ouve as mudanças no provider de locale.
+    // Quando o idioma for trocado em qualquer lugar do app,
+    // este widget será reconstruído com o novo valor.
+    final locale = ref.watch(localeProvider);
 
     return MaterialApp.router(
       title: 'IntelliResume',
@@ -16,18 +22,22 @@ class App extends ConsumerWidget {
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: ThemeMode.light,
-      localeResolutionCallback: _localeResolution,
+      // 2. Passa o locale do provider diretamente para o MaterialApp.
+      // Isso força o Flutter a usar o idioma especificado e a recarregar
+      // as traduções do AppLocalizations.
+      locale: locale,
       routerConfig: router,
+      builder:
+          (context, child) => AccessibilityTools(
+            enableButtonsDrag: true,
+            checkFontOverflows: true,
+            checkImageLabels: true,
+            buttonsAlignment: ButtonsAlignment.bottomRight,
+            child: child,
+          ),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
+      onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
     );
-  }
-
-  Locale _localeResolution(Locale? locale, Iterable<Locale> supported) {
-    if (locale == null) return supported.first;
-    for (final l in supported) {
-      if (l.languageCode == locale.languageCode) return l;
-    }
-    return supported.first;
   }
 }
