@@ -3,10 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intelliresume/core/providers/user_provider.dart';
 import 'package:intelliresume/data/datasources/remote/auth_resume_ds.dart';
-import 'package:intelliresume/presentation/widgets/preview/resume_preview.dart';
+import 'package:intelliresume/presentation/pages/resume_preview_page.dart';
+import 'package:intelliresume/presentation/widgets/ai_assistant_panel.dart';
+//import 'package:intelliresume/presentation/widgets/preview/resume_preview.dart';
 import 'package:intelliresume/presentation/widgets/preview_dialog.dart';
 import 'package:intelliresume/presentation/widgets/side_menu.dart';
-//import 'package:printing/printing.dart';
+import 'package:multi_split_view/multi_split_view.dart';
+//import 'package:printing/printing';
 import '../../core/providers/cv_provider.dart';
 import '../../core/utils/app_localizations.dart';
 import '../widgets/form/resume_form.dart';
@@ -18,8 +21,22 @@ class ResumeFormPage extends ConsumerStatefulWidget {
   ConsumerState<ResumeFormPage> createState() => _ResumeFormPageState();
 }
 
-class _ResumeFormPageState extends ConsumerState<ResumeFormPage> {
+class _ResumeFormPageState extends ConsumerState<ResumeFormPage>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
   int _selectedIndex = 3; // Default to Form page
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   void _onDestinationSelected(int index) {
     setState(() => _selectedIndex = index);
@@ -50,11 +67,10 @@ class _ResumeFormPageState extends ConsumerState<ResumeFormPage> {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
-    final isWide = MediaQuery.of(context).size.width > 600;
-    final current = ref.watch(userProfileProvider);
-    final resumeData = ref.watch(resumeProvider);
-    var resume = resumeData.copyWith(personalInfo: current.value);
-    print(resume.toMap());
+    final theme = Theme.of(context);
+    final isWide =
+        MediaQuery.of(context).size.width >
+        800; // Aumentado para melhor acomodar o painel
 
     return Scaffold(
       appBar: AppBar(title: Text(t.appTitle)),
@@ -65,60 +81,141 @@ class _ResumeFormPageState extends ConsumerState<ResumeFormPage> {
       body: LayoutBuilder(
         builder: (context, constraints) {
           if (isWide) {
-            return InkWell(
-              onTap:
-                  () => showAdaptiveDialog(
-                    context: context,
-                    builder: (_) => PreviewDialog(resume: resume),
+            // Layout para telas largas com painel de instruções
+            return Column(
+              children: [
+                Card(
+                  margin: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+                  color: theme.colorScheme.primaryContainer.withOpacity(0.5),
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(color: theme.colorScheme.outlineVariant),
                   ),
-              child: Row(
-                children: [
-                  Expanded(child: ResumeForm()),
-                  const VerticalDivider(),
-                  Expanded(child: ResumePreview()),
-                ],
-              ),
-            );
-          } else {
-            return SingleChildScrollView(
-              child: Column(
-                children: [
-                  ResumeForm(),
-                  const Divider(),
-                  InkWell(
-                    onTap:
-                        () => showAdaptiveDialog(
-                          context: context,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.info_outline,
+                          color: theme.colorScheme.onPrimaryContainer,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            "Bem-vindo ao Modo Estúdio! Use o painel de Edição à esquerda e veja o resultado em tempo real à direita. Dica: Clique em um item na visualização para editá-lo!",
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.onPrimaryContainer,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Semantics(
+                    label:
+                        "Modo Estúdio. O painel da esquerda contém o formulário para editar os dados. O painel da direita mostra a pré-visualização e opções de criação. As alterações são refletidas em tempo real.",
+                    child: MultiSplitView(
+                      axis: Axis.horizontal,
+                      dividerBuilder: (
+                        axis,
+                        index,
+                        resizable,
+                        dragging,
+                        highlighted,
+                        themeData,
+                      ) {
+                        return Container(
+                          color: dragging ? Colors.teal[300] : Colors.teal[100],
+                          child: Icon(
+                            Icons.drag_indicator_sharp,
+                            size: 10,
+                            color:
+                                highlighted
+                                    ? Colors.teal[600]
+                                    : Colors.teal[400],
+                          ),
+                        );
+                      },
+                      pushDividers: true,
+                      initialAreas: [
+                        Area(
                           builder:
-                              (_) => AlertDialog.adaptive(
-                                content: ResumePreview(),
-                                title: Text("Preview"),
-                                actions: [
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      context.pushNamed('preview-pdf');
-                                    },
-                                    child: Text("Exportar PDF"),
+                              (context, area) => Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(12.0),
+                                    child: Semantics(
+                                      header: true,
+                                      child: Text(
+                                        "Área de Edição",
+                                        style: theme.textTheme.titleMedium,
+                                      ),
+                                    ),
                                   ),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      context.pushNamed('preview-docx');
-                                    },
-                                    child: Text("Exportar DOCX"),
-                                  ),
-                                  IconButton(
-                                    onPressed: () {},
-                                    icon: Icon(Icons.print, color: Colors.blue),
-                                  ),
-                                  IconButton(
-                                    onPressed:
-                                        () => Navigator.of(context).pop(),
-                                    icon: Icon(Icons.close, color: Colors.red),
-                                  ),
+                                  Expanded(child: ResumeForm()),
                                 ],
                               ),
                         ),
-                    child: ResumePreview(),
+                        Area(
+                          builder:
+                              (context, area) => Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(12.0),
+                                    child: Semantics(
+                                      header: true,
+                                      child: Text(
+                                        "Visualização e Assistente de IA",
+                                        style: theme.textTheme.titleMedium,
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(child: ResumePreviewPage()),
+                                ],
+                              ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            );
+          } else {
+            // Layout para telas estreitas com o Painel de IA no final
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  const ResumeForm(),
+                  const Divider(),
+                  // Adiciona o painel de IA aqui para mobile
+                  const SizedBox(
+                    height: 500, // Altura definida para o painel em mobile
+                    child: AIAssistantPanel(),
+                  ),
+                  const Divider(),
+                  // Mantém o preview acessível por um botão/dialog
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: ElevatedButton.icon(
+                      icon: const Icon(Icons.visibility),
+                      label: const Text("Visualizar Currículo"),
+                      onPressed:
+                          () => showDialog(
+                            context: context,
+                            builder: (_) {
+                              final resumeData = ref.read(localResumeProvider);
+                              final userProfile =
+                                  ref.read(userProfileProvider).value;
+                              final fullResume = resumeData.copyWith(
+                                personalInfo: userProfile,
+                              );
+                              return PreviewDialog(resume: fullResume);
+                            },
+                          ),
+                    ),
                   ),
                 ],
               ),

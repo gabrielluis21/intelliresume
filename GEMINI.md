@@ -113,11 +113,14 @@ As principais dependências do projeto estão listadas no `pubspec.yaml`.
     *   Baixe o `google-services.json` (para Android) e o `GoogleService-Info.plist` (para iOS) e coloque-os nos diretórios corretos (`android/app/` e `ios/Runner/`).
 
 4.  **Configurar Variáveis de Ambiente:**
-    *   Obtenha uma chave de API do seu provedor de IA (ex: OpenAI).
-    *   **NÃO** coloque a chave diretamente no código. Use variáveis de ambiente através do comando `--dart-define` para segurança.
+    *   Na raiz do projeto, copie o arquivo `.env.example` para um novo arquivo chamado `.env`.
+        ```bash
+        cp .env.example .env
+        ```
+    *   Abra o arquivo `.env` e insira suas chaves de API (OpenAI, Stripe, etc.).
+    *   O arquivo `.env` já está no `.gitignore` para garantir que suas chaves não sejam enviadas ao repositório.
 
 5.  **Executar a Aplicação:**
     ```bash
-    # Exemplo de execução passando a chave de API
-    flutter run --dart-define=OPENAI_API_KEY="sua_chave_aqui"
+    flutter run
     ```

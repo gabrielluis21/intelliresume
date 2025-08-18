@@ -1,104 +1,76 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-enum PlanType { free, premium, pro }
+// 1. Estado para o status da assinatura
+class PurchaseState {
+  final bool isPremium;
+  final bool isProcessing;
+  final String? error;
 
-final purchaseControllerProvider =
-    StateNotifierProvider<PurchaseController, PurchaseState>((ref) {
-      return PurchaseController();
-    });
+  PurchaseState({
+    this.isPremium = false,
+    this.isProcessing = false,
+    this.error,
+  });
 
-class PurchaseController extends StateNotifier<PurchaseState> {
-  PurchaseController() : super(PurchaseState.initial());
-
-  Future<void> loadStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-    final planName = prefs.getString('currentPlan') ?? 'free';
-    final plan = PlanType.values.firstWhere(
-      (e) => e.toString().split('.').last == planName,
-      orElse: () => PlanType.free,
+  PurchaseState copyWith({bool? isPremium, bool? isProcessing, String? error}) {
+    return PurchaseState(
+      isPremium: isPremium ?? this.isPremium,
+      isProcessing: isProcessing ?? this.isProcessing,
+      error: error ?? this.error,
     );
-
-    state = state.copyWith(currentPlan: plan);
   }
+}
 
-  Future<void> updatePlan(PlanType newPlan) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('currentPlan', newPlan.toString().split('.').last);
+// 2. Notifier para gerenciar a lógica de compra
+class PurchaseController extends StateNotifier<PurchaseState> {
+  PurchaseController() : super(PurchaseState());
 
-    state = state.copyWith(currentPlan: newPlan);
-  }
-
-  void setError(String? message) {
-    state = state.copyWith(error: message);
+  Future<bool> _launchURL(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      return await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+    return false;
   }
 
   Future<bool> initiatePurchase({
     required String primaryUrl,
     required String fallbackUrl,
-    required Future<bool?> Function(String title, String content)
-    showFallbackDialog,
+    required Future<bool?> Function(String, String) showFallbackDialog,
   }) async {
-    final primaryUri = Uri.parse(primaryUrl);
+    state = state.copyWith(isProcessing: true);
+    bool success = false;
 
     try {
-      if (await canLaunchUrl(primaryUri)) {
-        await launchUrl(primaryUri, mode: LaunchMode.externalApplication);
-        return true;
-      } else {
-        throw Exception('Primary provider unavailable');
-      }
-    } catch (_) {
-      final useFallback =
-          await showFallbackDialog(
-            'Pagamento indisponível',
-            'Deseja tentar com um método alternativo?',
-          ) ??
-          false;
-
-      if (useFallback) {
-        final fallbackUri = Uri.parse(fallbackUrl);
-        if (await canLaunchUrl(fallbackUri)) {
-          await launchUrl(fallbackUri, mode: LaunchMode.externalApplication);
-          return true;
+      success = await _launchURL(primaryUrl);
+      if (!success) {
+        final useFallback = await showFallbackDialog(
+          'Ops! Algo deu errado',
+          'Não conseguimos abrir o link de pagamento principal. Deseja tentar com uma opção alternativa?',
+        );
+        if (useFallback == true) {
+          success = await _launchURL(fallbackUrl);
         }
       }
+    } finally {
+      state = state.copyWith(isProcessing: false);
     }
-    return false;
+    return success;
   }
 
+  // Simula a verificação do status da compra (em produção, use webhooks)
   Future<void> verifyPurchaseStatus() async {
-    // NOTA: Um delay fixo não é confiável. A solução ideal envolve um backend
-    // com webhooks do provedor de pagamento que atualiza o status do usuário
-    // em um banco de dados (ex: Firestore). O app então ouviria essas
-    // atualizações em tempo real.
-    await Future.delayed(const Duration(seconds: 5));
-
-    final prefs = await SharedPreferences.getInstance();
-    final isPro = prefs.getBool('isProUser') ?? false;
-    if (isPro) await updatePlan(PlanType.premium);
+    state = state.copyWith(isProcessing: true);
+    // Simula uma chamada de rede para o backend
+    await Future.delayed(const Duration(seconds: 2));
+    // Em um app real, o backend confirmaria o pagamento e você atualizaria o estado
+    state = state.copyWith(isPremium: true, isProcessing: false);
   }
 }
 
-class PurchaseState {
-  final PlanType currentPlan;
-  final String? error;
-
-  bool get isPremium =>
-      currentPlan == PlanType.premium || currentPlan == PlanType.pro;
-
-  bool get isPro => currentPlan == PlanType.pro;
-
-  const PurchaseState({required this.currentPlan, this.error});
-
-  factory PurchaseState.initial() =>
-      const PurchaseState(currentPlan: PlanType.free);
-
-  PurchaseState copyWith({PlanType? currentPlan, String? error}) {
-    return PurchaseState(
-      currentPlan: currentPlan ?? this.currentPlan,
-      error: error,
+// 3. Provider para acessar o controller e o estado
+final purchaseControllerProvider =
+    StateNotifierProvider<PurchaseController, PurchaseState>(
+      (ref) => PurchaseController(),
     );
-  }
-}

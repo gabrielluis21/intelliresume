@@ -37,19 +37,23 @@ class HeaderSection extends StatelessWidget {
               )
               : ListTile(
                 contentPadding: const EdgeInsets.all(16),
-                leading: CircleAvatar(
-                  radius: 40,
-                  backgroundImage:
-                      user?.profilePictureUrl == null
-                          ? Image.asset(
-                            'images/default_avatar.png',
-                            fit: BoxFit.contain,
-                          ).image
-                          : Image.network(
-                            user!.profilePictureUrl!,
-                            fit: BoxFit.contain,
-                          ).image,
-                  backgroundColor: Colors.grey.shade200,
+                leading: Semantics(
+                  label: 'Foto de perfil de ${user?.name ?? "usuário"}',
+                  image: true,
+                  child: CircleAvatar(
+                    radius: 40,
+                    backgroundImage:
+                        user?.profilePictureUrl == null
+                            ? Image.asset(
+                              'images/default_avatar.png',
+                              fit: BoxFit.contain,
+                            ).image
+                            : Image.network(
+                              user!.profilePictureUrl!,
+                              fit: BoxFit.contain,
+                            ).image,
+                    backgroundColor: Colors.grey.shade200,
+                  ),
                 ),
                 title: Text(
                   "${user?.name}",

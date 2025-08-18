@@ -1,16 +1,36 @@
-# intelliresume
+# IntelliResume
 
-A new Flutter project.
+A new Flutter project designed to simplify and enhance the creation of professional resumes.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+### 1. Clone the Repository
+```bash
+git clone https://github.com/seu-usuario/intelliresume.git
+cd intelliresume
+```
 
-A few resources to get you started if this is your first Flutter project:
+### 2. Install Dependencies
+```bash
+flutter pub get
+```
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### 3. Configure Firebase
+- Create a project in the Firebase console.
+- Configure your applications (Android, iOS, Web).
+- Download `google-services.json` (for Android) and `GoogleService-Info.plist` (for iOS) and place them in the correct directories (`android/app/` and `ios/Runner/`).
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### 4. Configure Environment Variables
+- In the project root, copy the file `.env.example` to a new file called `.env`.
+  ```bash
+  cp .env.example .env
+  ```
+- Open the `.env` file and enter your API keys (OpenAI, Stripe, etc.).
+- The `.env` file is already in `.gitignore` to ensure that your keys are not sent to the repository.
+
+### 5. Run the Application
+```bash
+flutter run
+```
+
+For more details, see the [online documentation](https://docs.flutter.dev/), which offers tutorials, samples, guidance on mobile development, and a full API reference.

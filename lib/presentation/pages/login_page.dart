@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intelliresume/core/providers/cv_provider.dart';
 import '../../core/providers/user_provider.dart';
 import '../../data/datasources/remote/auth_resume_ds.dart';
-import '../../routes/app_routes.dart';
 import '../../core/utils/app_localizations.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
@@ -16,11 +16,17 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   String email = '', password = '';
   bool _loading = false;
+  bool _obscurePassword = true;
+  String? _errorMessage;
 
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
     _formKey.currentState!.save();
-    setState(() => _loading = true);
+    setState(() {
+      _loading = true;
+      _errorMessage = null;
+    });
+
     try {
       final logged = await AuthService.instance.signIn(
         email: email,
@@ -29,20 +35,17 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
       final userProfileRepository = ref.read(userProfileRepositoryProvider);
       final user = await userProfileRepository.watchProfile(logged.uid).first;
-      print(user.toJson());
-      ref.read(resumeProvider.notifier).updatePersonalInfo(user);
-      //ref.(resumeProvider);
+      ref.read(localResumeProvider.notifier).updatePersonalInfo(user);
 
-      ref.watch(routerProvider).goNamed('home');
+      if (mounted) context.goNamed('home');
     } on Exception catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      setState(() {
+        _errorMessage = e.toString().replaceFirst('Exception: ', '');
+      });
     } finally {
-      setState(() => _loading = false);
+      if (mounted) {
+        setState(() => _loading = false);
+      }
     }
   }
 
@@ -52,64 +55,114 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     return Scaffold(
       body: SafeArea(
         child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 400),
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      t.login,
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 24),
-                    TextFormField(
-                      decoration: InputDecoration(
-                        labelText: t.email,
-                        prefixIcon: const Icon(Icons.email),
+          child: SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 400),
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        'assets/images/logo.png', // Certifique-se que o caminho está correto
+                        height: 80,
+                        width: 80,
+                        semanticLabel: 'Logo do IntelliResume',
                       ),
-                      keyboardType: TextInputType.emailAddress,
-                      validator:
-                          (v) =>
-                              (v?.contains('@') == true)
-                                  ? null
-                                  : t.fieldRequired,
-                      onSaved: (v) => email = v!.trim(),
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      decoration: InputDecoration(
-                        labelText: t.password,
-                        prefixIcon: const Icon(Icons.lock),
+                      const SizedBox(height: 16),
+                      Text(
+                        t.login,
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
-                      obscureText: true,
-                      validator:
-                          (v) =>
-                              (v != null && v.length >= 6)
-                                  ? null
-                                  : t.fieldRequired,
-                      onSaved: (v) => password = v!,
-                    ),
-                    const SizedBox(height: 24),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: _loading ? null : _login,
-                        child:
-                            _loading
-                                ? const CircularProgressIndicator.adaptive()
-                                : Text(t.login),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Bem-vindo de volta! Acesse sua conta.',
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
-                    ),
-                    TextButton(
-                      onPressed:
-                          () => ref.watch(routerProvider).goNamed('signup'),
-                      child: Text(t.signup),
-                    ),
-                  ],
+                      const SizedBox(height: 32),
+                      TextFormField(
+                        decoration: InputDecoration(
+                          labelText: t.email,
+                          prefixIcon: const Icon(Icons.email),
+                        ),
+                        keyboardType: TextInputType.emailAddress,
+                        validator:
+                            (v) =>
+                                (v?.contains('@') == true)
+                                    ? null
+                                    : t.invalidEmail,
+                        onSaved: (v) => email = v!.trim(),
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        obscureText: _obscurePassword,
+                        decoration: InputDecoration(
+                          labelText: t.password,
+                          prefixIcon: const Icon(Icons.lock),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscurePassword
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                            ),
+                            tooltip:
+                                _obscurePassword
+                                    ? 'Mostrar senha'
+                                    : 'Ocultar senha',
+                            onPressed: () {
+                              setState(() {
+                                _obscurePassword = !_obscurePassword;
+                              });
+                            },
+                          ),
+                        ),
+                        validator:
+                            (v) =>
+                                (v != null && v.length >= 6)
+                                    ? null
+                                    : t.passwordTooShort,
+                        onSaved: (v) => password = v!,
+                      ),
+                      const SizedBox(height: 24),
+                      if (_errorMessage != null)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 16.0),
+                          child: Text(
+                            _errorMessage!,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.error,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: ElevatedButton(
+                          onPressed: _loading ? null : _login,
+                          child:
+                              _loading
+                                  ? const CircularProgressIndicator(
+                                    color: Colors.white,
+                                  )
+                                  : Text(
+                                    t.login,
+                                    style: const TextStyle(fontSize: 16),
+                                  ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextButton(
+                        onPressed: () => context.goNamed('signup'),
+                        child: Text('Não tem uma conta? ${t.signup}'),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

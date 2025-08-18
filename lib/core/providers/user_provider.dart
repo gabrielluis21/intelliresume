@@ -83,6 +83,9 @@ class UserProfileNotifier extends StateNotifier<AsyncValue<UserProfile?>> {
           phone: updatedProfile.phone,
           profilePictureUrl: updatedProfile.profilePictureUrl,
           plan: updatedProfile.plan,
+          isPCD: updatedProfile.isPCD,
+          disabilityTypes: updatedProfile.disabilityTypes,
+          disabilityDescription: updatedProfile.disabilityDescription,
         ),
       );
     } catch (e, st) {

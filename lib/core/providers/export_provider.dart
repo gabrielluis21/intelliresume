@@ -16,7 +16,6 @@ class ExportService {
     final isSaved = await FileSaver.instance.saveFile(
       name: 'Curriculo_IntelliResume',
       bytes: bytes,
-      ext: 'pdf',
       mimeType: MimeType.pdf,
     );
 
@@ -32,7 +31,6 @@ class ExportService {
     final isSaved = await FileSaver.instance.saveFile(
       name: 'Curriculo_IntelliResume',
       bytes: docx,
-      ext: 'docx',
       mimeType: MimeType.microsoftWord,
     );
 

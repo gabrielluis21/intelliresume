@@ -1,41 +1,22 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intelliresume/domain/entities/accessibility_settings.dart';
 
-final accessibilityProvider =
-    StateNotifierProvider<AccessibilityService, AccessibilityState>(
-      (ref) => AccessibilityService(),
-    );
+class AccessibilityNotifier extends StateNotifier<AccessibilitySettings> {
+  AccessibilityNotifier() : super(const AccessibilitySettings());
 
-class AccessibilityState {
-  final bool highContrast;
-  final bool reduceMotion;
-  final bool readerMode;
+  void setFontScale(double scale) {
+    state = state.copyWith(fontScale: scale);
+  }
 
-  const AccessibilityState({
-    this.highContrast = false,
-    this.reduceMotion = false,
-    this.readerMode = false,
-  });
+  void toggleHighContrast(bool isEnabled) {
+    state = state.copyWith(highContrast: isEnabled);
+  }
 
-  AccessibilityState copyWith({
-    bool? highContrast,
-    bool? reduceMotion,
-    bool? readerMode,
-  }) {
-    return AccessibilityState(
-      highContrast: highContrast ?? this.highContrast,
-      reduceMotion: reduceMotion ?? this.reduceMotion,
-      readerMode: readerMode ?? this.readerMode,
-    );
+  void toggleBoldText(bool isEnabled) {
+    state = state.copyWith(boldText: isEnabled);
   }
 }
 
-class AccessibilityService extends StateNotifier<AccessibilityState> {
-  AccessibilityService() : super(const AccessibilityState());
-
-  void toggleHighContrast() =>
-      state = state.copyWith(highContrast: !state.highContrast);
-  void toggleReduceMotion() =>
-      state = state.copyWith(reduceMotion: !state.reduceMotion);
-  void toggleReaderMode() =>
-      state = state.copyWith(readerMode: !state.readerMode);
-}
+final accessibilityProvider = StateNotifierProvider<AccessibilityNotifier, AccessibilitySettings>((ref) {
+  return AccessibilityNotifier();
+});

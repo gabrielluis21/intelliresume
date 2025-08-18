@@ -79,8 +79,8 @@ class BusinessLogicService {
   UserProfile? get _profile => ref.watch(userProfileProvider).value;
   PlanType get _plan => _profile?.plan ?? PlanType.free;
   int get _usedAI => ref.watch(usageTrackerProvider).aiInteractions;
-  Set<String> get _usedTemplates =>
-      ref.watch(usageTrackerProvider).templatesUsed;
+  /* Set<String> get _usedTemplates =>
+      ref.watch(usageTrackerProvider).templatesUsed; */
 
   /// Retorna verdadeiro se o usuário pode usar o template
   bool canUseTemplate(String templateId) {

@@ -18,35 +18,32 @@ class EducationForm extends ConsumerStatefulWidget {
 }
 
 class _EducationFormState extends ConsumerState<EducationForm> {
-  late TextEditingController _schoolController;
-  late TextEditingController _degreeController;
-  late TextEditingController _startDateController;
-  late TextEditingController _endDateController;
+  late final TextEditingController _schoolController;
+  late final TextEditingController _degreeController;
+  late final TextEditingController _startDateController;
+  late final TextEditingController _endDateController;
 
   @override
   void initState() {
     super.initState();
     _schoolController = TextEditingController(text: widget.education.school);
     _degreeController = TextEditingController(text: widget.education.degree);
-    _startDateController = TextEditingController(
-      text: widget.education.startDate,
-    );
+    _startDateController = TextEditingController(text: widget.education.startDate);
     _endDateController = TextEditingController(text: widget.education.endDate);
-  }
 
-  @override
-  void didUpdateWidget(EducationForm oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.education != widget.education) {
-      _schoolController.text = widget.education.school ?? '';
-      _degreeController.text = widget.education.degree ?? '';
-      _startDateController.text = widget.education.startDate ?? '';
-      _endDateController.text = widget.education.endDate ?? '';
-    }
+    _schoolController.addListener(_updateEducation);
+    _degreeController.addListener(_updateEducation);
+    _startDateController.addListener(_updateEducation);
+    _endDateController.addListener(_updateEducation);
   }
 
   @override
   void dispose() {
+    _schoolController.removeListener(_updateEducation);
+    _degreeController.removeListener(_updateEducation);
+    _startDateController.removeListener(_updateEducation);
+    _endDateController.removeListener(_updateEducation);
+
     _schoolController.dispose();
     _degreeController.dispose();
     _startDateController.dispose();
@@ -55,84 +52,111 @@ class _EducationFormState extends ConsumerState<EducationForm> {
   }
 
   void _updateEducation() {
-    ref
-        .read(resumeProvider.notifier)
-        .updateEducation(
-          widget.index,
-          Education(
-            school: _schoolController.text,
-            degree: _degreeController.text,
-            startDate: _startDateController.text,
-            endDate: _endDateController.text,
-          ),
-        );
+    final updatedEducation = Education(
+      school: _schoolController.text,
+      degree: _degreeController.text,
+      startDate: _startDateController.text,
+      endDate: _endDateController.text,
+    );
+    ref.read(localResumeProvider.notifier).updateEducation(widget.index, updatedEducation);
   }
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 12.0),
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 2,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Formação #${widget.index + 1}',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                IconButton(
+                  tooltip: 'Remover esta formação',
+                  icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                  onPressed: () => ref.read(localResumeProvider.notifier).removeEducation(widget.index),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
               controller: _schoolController,
               decoration: const InputDecoration(
-                labelText: 'Instituição *',
+                labelText: 'Instituição',
                 border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.school_outlined),
               ),
             ),
-            const SizedBox(height: 16),
-            TextField(
+            const SizedBox(height: 12),
+            TextFormField(
               controller: _degreeController,
               decoration: const InputDecoration(
-                labelText: 'Curso *',
+                labelText: 'Curso / Graduação',
                 border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.book_outlined),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
-                  child: TextField(
+                  child: TextFormField(
                     controller: _startDateController,
-                    decoration: const InputDecoration(
-                      labelText: 'Data Início *',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: 'Data de Início',
+                      border: const OutlineInputBorder(),
+                      suffixIcon: IconButton(
+                        tooltip: 'Selecionar data de início',
+                        onPressed: () async {
+                          final picked = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(1950),
+                            lastDate: DateTime.now(),
+                          );
+                          if (picked != null) {
+                            _startDateController.text = "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
+                          }
+                        },
+                        icon: const Icon(Icons.calendar_today),
+                      ),
                     ),
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 12),
                 Expanded(
-                  child: TextField(
+                  child: TextFormField(
                     controller: _endDateController,
-                    decoration: const InputDecoration(
-                      labelText: 'Data Término',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: 'Data de Término',
+                      border: const OutlineInputBorder(),
+                      suffixIcon: IconButton(
+                        tooltip: 'Selecionar data de término',
+                        onPressed: () async {
+                          final picked = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(1950),
+                            lastDate: DateTime.now(),
+                          );
+                          if (picked != null) {
+                            _endDateController.text = "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
+                          }
+                        },
+                        icon: const Icon(Icons.calendar_today),
+                      ),
                     ),
                   ),
                 ),
               ],
-            ),
-            Align(
-              alignment: Alignment.centerRight,
-              child: Row(
-                children: [
-                  ElevatedButton(
-                    onPressed: _updateEducation,
-                    child: const Text('Salvar'),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.red),
-                    onPressed:
-                        () => ref
-                            .read(resumeProvider.notifier)
-                            .removeEducation(widget.index),
-                  ),
-                ],
-              ),
             ),
           ],
         ),

@@ -14,82 +14,77 @@ class SkillForm extends ConsumerStatefulWidget {
 }
 
 class _SkillFormState extends ConsumerState<SkillForm> {
-  late TextEditingController _nameController;
-  late TextEditingController _levelController;
+  late final TextEditingController _nameController;
+  late final TextEditingController _levelController;
 
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.skill.name);
     _levelController = TextEditingController(text: widget.skill.level);
-  }
 
-  @override
-  void didUpdateWidget(SkillForm oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.skill != widget.skill) {
-      _nameController.text = widget.skill.name ?? '';
-      _levelController.text = widget.skill.level ?? '';
-    }
+    _nameController.addListener(_updateSkill);
+    _levelController.addListener(_updateSkill);
   }
 
   @override
   void dispose() {
+    _nameController.removeListener(_updateSkill);
+    _levelController.removeListener(_updateSkill);
+
     _nameController.dispose();
     _levelController.dispose();
     super.dispose();
   }
 
   void _updateSkill() {
-    ref
-        .read(resumeProvider.notifier)
-        .updateSkill(
-          widget.index,
-          Skill(name: _nameController.text, level: _levelController.text),
-        );
+    final updatedSkill = Skill(
+      name: _nameController.text,
+      level: _levelController.text,
+    );
+    ref.read(localResumeProvider.notifier).updateSkill(widget.index, updatedSkill);
   }
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 12.0),
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 2,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(
-              controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Habilidade *',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _levelController,
-              decoration: const InputDecoration(
-                labelText: 'Nível (ex: Intermediário) *',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            Align(
-              alignment: Alignment.centerRight,
-              child: Row(
-                children: [
-                  ElevatedButton(
-                    onPressed: () => _updateSkill(),
-                    child: const Text('Salvar'),
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: _nameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Habilidade',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.star_border_outlined),
+                    ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.red),
-                    onPressed:
-                        () => ref
-                            .read(resumeProvider.notifier)
-                            .removeSkill(widget.index),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextFormField(
+                    controller: _levelController,
+                    decoration: const InputDecoration(
+                      labelText: 'Nível (Ex: Avançado)',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.bar_chart_outlined),
+                    ),
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  tooltip: 'Remover esta habilidade',
+                  icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                  onPressed: () => ref.read(localResumeProvider.notifier).removeSkill(widget.index),
+                ),
+              ],
             ),
           ],
         ),

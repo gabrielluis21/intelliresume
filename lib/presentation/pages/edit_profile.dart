@@ -1,11 +1,10 @@
-// lib/pages/edit_profile_page.dart
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intelliresume/core/providers/cv_provider.dart';
-
+import 'package:intelliresume/services/image_upload_service.dart';
 import '../../core/providers/user_provider.dart';
 import '../widgets/layout_template.dart';
 
@@ -20,9 +19,21 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
+  final _disabilityDescriptionController = TextEditingController();
   final _picker = ImagePicker();
+
   File? _imageFile;
   bool _loading = false;
+  bool _isPCD = false;
+  final List<String> _availableDisabilities = [
+    'Física',
+    'Auditiva',
+    'Visual',
+    'Mental',
+    'Intelectual',
+    'Múltipla',
+  ];
+  final Set<String> _selectedDisabilities = {};
 
   @override
   void initState() {
@@ -31,18 +42,20 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   }
 
   void _loadUserData() {
-    final userProfile = ref.read(userProfileProvider);
-    if (userProfile.value != null) {
-      _nameController.text = userProfile.value?.name ?? '';
+    final user = ref.read(userProfileProvider).value;
+    if (user != null) {
+      _nameController.text = user.name ?? '';
+      _phoneController.text = user.phone ?? '';
+      _isPCD = user.isPCD;
+      _selectedDisabilities.addAll(user.disabilityTypes);
+      _disabilityDescriptionController.text = user.disabilityDescription ?? '';
     }
   }
 
   Future<void> _pickImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-      setState(() {
-        _imageFile = File(pickedFile.path);
-      });
+      setState(() => _imageFile = File(pickedFile.path));
     }
   }
 
@@ -52,59 +65,49 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     setState(() => _loading = true);
 
     try {
-      final userProfileRepository = ref.read(userProfileRepositoryProvider);
-      final currentProfile = ref.read(userProfileProvider);
+      final userProfileNotifier = ref.read(userProfileProvider.notifier);
+      final currentProfile = ref.read(userProfileProvider).value;
 
-      // Atualizar perfil usando o repositório
-      final profile = currentProfile.value;
-      if (profile == null) {
+      if (currentProfile == null) {
         throw Exception('Perfil do usuário não encontrado.');
       }
-      await userProfileRepository.updateProfile(
-        profile.copyWith(
-          name: _nameController.text,
-          profilePictureUrl:
-              _imageFile != null ? _imageFile!.path : profile.profilePictureUrl,
-          phone: _phoneController.text, // Preservar o telefone atual
-        ),
+
+      String? finalProfilePictureUrl = currentProfile.profilePictureUrl;
+
+      if (_imageFile != null) {
+        if (currentProfile.uid == null) {
+          throw Exception(
+            'UID do usuário não encontrado para upload de imagem.',
+          );
+        }
+        finalProfilePictureUrl = await ImageUploadService()
+            .uploadProfilePicture(_imageFile!, currentProfile.uid!);
+      }
+
+      final updatedProfile = currentProfile.copyWith(
+        name: _nameController.text,
+        phone: _phoneController.text,
+        profilePictureUrl: finalProfilePictureUrl,
+        isPCD: _isPCD,
+        disabilityTypes: _selectedDisabilities.toList(),
+        disabilityDescription: _disabilityDescriptionController.text,
       );
 
-      // Forçar refresh do provider
-      ref.invalidate(userProfileProvider);
-      ref.read(resumeProvider.notifier).updatePersonalInfo(profile);
-      ref.invalidate(resumeProvider);
-      // Mostrar mensagem de sucesso
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Perfil atualizado com sucesso!')),
-      );
+      await userProfileNotifier.updateUser(updatedProfile);
+      ref.read(localResumeProvider.notifier).updatePersonalInfo(updatedProfile);
 
-      // Voltar para a página de perfil
-      if (mounted) context.pop();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Perfil atualizado com sucesso!')),
+        );
+        context.pop();
+      }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Erro ao atualizar perfil: $e')));
-    } finally {
-      if (mounted) setState(() => _loading = false);
-    }
-  }
-
-  Future<void> _verifyEmail() async {
-    setState(() => _loading = true);
-    try {
-      final userProfileRepository = ref.read(userProfileRepositoryProvider);
-      await userProfileRepository.verifyProfileEmail();
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Email de verificação enviado!'),
-          duration: Duration(seconds: 5),
-        ),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Erro ao enviar verificação: $e')));
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Erro ao atualizar perfil: $e')));
+      }
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -112,155 +115,194 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    final userProfile = ref.watch(userProfileProvider);
-    final user = userProfile.value;
-    final email = user?.email ?? '';
-    final phone = user?.phone ?? '';
-    final emailVerified = user?.emailVerified ?? false;
-    final photoUrl = user?.profilePictureUrl;
+    final user = ref.watch(userProfileProvider).value;
 
     return LayoutTemplate(
       selectedIndex: 1,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: MediaQuery.of(context).size.height - 100,
-            ),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Editar Perfil',
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Seção de Foto de Perfil
-                  Center(
-                    child: Stack(
+        child:
+            user == null
+                ? const Center(child: CircularProgressIndicator())
+                : SingleChildScrollView(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CircleAvatar(
-                          radius: 60,
-                          backgroundColor: Colors.grey[200],
-                          backgroundImage:
-                              _imageFile != null
-                                  ? FileImage(_imageFile!)
-                                  : (photoUrl != null
-                                      ? NetworkImage(photoUrl)
-                                      : null),
-                          child:
-                              photoUrl == null && _imageFile == null
-                                  ? const Icon(Icons.person, size: 60)
-                                  : null,
+                        Text(
+                          'Editar Perfil',
+                          style: Theme.of(context).textTheme.headlineSmall,
                         ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.blue,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: IconButton(
-                              icon: const Icon(
-                                Icons.camera_alt,
-                                color: Colors.white,
-                              ),
-                              onPressed: _pickImage,
-                            ),
-                          ),
+                        const SizedBox(height: 24),
+                        _buildProfilePictureSection(user.profilePictureUrl),
+                        const SizedBox(height: 24),
+                        _buildTextField(_nameController, 'Nome', Icons.person),
+                        const SizedBox(height: 16),
+                        _buildTextField(
+                          _phoneController,
+                          'Telefone',
+                          Icons.phone,
+                          keyboardType: TextInputType.phone,
                         ),
+                        const SizedBox(height: 16),
+                        _buildAccessibilitySection(),
+                        const SizedBox(height: 32),
+                        _buildSaveButton(),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 24),
+                ),
+      ),
+    );
+  }
 
-                  // Campo de Nome
-                  TextFormField(
-                    controller: _nameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Nome',
-                      prefixIcon: Icon(Icons.person),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Por favor, insira seu nome';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Campo de Email (read-only)
-                  TextFormField(
-                    initialValue: email,
-                    decoration: InputDecoration(
-                      labelText: 'Email',
-                      prefixIcon: const Icon(Icons.email),
-                      suffixIcon:
-                          emailVerified
-                              ? const Tooltip(
-                                message: 'Email verificado',
-                                child: Icon(
-                                  Icons.verified,
-                                  color: Colors.green,
-                                ),
-                              )
-                              : null,
-                    ),
-                    readOnly: true,
-                  ),
-                  const SizedBox(height: 8),
-
-                  // Botão de verificação de email
-                  if (!emailVerified) ...[
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton.icon(
-                        icon: const Icon(Icons.mark_email_unread),
-                        label: const Text('Verificar email'),
-                        onPressed: _verifyEmail,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                  ],
-                  // Campo de Email (read-only)
-                  TextFormField(
-                    controller: _phoneController,
-                    keyboardType: TextInputType.phone,
-                    initialValue: phone,
-                    decoration: InputDecoration(
-                      labelText: 'Telfone',
-                      prefixIcon: const Icon(Icons.phone),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  // Botão de Salvar
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      icon:
-                          _loading
-                              ? const CircularProgressIndicator.adaptive()
-                              : const Icon(Icons.save),
-                      label: Text(
-                        _loading ? 'Salvando...' : 'Salvar Alterações',
-                      ),
-                      onPressed: _loading ? null : _saveProfile,
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+  Widget _buildProfilePictureSection(String? photoUrl) {
+    return Center(
+      child: Stack(
+        children: [
+          CircleAvatar(
+            radius: 60,
+            backgroundColor: Colors.grey[200],
+            backgroundImage:
+                _imageFile != null
+                    ? FileImage(_imageFile!)
+                    : (photoUrl != null ? NetworkImage(photoUrl) : null)
+                        as ImageProvider?,
+            child:
+                photoUrl == null && _imageFile == null
+                    ? const Icon(Icons.person, size: 60)
+                    : null,
+          ),
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: IconButton(
+              icon: const Icon(Icons.camera_alt, color: Colors.white),
+              style: IconButton.styleFrom(backgroundColor: Colors.blue),
+              onPressed: _pickImage,
+              tooltip: 'Selecionar foto de perfil',
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTextField(
+    TextEditingController controller,
+    String label,
+    IconData icon, {
+    TextInputType? keyboardType,
+  }) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(labelText: label, prefixIcon: Icon(icon)),
+      keyboardType: keyboardType,
+      validator:
+          (value) =>
+              (value == null || value.isEmpty)
+                  ? 'Este campo é obrigatório'
+                  : null,
+    );
+  }
+
+  Widget _buildAccessibilitySection() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Acessibilidade e Inclusão',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 8),
+            CheckboxListTile(
+              title: const Text('Desejo informar que sou PCD'),
+              subtitle: const Text(
+                'Esta informação é opcional e será usada para vagas afirmativas.',
+              ),
+              value: _isPCD,
+              onChanged:
+                  (bool? value) => setState(() => _isPCD = value ?? false),
+            ),
+            if (_isPCD)
+              Padding(
+                padding: const EdgeInsets.only(
+                  top: 16.0,
+                  left: 16.0,
+                  right: 16.0,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Tipos de Deficiência (selecione uma ou mais)',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8.0,
+                      children:
+                          _availableDisabilities.map((disability) {
+                            return FilterChip(
+                              label: Text(disability),
+                              selected: _selectedDisabilities.contains(
+                                disability,
+                              ),
+                              onSelected: (selected) {
+                                setState(() {
+                                  if (selected) {
+                                    _selectedDisabilities.add(disability);
+                                  } else {
+                                    _selectedDisabilities.remove(disability);
+                                  }
+                                });
+                              },
+                            );
+                          }).toList(),
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _disabilityDescriptionController,
+                      decoration: const InputDecoration(
+                        labelText: 'Descrição ou CID (opcional)',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildSaveButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: Row(
+        children: [
+          Icon(
+            _loading ? null : Icons.save,
+            semanticLabel: _loading ? 'Salvando...' : 'Salvar Alterações',
+          ),
+          ElevatedButton(
+            onPressed: _loading ? null : _saveProfile,
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+            ),
+            // Adiciona o indicador de progresso dentro do botão
+            child:
+                _loading
+                    ? const CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    )
+                    : Text(_loading ? 'Salvando...' : 'Salvar Alterações'),
+          ),
+        ],
       ),
     );
   }
@@ -268,6 +310,8 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   @override
   void dispose() {
     _nameController.dispose();
+    _phoneController.dispose();
+    _disabilityDescriptionController.dispose();
     super.dispose();
   }
 }

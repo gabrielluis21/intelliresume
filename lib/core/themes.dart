@@ -1,7 +1,6 @@
 // lib/core/themes.dart
 
 import 'package:flutter/material.dart';
-import 'package:intelliresume/core/providers/accessibility_provider.dart';
 
 /// Tema baseado em Material 3 com esquema de cores calmante.
 /// Usa verde-água como seed para passar sensação de tranquilidade.
@@ -13,6 +12,7 @@ final lightTheme = ThemeData(
     seedColor: const Color(0xFF64B6AC), // verde-água suave
     brightness: Brightness.light,
   ),
+  focusColor: const Color(0xFF64B6AC).withOpacity(0.12),
   scaffoldBackgroundColor: Colors.white,
   appBarTheme: const AppBarTheme(
     surfaceTintColor: Colors.transparent,
@@ -37,14 +37,14 @@ final lightTheme = ThemeData(
     border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(8),
-      borderSide: BorderSide(color: const Color(0xFF64B6AC), width: 2),
+      borderSide: const BorderSide(color: Color(0xFF64B6AC), width: 3),
     ),
   ),
   textTheme: const TextTheme(
-    titleLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-    titleMedium: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-    bodyLarge: TextStyle(fontSize: 18),
-    bodyMedium: TextStyle(fontSize: 16),
+    titleLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black87),
+    titleMedium: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.black87),
+    bodyLarge: TextStyle(fontSize: 18, color: Colors.black87),
+    bodyMedium: TextStyle(fontSize: 16, color: Colors.black54),
   ),
 );
 
@@ -55,6 +55,7 @@ final darkTheme = ThemeData(
     seedColor: const Color(0xFF64B6AC),
     brightness: Brightness.dark,
   ),
+  focusColor: const Color(0xFF64B6AC).withOpacity(0.15),
   scaffoldBackgroundColor: const Color(0xFF121212),
   appBarTheme: const AppBarTheme(
     surfaceTintColor: Colors.transparent,
@@ -88,7 +89,7 @@ final darkTheme = ThemeData(
     border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(8),
-      borderSide: const BorderSide(color: Color(0xFF64B6AC), width: 2),
+      borderSide: const BorderSide(color: Color(0xFF64B6AC), width: 3),
     ),
     hintStyle: TextStyle(color: Colors.grey.shade400),
   ),
@@ -104,72 +105,53 @@ final darkTheme = ThemeData(
       color: Colors.white70,
     ),
     bodyLarge: TextStyle(fontSize: 18, color: Colors.grey.shade200),
-    bodyMedium: TextStyle(fontSize: 16, color: Colors.grey.shade400),
+    bodyMedium: TextStyle(fontSize: 16, color: Colors.grey.shade300),
   ),
 );
 
-/// Tema acessível baseado nas preferências do usuário.
-ThemeData buildAccessibleTheme(
-  AccessibilityState state,
-  Brightness brightness,
-) {
-  final isDark = brightness == Brightness.dark;
-
-  if (state.readerMode) {
-    return ThemeData(
-      brightness: brightness,
-      scaffoldBackgroundColor: isDark ? Colors.grey[900] : Colors.grey[100],
-      textTheme: const TextTheme(
-        bodyLarge: TextStyle(fontSize: 20, fontFamily: 'Roboto'),
-        bodyMedium: TextStyle(fontSize: 18, fontFamily: 'Roboto'),
-      ),
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: Colors.brown,
-        brightness: brightness,
-      ),
-    );
-  }
-
-  if (state.highContrast) {
-    return ThemeData(
-      brightness: brightness,
-      scaffoldBackgroundColor: isDark ? Colors.black : Colors.white,
-      textTheme: TextTheme(
-        bodyLarge: TextStyle(
-          color: isDark ? Colors.white : Colors.black,
-          fontWeight: FontWeight.bold,
-          fontSize: 18,
-        ),
-        bodyMedium: TextStyle(
-          color: isDark ? Colors.white : Colors.black87,
-          fontSize: 16,
-        ),
-      ),
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: Colors.yellow,
-        brightness: brightness,
-      ).copyWith(
-        primary: Colors.yellow[800],
-        onPrimary: Colors.black,
-        surface: isDark ? Colors.black : Colors.white,
-        onSurface: isDark ? Colors.white : Colors.black,
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.yellow[800],
-          foregroundColor: Colors.black,
-        ),
-      ),
-    );
-  }
-
-  // Tema padrão do app
-  return ThemeData(
-    brightness: brightness,
-    useMaterial3: true,
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: Colors.teal,
-      brightness: brightness,
+/// Tema de alto contraste
+final highContrastTheme = ThemeData(
+  useMaterial3: true,
+  colorScheme: const ColorScheme.highContrastDark(
+    primary: Colors.yellow,
+    secondary: Colors.cyan,
+  ),
+  focusColor: Colors.cyan.withOpacity(0.25),
+  scaffoldBackgroundColor: Colors.black,
+  appBarTheme: const AppBarTheme(
+    backgroundColor: Colors.black,
+    foregroundColor: Colors.white,
+    elevation: 0,
+  ),
+  cardTheme: CardThemeData(
+    color: Colors.black,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(0),
+      side: const BorderSide(color: Colors.white, width: 2),
     ),
-  );
-}
+  ),
+  elevatedButtonTheme: ElevatedButtonThemeData(
+    style: ElevatedButton.styleFrom(
+      backgroundColor: Colors.yellow,
+      foregroundColor: Colors.black,
+      shape: const BeveledRectangleBorder(),
+      side: const BorderSide(color: Colors.black, width: 2),
+    ),
+  ),
+  inputDecorationTheme: const InputDecorationTheme(
+    filled: true,
+    fillColor: Colors.black,
+    enabledBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: Colors.white, width: 2),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: Colors.yellow, width: 3),
+    ),
+    labelStyle: TextStyle(color: Colors.white),
+  ),
+  textTheme: const TextTheme(
+    bodyLarge: TextStyle(color: Colors.white, fontSize: 18),
+    bodyMedium: TextStyle(color: Colors.white, fontSize: 16),
+    titleLarge: TextStyle(color: Colors.yellow, fontWeight: FontWeight.bold),
+  ),
+);

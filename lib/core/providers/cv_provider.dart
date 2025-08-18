@@ -1,42 +1,30 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Necessário para o provider remoto
+import 'package:intelliresume/core/providers/user_provider.dart';
 
 import '../../data/models/cv_data.dart';
 import '../../domain/entities/user_profile.dart';
 
-class ResumeState extends StateNotifier<ResumeData> {
-  ResumeState() : super(ResumeData.initial());
+// --- PROVIDER DE ESTADO LOCAL ---
 
-  void updatePersonalInfo(UserProfile userProfile) {
-    print(userProfile.toJson());
+/// Notifier que contém a lógica de estado para o currículo sendo editado na UI.
+class LocalResumeNotifier extends StateNotifier<ResumeData> {
+  LocalResumeNotifier() : super(ResumeData.initial());
+
+  /// Inicializa o estado com dados vindos do backend (usado no modo de edição).
+  void initialize(ResumeData initialData) {
+    state = initialData;
+  }
+
+  void updatePersonalInfo(UserProfile? userProfile) {
     state = state.copyWith(personalInfo: userProfile);
   }
 
-  // Objetivos
-  void addObjective() {
-    state = state.copyWith(objective: '');
-  }
-
-  void updateObjective(String objective) {
-    state = state.copyWith(objective: objective);
-  }
-
-  void removeObjective() {
-    state = state.copyWith(objective: '');
-  }
-
+  // ... todos os outros métodos (addExperience, updateSkill, etc.) permanecem aqui ...
   // Experiências
-  void addExperience() {
+  void addExperience(Experience? newExperience) {
     state = state.copyWith(
-      experiences: [
-        ...state.experiences!,
-        Experience(
-          company: '',
-          position: '',
-          startDate: '',
-          endDate: '',
-          description: '',
-        ),
-      ],
+      experiences: [...state.experiences!, newExperience!],
     );
   }
 
@@ -53,13 +41,8 @@ class ResumeState extends StateNotifier<ResumeData> {
   }
 
   // Educação
-  void addEducation() {
-    state = state.copyWith(
-      educations: [
-        ...state.educations!,
-        Education(degree: '', startDate: '', endDate: '', school: ''),
-      ],
-    );
+  void addEducation(Education? newEducation) {
+    state = state.copyWith(educations: [...state.educations!, newEducation!]);
   }
 
   void updateEducation(int index, Education education) {
@@ -74,11 +57,8 @@ class ResumeState extends StateNotifier<ResumeData> {
     state = state.copyWith(educations: newEducations);
   }
 
-  // Habilidades
-  void addSkill() {
-    state = state.copyWith(
-      skills: [...state.skills!, Skill(name: '', level: '')],
-    );
+  void addSkill(Skill? skill) {
+    state = state.copyWith(skills: [...state.skills!, skill!]);
   }
 
   void updateSkill(int index, Skill skill) {
@@ -93,17 +73,13 @@ class ResumeState extends StateNotifier<ResumeData> {
     state = state.copyWith(skills: newSkills);
   }
 
-  // Redes Sociais
-  void addSocial() {
-    state = state.copyWith(
-      socials: [...state.socials!, Social(platform: '', url: '')],
-    );
+  void addSocial(Social? social) {
+    state = state.copyWith(socials: [...state.socials!, social!]);
   }
 
   void updateSocial(int index, Social social) {
     final newSocials = List<Social>.from(state.socials!);
     newSocials[index] = social;
-    state = state.copyWith(socials: newSocials);
   }
 
   void removeSocial(int index) {
@@ -111,8 +87,55 @@ class ResumeState extends StateNotifier<ResumeData> {
     newSocials.removeAt(index);
     state = state.copyWith(socials: newSocials);
   }
+
+  void toggleIncludePCDInfo(bool value) {
+    state = state.copyWith(includePCDInfo: value);
+  }
+
+  void addObjective(String objective) {
+    state = state.copyWith(objective: objective);
+  }
+
+  void updateObjective(String objective) {
+    state = state.copyWith(objective: objective);
+  }
+
+  void removeObjective() {
+    state = state.copyWith(objective: '');
+  }
 }
 
-final resumeProvider = StateNotifierProvider<ResumeState, ResumeData>((ref) {
-  return ResumeState();
+/// Provider que expõe o [LocalResumeNotifier].
+/// A UI (formulário e preview) irá observar este provider para obter os dados ao vivo.
+final localResumeProvider =
+    StateNotifierProvider<LocalResumeNotifier, ResumeData>((ref) {
+      return LocalResumeNotifier();
+    });
+
+// --- PROVIDER DE DADOS REMOTOS ---
+
+/// Provider que busca os dados iniciais de um currículo do Firestore.
+/// Usado apenas no MODO EDIÇÃO para carregar os dados pela primeira vez.
+final remoteResumeProvider = StreamProvider.family<ResumeData?, String>((
+  ref,
+  cvId,
+) {
+  if (cvId.isEmpty) {
+    return Stream.value(null);
+  }
+  // Exemplo de como buscar do Firestore. Adapte para sua estrutura.
+  final firestore = FirebaseFirestore.instance;
+  final docRef = firestore
+      .collection('users')
+      .doc(ref.watch(userProfileProvider).value?.uid)
+      .collection('resumes')
+      .doc(cvId);
+
+  return docRef.snapshots().map((snapshot) {
+    if (snapshot.exists) {
+      return ResumeData.fromJson(snapshot.data()!);
+    } else {
+      return null;
+    }
+  });
 });

@@ -7,3 +7,8 @@ export 'widgets/preview/resume_preview.dart';
 export './pages/settings_page.dart';
 export './pages/signup_page.dart';
 export './pages/splash_page.dart';
+export './pages/edit_profile.dart';
+export './pages/export/export_pdf_page.dart';
+export './pages/home_page.dart';
+export './pages/resume_preview_page.dart';
+export './pages/settings/accessibility_settings_page.dart';

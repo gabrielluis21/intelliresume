@@ -124,11 +124,54 @@ class OpenAIService implements AIService, TemplateTranslationService {
     }
   }
 
-  // Implementações futuras para o AIService do usuário
   @override
-  Future<String> correct(String text) async => "Corrigido: $text";
+  Future<String> correct(String text) async {
+    final chat = await _openAI.onChatCompletion(
+      request: ChatCompleteText(
+        model: GptTurboChatModel(),
+        messages: [
+          Map.of({
+            'role': Role.system,
+            'content': 'Corrija erros gramaticais e de estilo:',
+          }),
+          Map.of({'role': Role.user, 'content': text}),
+        ],
+      ),
+    );
+    return chat!.choices.first.message!.content;
+  }
+
   @override
-  Future<String> evaluate(String text) async => "Avaliado: $text";
+  Future<String> evaluate(String text) async {
+    final chat = await _openAI.onChatCompletion(
+      request: ChatCompleteText(
+        model: GptTurboChatModel(),
+        messages: [
+          Map.of({
+            'role': Role.system,
+            'content': 'Você é um recrutador sênior. Avalie o currículo:',
+          }),
+          Map.of({'role': Role.user, 'content': text}),
+        ],
+      ),
+    );
+    return chat!.choices.first.message!.content;
+  }
+
   @override
-  Future<String> translate(String text, String to) async => "Traduzido: $text";
+  Future<String> translate(String text, String to) async {
+    final chat = await _openAI.onChatCompletion(
+      request: ChatCompleteText(
+        model: GptTurboChatModel(),
+        messages: [
+          Map.of({
+            'role': Role.system,
+            'content': 'Traduza o texto para $to, mantendo nomes e formatação.',
+          }),
+          Map.of({'role': Role.user, 'content': text}),
+        ],
+      ),
+    );
+    return chat!.choices.first.message!.content;
+  }
 }

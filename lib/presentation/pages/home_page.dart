@@ -1,7 +1,7 @@
 // lib/pages/home_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intelliresume/routes/app_routes.dart';
+import 'package:intelliresume/core/routes/app_routes.dart';
 
 import '../widgets/layout_template.dart';
 import '../widgets/cv_card.dart';
@@ -26,10 +26,10 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   Future<void> _loadData() async {}
 
-  void _createNewCV() {
+  /* void _createNewCV() {
     ref.watch(routerProvider).goNamed('form');
   }
-
+ */
   void _editCV(dynamic cv) {
     ref.watch(routerProvider).goNamed('form', extra: cv);
   }

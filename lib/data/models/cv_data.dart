@@ -11,6 +11,7 @@ class ResumeData {
   List<Project>? projects;
   List<Certificate>? certificates;
   List<Language>? languages;
+  bool includePCDInfo; // Novo campo
 
   ResumeData({
     this.personalInfo,
@@ -23,44 +24,49 @@ class ResumeData {
     this.projects,
     this.certificates,
     this.languages,
+    this.includePCDInfo = false, // Valor padrão
   });
 
   ResumeData.initial()
-    : personalInfo = UserProfile(),
-      about = '',
-      objective = '',
-      experiences = List<Experience>.empty(growable: true),
-      educations = List<Education>.empty(growable: true),
-      skills = List<Skill>.empty(growable: true),
-      socials = List<Social>.empty(growable: true),
-      projects = List<Project>.empty(growable: true),
-      certificates = List<Certificate>.empty(growable: true),
-      languages = List<Language>.empty(growable: true);
+      : personalInfo = UserProfile(),
+        about = '',
+        objective = '',
+        experiences = List<Experience>.empty(growable: true),
+        educations = List<Education>.empty(growable: true),
+        skills = List<Skill>.empty(growable: true),
+        socials = List<Social>.empty(growable: true),
+        projects = List<Project>.empty(growable: true),
+        certificates = List<Certificate>.empty(growable: true),
+        languages = List<Language>.empty(growable: true),
+        includePCDInfo = false;
 
   factory ResumeData.fromJson(Map<String, dynamic> json) {
     return ResumeData(
       personalInfo: UserProfile.fromJson(json['personalInfo']),
-      about: json['abaout'] as String,
-      objective: json['objective'] as String,
-      experiences: List<Experience>.from(
-        json['experiences'].map((x) => Experience.fromJson(x)),
-      ),
-      educations: List<Education>.from(
-        json['education'].map((x) => Education.fromJson(x)),
-      ),
-      socials: List<Social>.from(
-        json["socials"].map((x) => Social.fromJson(x)),
-      ),
-      skills: List<Skill>.from(json['skills'].map((x) => Skill.fromJson(x))),
-      projects: List<Project>.from(
-        json['projects'].map((x) => Project.fromJson(x)),
-      ),
-      certificates: List<Certificate>.from(
-        json['certificates'].map((x) => Certificate.fromJson(x)),
-      ),
-      languages: List<Language>.from(
-        json['languages'].map((x) => Language.fromJson(x)),
-      ),
+      about: json['about'] as String?,
+      objective: json['objective'] as String?,
+      experiences: (json['experiences'] as List<dynamic>?)
+          ?.map((x) => Experience.fromJson(x))
+          .toList(),
+      educations: (json['education'] as List<dynamic>?)
+          ?.map((x) => Education.fromJson(x))
+          .toList(),
+      socials: (json["socials"] as List<dynamic>?)
+          ?.map((x) => Social.fromJson(x))
+          .toList(),
+      skills: (json['skills'] as List<dynamic>?)
+          ?.map((x) => Skill.fromJson(x))
+          .toList(),
+      projects: (json['projects'] as List<dynamic>?)
+          ?.map((x) => Project.fromJson(x))
+          .toList(),
+      certificates: (json['certificates'] as List<dynamic>?)
+          ?.map((x) => Certificate.fromJson(x))
+          .toList(),
+      languages: (json['languages'] as List<dynamic>?)
+          ?.map((x) => Language.fromJson(x))
+          .toList(),
+      includePCDInfo: json['includePCDInfo'] ?? false,
     );
   }
 
@@ -71,11 +77,12 @@ class ResumeData {
       'objective': objective,
       'experiences': experiences?.map((e) => e.toJson()).toList(),
       'education': educations?.map((e) => e.toJson()).toList(),
-      'skills': skills?.map((e) => e.toJson()),
-      'socials': socials?.map((e) => e.toJson()).toList(),
-      'projects': projects?.map((e) => e.toJson()).toList(),
-      'certificates': certificates?.map((e) => e.toJson()).toList(),
-      'languages': languages?.map((e) => e.toJson()).toList(),
+      'skills': skills?.map((s) => s.toJson()).toList(),
+      'socials': socials?.map((s) => s.toJson()).toList(),
+      'projects': projects?.map((p) => p.toJson()).toList(),
+      'certificates': certificates?.map((c) => c.toJson()).toList(),
+      'languages': languages?.map((l) => l.toJson()).toList(),
+      'includePCDInfo': includePCDInfo,
     };
   }
 
@@ -90,8 +97,7 @@ class ResumeData {
       (languages == null || languages!.isEmpty) &&
       (certificates == null || certificates!.isEmpty);
 
-  bool get isNotEmpty =>
-      !isEmpty; // Simplesmente negamos o resultado de isEmpty para isNotEmpty
+  bool get isNotEmpty => !isEmpty;
 
   ResumeData copyWith({
     UserProfile? personalInfo,
@@ -104,6 +110,7 @@ class ResumeData {
     List<Project>? projects,
     List<Certificate>? certificates,
     List<Language>? languages,
+    bool? includePCDInfo,
   }) {
     return ResumeData(
       personalInfo: personalInfo ?? this.personalInfo,
@@ -116,6 +123,7 @@ class ResumeData {
       projects: projects ?? this.projects,
       certificates: certificates ?? this.certificates,
       languages: languages ?? this.languages,
+      includePCDInfo: includePCDInfo ?? this.includePCDInfo,
     );
   }
 }

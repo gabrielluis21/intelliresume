@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intelliresume/routes/app_routes.dart';
-import 'web_landing_page.dart'; // Nova página para web
+import 'package:intelliresume/core/routes/app_routes.dart';
+import '../../web_app/pages/web_landing_page.dart'; // Nova página para web
 
 class SplashPage extends ConsumerStatefulWidget {
   const SplashPage({super.key});

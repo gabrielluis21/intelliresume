@@ -38,7 +38,7 @@ class _ObjectiveFormState extends ConsumerState<ObjectiveForm> {
 
   void _updateObjective() {
     ref
-        .read(resumeProvider.notifier)
+        .read(localResumeProvider.notifier)
         .updateObjective(_objectiveController.text);
   }
 
@@ -75,7 +75,7 @@ class _ObjectiveFormState extends ConsumerState<ObjectiveForm> {
                     IconButton(
                       icon: const Icon(Icons.delete, color: Colors.red),
                       onPressed: () {
-                        ref.read(resumeProvider.notifier).removeObjective();
+                        ref.read(localResumeProvider.notifier).removeObjective();
                         _objectiveController.clear();
                       },
                     ),

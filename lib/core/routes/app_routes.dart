@@ -1,11 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intelliresume/presentation/pages/edit_profile.dart';
-import 'package:intelliresume/presentation/pages/export/export_pdf_page.dart';
-import 'package:intelliresume/presentation/pages/home_page.dart';
 import 'package:intelliresume/presentation/widgets/layout_template.dart';
 import 'package:pdf/widgets.dart';
-import '../presentation/pages.dart';
+import '../../presentation/pages.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -40,12 +37,12 @@ final routerProvider = Provider<GoRouter>((ref) {
         routes: [
           GoRoute(
             name: 'preview',
-            path: '/preview',
-            builder: (context, state) => const ResumePreview(),
+            path: 'preview',
+            builder: (context, state) => const ResumePreviewPage(),
           ),
           GoRoute(
             name: 'preview-pdf',
-            path: '/preview-pdf',
+            path: 'preview-pdf',
             builder:
                 (context, state) =>
                     PreviewPdfScreen(pdf: state.extra as Document),
@@ -77,6 +74,13 @@ final routerProvider = Provider<GoRouter>((ref) {
               selectedIndex: 4,
               child: const SettingsPage(), // Implemente esta página
             ),
+        routes: [
+          GoRoute(
+            name: 'accessibility-settings',
+            path: 'accessibility',
+            builder: (context, state) => const AccessibilitySettingsPage(),
+          ),
+        ],
       ),
     ],
     /* redirect: (ctx, state) {

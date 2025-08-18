@@ -30,6 +30,7 @@ abstract class ResumeTemplate {
     InfographicTemplate(),
     InternationalTemplate(),
     TechDeveloper(),
+    CorporateTemplate(),
   ];
 
   /// Retorna os templates permitidos para o plano
@@ -163,7 +164,7 @@ class IntelliResumePatternTemplate implements ResumeTemplate {
         ),
         pw.SizedBox(height: 8),
         experiences.isEmpty
-            ? pw.Text(t.noExperiences)
+            ? pw.Text(t.noExperience)
             : _buidExpList(experiences),
 
         pw.SizedBox(height: 20),
@@ -255,7 +256,7 @@ class IntelliResumePatternTemplate implements ResumeTemplate {
         ),
         pw.SizedBox(height: 8),
         skills.isEmpty
-            ? pw.Text(t.noSkills, style: pw.TextStyle(font: fontsRegular))
+            ? pw.Text(t.noSkill, style: pw.TextStyle(font: fontsRegular))
             : _buildSkillList(skills),
         pw.SizedBox(height: 20),
       ],
@@ -287,7 +288,7 @@ class IntelliResumePatternTemplate implements ResumeTemplate {
         ),
         pw.SizedBox(height: 8),
         socials.isEmpty
-            ? pw.Text(t.noSocialLinks, style: pw.TextStyle(font: fontsRegular))
+            ? pw.Text(t.noSocialLink, style: pw.TextStyle(font: fontsRegular))
             : _buildSocialList(socials),
         pw.SizedBox(height: 20),
       ],
@@ -952,7 +953,7 @@ class InfographicTemplate implements ResumeTemplate {
   }
 
   @override
-  String get id => 'info_graphic';
+  String get id => 'infographic';
 
   @override
   PlanType get minPlan => PlanType.premium;
