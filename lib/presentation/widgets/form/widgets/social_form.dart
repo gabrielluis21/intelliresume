@@ -22,16 +22,19 @@ class _SocialFormState extends ConsumerState<SocialForm> {
     super.initState();
     _platformController = TextEditingController(text: widget.social.platform);
     _urlController = TextEditingController(text: widget.social.url);
+  }
 
-    _platformController.addListener(_updateSocial);
-    _urlController.addListener(_updateSocial);
+  @override
+  void didUpdateWidget(SocialForm oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.social != oldWidget.social) {
+      _platformController.text = widget.social.platform ?? '';
+      _urlController.text = widget.social.url ?? '';
+    }
   }
 
   @override
   void dispose() {
-    _platformController.removeListener(_updateSocial);
-    _urlController.removeListener(_updateSocial);
-
     _platformController.dispose();
     _urlController.dispose();
     super.dispose();
@@ -42,7 +45,9 @@ class _SocialFormState extends ConsumerState<SocialForm> {
       platform: _platformController.text,
       url: _urlController.text,
     );
-    ref.read(localResumeProvider.notifier).updateSocial(widget.index, updatedSocial);
+    ref
+        .read(localResumeProvider.notifier)
+        .updateSocial(widget.index, updatedSocial);
   }
 
   @override
@@ -60,6 +65,7 @@ class _SocialFormState extends ConsumerState<SocialForm> {
                 Expanded(
                   child: TextFormField(
                     controller: _platformController,
+                    //onChanged: (_) => _updateSocial(),
                     decoration: const InputDecoration(
                       labelText: 'Plataforma (Ex: LinkedIn)',
                       border: OutlineInputBorder(),
@@ -71,6 +77,7 @@ class _SocialFormState extends ConsumerState<SocialForm> {
                 Expanded(
                   child: TextFormField(
                     controller: _urlController,
+                    //onChanged: (_) => _updateSocial(),
                     decoration: const InputDecoration(
                       labelText: 'URL do Perfil',
                       border: OutlineInputBorder(),
@@ -80,9 +87,23 @@ class _SocialFormState extends ConsumerState<SocialForm> {
                 ),
                 const SizedBox(width: 8),
                 IconButton(
+                  tooltip: 'Salvar esta rede social',
+                  icon: const Icon(
+                    Icons.save_outlined,
+                    color: Colors.blueAccent,
+                  ),
+                  onPressed: _updateSocial,
+                ),
+                IconButton(
                   tooltip: 'Remover esta rede social',
-                  icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                  onPressed: () => ref.read(localResumeProvider.notifier).removeSocial(widget.index),
+                  icon: const Icon(
+                    Icons.delete_outline,
+                    color: Colors.redAccent,
+                  ),
+                  onPressed:
+                      () => ref
+                          .read(localResumeProvider.notifier)
+                          .removeSocial(widget.index),
                 ),
               ],
             ),

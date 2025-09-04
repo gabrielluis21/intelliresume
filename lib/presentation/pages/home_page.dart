@@ -1,6 +1,8 @@
 // lib/pages/home_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intelliresume/core/providers/cv_provider.dart';
+import 'package:intelliresume/core/providers/user_provider.dart';
 import 'package:intelliresume/core/routes/app_routes.dart';
 
 import '../widgets/layout_template.dart';
@@ -21,10 +23,14 @@ class _HomePageState extends ConsumerState<HomePage> {
   @override
   void initState() {
     super.initState();
-    _loadData();
+    //_loadData();
   }
 
-  Future<void> _loadData() async {}
+  /* void _loadData() async {
+    ref
+        .read(localResumeProvider.notifier)
+        .updatePersonalInfo(ref.read(userProfileProvider).value);
+  } */
 
   /* void _createNewCV() {
     ref.watch(routerProvider).goNamed('form');
@@ -36,7 +42,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   void _deleteCV(dynamic cv) async {
     await _cvService.delete(cv.id);
-    _loadData();
+    //_loadData();
   }
 
   @override

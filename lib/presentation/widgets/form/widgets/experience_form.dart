@@ -6,11 +6,13 @@ import '../../../../data/models/cv_data.dart';
 class ExperienceForm extends ConsumerStatefulWidget {
   final int index;
   final Experience experience;
+  final FocusNode? companyFocusNode;
 
   const ExperienceForm({
     super.key,
     required this.index,
     required this.experience,
+    this.companyFocusNode,
   });
 
   @override
@@ -27,30 +29,33 @@ class _ExperienceFormState extends ConsumerState<ExperienceForm> {
   @override
   void initState() {
     super.initState();
-    // Initialize controllers with initial data from the provider.
     _companyController = TextEditingController(text: widget.experience.company);
-    _positionController = TextEditingController(text: widget.experience.position);
-    _startDateController = TextEditingController(text: widget.experience.startDate);
+    _positionController = TextEditingController(
+      text: widget.experience.position,
+    );
+    _startDateController = TextEditingController(
+      text: widget.experience.startDate,
+    );
     _endDateController = TextEditingController(text: widget.experience.endDate);
-    _descriptionController = TextEditingController(text: widget.experience.description ?? '');
+    _descriptionController = TextEditingController(
+      text: widget.experience.description ?? '',
+    );
+  }
 
-    // Add listeners to each controller to update the state in real-time.
-    _companyController.addListener(_updateExperience);
-    _positionController.addListener(_updateExperience);
-    _startDateController.addListener(_updateExperience);
-    _endDateController.addListener(_updateExperience);
-    _descriptionController.addListener(_updateExperience);
+  @override
+  void didUpdateWidget(ExperienceForm oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.experience != oldWidget.experience) {
+      _companyController.text = widget.experience.company ?? '';
+      _positionController.text = widget.experience.position ?? '';
+      _startDateController.text = widget.experience.startDate ?? '';
+      _endDateController.text = widget.experience.endDate ?? '';
+      _descriptionController.text = widget.experience.description ?? '';
+    }
   }
 
   @override
   void dispose() {
-    // It's crucial to remove listeners before disposing the controllers.
-    _companyController.removeListener(_updateExperience);
-    _positionController.removeListener(_updateExperience);
-    _startDateController.removeListener(_updateExperience);
-    _endDateController.removeListener(_updateExperience);
-    _descriptionController.removeListener(_updateExperience);
-
     _companyController.dispose();
     _positionController.dispose();
     _startDateController.dispose();
@@ -59,9 +64,7 @@ class _ExperienceFormState extends ConsumerState<ExperienceForm> {
     super.dispose();
   }
 
-  // This method is now called on every keystroke, keeping the provider in sync.
   void _updateExperience() {
-    // Use a debounce here in a real-world scenario if performance becomes an issue.
     final updatedExperience = Experience(
       company: _companyController.text,
       position: _positionController.text,
@@ -69,7 +72,9 @@ class _ExperienceFormState extends ConsumerState<ExperienceForm> {
       endDate: _endDateController.text,
       description: _descriptionController.text,
     );
-    ref.read(localResumeProvider.notifier).updateExperience(widget.index, updatedExperience);
+    ref
+        .read(localResumeProvider.notifier)
+        .updateExperience(widget.index, updatedExperience);
   }
 
   @override
@@ -88,18 +93,37 @@ class _ExperienceFormState extends ConsumerState<ExperienceForm> {
               children: [
                 Text(
                   'Experiência #${widget.index + 1}',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
-                IconButton(
-                  tooltip: 'Remover esta experiência',
-                  icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                  onPressed: () => ref.read(localResumeProvider.notifier).removeExperience(widget.index),
+                Row(
+                  children: [
+                    IconButton(
+                      tooltip: 'Salvar',
+                      icon: const Icon(Icons.save_outlined),
+                      onPressed: _updateExperience,
+                    ),
+                    IconButton(
+                      tooltip: 'Remover esta experiência',
+                      icon: const Icon(
+                        Icons.delete_outline,
+                        color: Colors.redAccent,
+                      ),
+                      onPressed:
+                          () => ref
+                              .read(localResumeProvider.notifier)
+                              .removeExperience(widget.index),
+                    ),
+                  ],
                 ),
               ],
             ),
             const SizedBox(height: 16),
             TextFormField(
+              focusNode: widget.companyFocusNode,
               controller: _companyController,
+              //onChanged: (_) => _updateExperience(),
               decoration: const InputDecoration(
                 labelText: 'Empresa',
                 border: OutlineInputBorder(),
@@ -109,6 +133,7 @@ class _ExperienceFormState extends ConsumerState<ExperienceForm> {
             const SizedBox(height: 12),
             TextFormField(
               controller: _positionController,
+              //onChanged: (_) => _updateExperience(),
               decoration: const InputDecoration(
                 labelText: 'Cargo',
                 border: OutlineInputBorder(),
@@ -121,6 +146,7 @@ class _ExperienceFormState extends ConsumerState<ExperienceForm> {
                 Expanded(
                   child: TextFormField(
                     controller: _startDateController,
+                    //onChanged: (_) => _updateExperience(),
                     decoration: InputDecoration(
                       labelText: 'Data de Início',
                       border: const OutlineInputBorder(),
@@ -134,7 +160,9 @@ class _ExperienceFormState extends ConsumerState<ExperienceForm> {
                             lastDate: DateTime.now(),
                           );
                           if (picked != null) {
-                            _startDateController.text = "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
+                            _startDateController.text =
+                                "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
+                            _updateExperience();
                           }
                         },
                         icon: const Icon(Icons.calendar_today),
@@ -146,6 +174,7 @@ class _ExperienceFormState extends ConsumerState<ExperienceForm> {
                 Expanded(
                   child: TextFormField(
                     controller: _endDateController,
+                    //onChanged: (_) => _updateExperience(),
                     decoration: InputDecoration(
                       labelText: 'Data de Término',
                       border: const OutlineInputBorder(),
@@ -159,7 +188,9 @@ class _ExperienceFormState extends ConsumerState<ExperienceForm> {
                             lastDate: DateTime.now(),
                           );
                           if (picked != null) {
-                            _endDateController.text = "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
+                            _endDateController.text =
+                                "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
+                            _updateExperience();
                           }
                         },
                         icon: const Icon(Icons.calendar_today),
@@ -172,6 +203,7 @@ class _ExperienceFormState extends ConsumerState<ExperienceForm> {
             const SizedBox(height: 12),
             TextFormField(
               controller: _descriptionController,
+              //onChanged: (_) => _updateExperience(),
               decoration: const InputDecoration(
                 labelText: 'Descrição (opcional)',
                 border: OutlineInputBorder(),

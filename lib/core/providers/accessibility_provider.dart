@@ -20,3 +20,6 @@ class AccessibilityNotifier extends StateNotifier<AccessibilitySettings> {
 final accessibilityProvider = StateNotifierProvider<AccessibilityNotifier, AccessibilitySettings>((ref) {
   return AccessibilityNotifier();
 });
+
+/// Provider para gerenciar o estado do Modo Libras.
+final librasModeProvider = StateProvider<bool>((ref) => false);

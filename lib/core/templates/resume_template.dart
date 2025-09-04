@@ -75,11 +75,11 @@ class IntelliResumePatternTemplate implements ResumeTemplate {
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
               headerPdf,
-              _buildSection('Objetivo', data.objective!, translated),
-              _buildExperienceSection(data.experiences!, translated),
-              _buildEducationSection(data.educations!, translated),
-              _buildSkillsSection(data.skills!, translated),
-              _buildSocialsSection(data.socials!, translated),
+              _buildSection('Objetivo', data.objective ?? '', translated),
+              _buildExperienceSection(data.experiences ?? [], translated),
+              _buildEducationSection(data.educations ?? [], translated),
+              _buildSkillsSection(data.skills ?? [], translated),
+              _buildSocialsSection(data.socials ?? [], translated),
             ],
           );
         },
@@ -119,16 +119,22 @@ class IntelliResumePatternTemplate implements ResumeTemplate {
             ? pw.Image(_profileImage, width: 100, height: 100)
             : pw.SizedBox.shrink(),
         pw.Text(
-          data.personalInfo!.name!,
+          data.personalInfo?.name ?? '',
           style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold),
         ),
-        pw.Text('${data.personalInfo!.email} | ${data.personalInfo!.phone}'),
+        pw.Text(
+          '${data.personalInfo?.email ?? ''} | ${data.personalInfo?.phone ?? ''}',
+        ),
         pw.SizedBox(height: 20),
       ],
     );
   }
 
-  pw.Widget _buildSection(String title, String content, AppLocalizations t) {
+  pw.Widget _buildSection(
+    String title,
+    String disabilityDescription,
+    AppLocalizations t,
+  ) {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
@@ -141,7 +147,11 @@ class IntelliResumePatternTemplate implements ResumeTemplate {
           ),
         ),
         pw.SizedBox(height: 8),
-        pw.Text(content.isNotEmpty ? content : t.noObjectives),
+        pw.Text(
+          disabilityDescription.isNotEmpty
+              ? disabilityDescription
+              : t.noObjectives,
+        ),
         pw.SizedBox(height: 20),
       ],
     );
@@ -166,7 +176,6 @@ class IntelliResumePatternTemplate implements ResumeTemplate {
         experiences.isEmpty
             ? pw.Text(t.noExperience)
             : _buidExpList(experiences),
-
         pw.SizedBox(height: 20),
       ],
     );
@@ -181,11 +190,11 @@ class IntelliResumePatternTemplate implements ResumeTemplate {
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
               pw.Text(
-                '- ${exp.company} - ${exp.position}',
+                '- ${exp.company ?? ''} - ${exp.position ?? ''}',
                 style: pw.TextStyle(font: fontsLight),
               ),
               pw.Text(
-                '   ${exp.startDate} - ${exp.endDate}',
+                '   ${exp.startDate ?? ''} - ${exp.endDate ?? ''}',
                 style: pw.TextStyle(font: fontsLight),
               ),
               pw.SizedBox(height: 8),
@@ -228,11 +237,11 @@ class IntelliResumePatternTemplate implements ResumeTemplate {
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
               pw.Text(
-                '- ${edu.school} - ${edu.degree}',
+                '- ${edu.school ?? ''} - ${edu.degree ?? ''}',
                 style: pw.TextStyle(font: fontsLight),
               ),
               pw.Text(
-                '   ${edu.startDate} - ${edu.endDate}',
+                '   ${edu.startDate ?? ''} - ${edu.endDate ?? ''}',
                 style: pw.TextStyle(font: fontsLight),
               ),
               pw.SizedBox(height: 8),
@@ -247,7 +256,7 @@ class IntelliResumePatternTemplate implements ResumeTemplate {
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
         pw.Text(
-          'Experiências',
+          'Habilidades',
           style: pw.TextStyle(
             fontSize: 18,
             fontWeight: pw.FontWeight.bold,
@@ -270,7 +279,7 @@ class IntelliResumePatternTemplate implements ResumeTemplate {
           skills
               .map(
                 (skill) => pw.Text(
-                  '- ${skill.name} (${skill.level})',
+                  '- ${skill.name ?? ''} (${skill.level ?? ''})',
                   style: pw.TextStyle(fontSize: 12, font: fontsLight),
                 ),
               )
@@ -283,7 +292,7 @@ class IntelliResumePatternTemplate implements ResumeTemplate {
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
         pw.Text(
-          'Experiências',
+          'Links e Redes Sociais',
           style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
         ),
         pw.SizedBox(height: 8),
@@ -302,7 +311,7 @@ class IntelliResumePatternTemplate implements ResumeTemplate {
           socials
               .map(
                 (social) => pw.Text(
-                  '- ${social.platform} (${social.url})',
+                  '- ${social.platform ?? ''} (${social.url ?? ''})',
                   style: pw.TextStyle(fontSize: 12, font: fontsLight),
                 ),
               )
@@ -310,8 +319,34 @@ class IntelliResumePatternTemplate implements ResumeTemplate {
     );
   }
 
+  pw.Widget _buildDisabilitySection(ResumeData data) {
+    final content = data.personalInfo?.pcdInfo;
+    if (content == null) {
+      return pw.SizedBox.shrink();
+    }
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.Text(
+          'Informações Adicionais',
+          style: pw.TextStyle(
+            fontSize: 18,
+            fontWeight: pw.FontWeight.bold,
+            font: fontsBold,
+          ),
+        ),
+        pw.SizedBox(height: 8),
+        pw.Text(
+          content.disabilityDescription ?? '',
+          style: pw.TextStyle(font: fontsRegular),
+        ),
+        pw.SizedBox(height: 20),
+      ],
+    );
+  }
+
   @override
-  String get id => 'intelli_resume';
+  String get id => 'intelliresume_pattern';
 
   @override
   PlanType get minPlan => PlanType.free;
@@ -339,7 +374,6 @@ class ClassicMinimalTemplate implements ResumeTemplate {
     String? targetLanguage,
   }) async {
     await _loadFonts();
-    //final translated = AppLocalizations.of(context);
     final doc = pw.Document();
     doc.addPage(
       pw.Page(
@@ -352,11 +386,18 @@ class ClassicMinimalTemplate implements ResumeTemplate {
             children: [
               pw.Text(
                 data.personalInfo?.name ?? '',
+                textAlign: pw.TextAlign.center,
                 style: pw.TextStyle(
                   fontSize: 32,
                   fontWeight: pw.FontWeight.bold,
                   font: fontsBold,
                 ),
+              ),
+              pw.SizedBox(height: 4),
+              pw.Text(
+                '${data.personalInfo?.email ?? ''} | ${data.personalInfo?.phone ?? ''}',
+                textAlign: pw.TextAlign.center,
+                style: pw.TextStyle(font: fontsRegular, fontSize: 11),
               ),
               pw.SizedBox(height: 16),
               pw.Text(
@@ -367,7 +408,7 @@ class ClassicMinimalTemplate implements ResumeTemplate {
                   fontWeight: pw.FontWeight.bold,
                 ),
               ),
-              pw.Text(data.objective ?? '—'),
+              pw.Text(data.objective ?? '—', textAlign: pw.TextAlign.center),
               pw.SizedBox(height: 24),
               pw.Text(
                 'Experiências',
@@ -377,8 +418,8 @@ class ClassicMinimalTemplate implements ResumeTemplate {
                   fontWeight: pw.FontWeight.bold,
                 ),
               ),
-              ...(data.experiences != null && data.experiences!.isNotEmpty
-                  ? data.experiences!
+              ...((data.experiences ?? []).isNotEmpty
+                  ? (data.experiences ?? [])
                       .map(
                         (e) => pw.Padding(
                           padding: pw.EdgeInsets.symmetric(vertical: 8),
@@ -386,14 +427,14 @@ class ClassicMinimalTemplate implements ResumeTemplate {
                             crossAxisAlignment: pw.CrossAxisAlignment.start,
                             children: [
                               pw.Text(
-                                '${e.position}',
+                                e.position ?? '',
                                 style: pw.TextStyle(
                                   font: fontsBold,
                                   fontWeight: pw.FontWeight.bold,
                                 ),
                               ),
                               pw.Text(
-                                '${e.company} | ${e.startDate} - ${e.endDate}',
+                                '${e.company ?? ''} | ${e.startDate ?? ''} - ${e.endDate ?? ''}',
                                 style: pw.TextStyle(font: fontsLight),
                               ),
                               pw.Text(
@@ -415,8 +456,8 @@ class ClassicMinimalTemplate implements ResumeTemplate {
                   font: fontsBold,
                 ),
               ),
-              ...(data.educations != null && data.educations!.isNotEmpty
-                  ? data.educations!
+              ...((data.educations ?? []).isNotEmpty
+                  ? (data.educations ?? [])
                       .map(
                         (e) => pw.Padding(
                           padding: pw.EdgeInsets.symmetric(vertical: 8),
@@ -424,14 +465,14 @@ class ClassicMinimalTemplate implements ResumeTemplate {
                             crossAxisAlignment: pw.CrossAxisAlignment.start,
                             children: [
                               pw.Text(
-                                '${e.degree}',
+                                e.degree ?? '',
                                 style: pw.TextStyle(
                                   fontWeight: pw.FontWeight.bold,
                                   font: fontsBold,
                                 ),
                               ),
                               pw.Text(
-                                '${e.school} | ${e.startDate} - ${e.endDate}',
+                                '${e.school ?? ''} | ${e.startDate ?? ''} - ${e.endDate ?? ''}',
                                 style: pw.TextStyle(font: fontsLight),
                               ),
                               pw.Text(
@@ -449,11 +490,13 @@ class ClassicMinimalTemplate implements ResumeTemplate {
                 'Habilidades',
                 style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
               ),
-              ...(data.skills != null && data.skills!.isNotEmpty
-                  ? data.skills!.map((s) => pw.Text('• ${s.name}')).toList()
+              ...((data.skills ?? []).isNotEmpty
+                  ? (data.skills ?? [])
+                      .map((s) => pw.Text('• ${s.name ?? ''}'))
+                      .toList()
                   : [pw.Text('Sem habilibdades registradas')]),
               pw.SizedBox(height: 12),
-              // ... Outras seções (Educação, Skills, Links)
+              _buildDisabilitySection(data),
             ],
           );
         },
@@ -462,8 +505,35 @@ class ClassicMinimalTemplate implements ResumeTemplate {
     return doc;
   }
 
+  pw.Widget _buildDisabilitySection(ResumeData data) {
+    final content = data.personalInfo?.pcdInfo;
+    if (content == null) {
+      return pw.SizedBox.shrink();
+    }
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.center,
+      children: [
+        pw.SizedBox(height: 12),
+        pw.Text(
+          'Informações Adicionais',
+          style: pw.TextStyle(
+            fontWeight: pw.FontWeight.bold,
+            font: fontsBold,
+            fontSize: 18,
+          ),
+        ),
+        pw.SizedBox(height: 4),
+        pw.Text(
+          content.disabilityDescription ?? '',
+          textAlign: pw.TextAlign.center,
+          style: pw.TextStyle(font: fontsRegular),
+        ),
+      ],
+    );
+  }
+
   @override
-  String get id => 'classic_minimal';
+  String get id => 'classic';
 
   @override
   PlanType get minPlan => PlanType.free;
@@ -490,7 +560,6 @@ class ModernSidebarTemplate implements ResumeTemplate {
     String? targetLanguage,
   }) async {
     await _loadFonts();
-    //final translated = AppLocalizations.of(context);
     final doc = pw.Document();
     doc.addPage(
       pw.Page(
@@ -519,9 +588,9 @@ class ModernSidebarTemplate implements ResumeTemplate {
                       'Habilidades',
                       style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                     ),
-                    ...(data.skills != null && data.skills!.isNotEmpty
-                        ? data.skills!
-                            .map((s) => pw.Text('• ${s.name}'))
+                    ...((data.skills ?? []).isNotEmpty
+                        ? (data.skills ?? [])
+                            .map((s) => pw.Text('• ${s.name ?? ''}'))
                             .toList()
                         : [pw.Text('Sem habilibdades registradas')]),
                     pw.SizedBox(height: 12),
@@ -529,11 +598,23 @@ class ModernSidebarTemplate implements ResumeTemplate {
                       'Contato',
                       style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                     ),
-                    pw.Text('${data.personalInfo?.phone}'),
+                    pw.Text(
+                      data.personalInfo?.email ?? '',
+                      style: pw.TextStyle(fontSize: 10),
+                    ),
+                    pw.SizedBox(height: 4),
+                    pw.Text(
+                      data.personalInfo?.phone ?? '',
+                      style: pw.TextStyle(fontSize: 10),
+                    ),
                     pw.SizedBox(height: 8),
-                    ...(data.socials != null && data.socials!.isNotEmpty
-                        ? data.socials!
-                            .map((l) => pw.Text('${l.platform}: ${l.url}'))
+                    ...((data.socials ?? []).isNotEmpty
+                        ? (data.socials ?? [])
+                            .map(
+                              (l) => pw.Text(
+                                '${l.platform ?? ''}: ${l.url ?? ''}',
+                              ),
+                            )
                             .toList()
                         : [pw.Text('Sem redes sociais registrdas')]),
                   ],
@@ -554,9 +635,8 @@ class ModernSidebarTemplate implements ResumeTemplate {
                           font: fontsBold,
                         ),
                       ),
-                      ...(data.experiences != null &&
-                              data.experiences!.isNotEmpty
-                          ? data.experiences!
+                      ...((data.experiences ?? []).isNotEmpty
+                          ? (data.experiences ?? [])
                               .map(
                                 (e) => pw.Padding(
                                   padding: pw.EdgeInsets.symmetric(vertical: 8),
@@ -565,14 +645,14 @@ class ModernSidebarTemplate implements ResumeTemplate {
                                         pw.CrossAxisAlignment.start,
                                     children: [
                                       pw.Text(
-                                        '${e.position}',
+                                        e.position ?? '',
                                         style: pw.TextStyle(
                                           fontWeight: pw.FontWeight.bold,
                                           font: fontsBold,
                                         ),
                                       ),
                                       pw.Text(
-                                        '${e.company} | ${e.startDate} - ${e.endDate}',
+                                        '${e.company ?? ''} | ${e.startDate ?? ''} - ${e.endDate ?? ''}',
                                       ),
                                       pw.Text(e.description ?? ''),
                                     ],
@@ -589,8 +669,8 @@ class ModernSidebarTemplate implements ResumeTemplate {
                           font: fontsBold,
                         ),
                       ),
-                      ...(data.educations != null && data.educations!.isNotEmpty
-                          ? data.educations!
+                      ...((data.educations ?? []).isNotEmpty
+                          ? (data.educations ?? [])
                               .map(
                                 (e) => pw.Padding(
                                   padding: pw.EdgeInsets.symmetric(vertical: 8),
@@ -599,14 +679,14 @@ class ModernSidebarTemplate implements ResumeTemplate {
                                         pw.CrossAxisAlignment.start,
                                     children: [
                                       pw.Text(
-                                        '${e.degree}',
+                                        e.degree ?? '',
                                         style: pw.TextStyle(
                                           fontWeight: pw.FontWeight.bold,
                                           font: fontsBold,
                                         ),
                                       ),
                                       pw.Text(
-                                        '${e.school} | ${e.startDate} - ${e.endDate}',
+                                        '${e.school ?? ''} | ${e.startDate ?? ''} - ${e.endDate ?? ''}',
                                       ),
                                       pw.Text(e.description ?? ''),
                                     ],
@@ -615,6 +695,7 @@ class ModernSidebarTemplate implements ResumeTemplate {
                               )
                               .toList()
                           : [pw.Text("Sem graduações registradas")]),
+                      _buildDisabilitySection(data),
                     ],
                   ),
                 ),
@@ -627,8 +708,34 @@ class ModernSidebarTemplate implements ResumeTemplate {
     return doc;
   }
 
+  pw.Widget _buildDisabilitySection(ResumeData data) {
+    final content = data.personalInfo?.pcdInfo;
+    if (content == null) {
+      return pw.SizedBox.shrink();
+    }
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.SizedBox(height: 16),
+        pw.Text(
+          'Informações Adicionais',
+          style: pw.TextStyle(
+            fontSize: 18,
+            fontWeight: pw.FontWeight.bold,
+            font: fontsBold,
+          ),
+        ),
+        pw.SizedBox(height: 8),
+        pw.Text(
+          content.disabilityDescription ?? '',
+          style: pw.TextStyle(font: fontsRegular),
+        ),
+      ],
+    );
+  }
+
   @override
-  String get id => 'modern_side';
+  String get id => 'modern_with_sidebar';
 
   @override
   PlanType get minPlan => PlanType.premium;
@@ -665,16 +772,21 @@ class TimelineTemplate implements ResumeTemplate {
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
               pw.Text(
-                '${data.personalInfo?.name}',
+                data.personalInfo?.name ?? '',
                 style: pw.TextStyle(
                   fontSize: 28,
                   fontWeight: pw.FontWeight.bold,
                   font: fontsBold,
                 ),
               ),
+              pw.SizedBox(height: 4),
+              pw.Text(
+                '${data.personalInfo?.email ?? ''} | ${data.personalInfo?.phone ?? ''}',
+                style: pw.TextStyle(font: fontsRegular, fontSize: 12),
+              ),
               pw.SizedBox(height: 16),
-              ...(data.experiences != null && data.experiences!.isNotEmpty
-                  ? data.experiences!
+              ...((data.experiences ?? []).isNotEmpty
+                  ? (data.experiences ?? [])
                       .map(
                         (e) => pw.Padding(
                           padding: pw.EdgeInsets.symmetric(vertical: 8),
@@ -682,13 +794,13 @@ class TimelineTemplate implements ResumeTemplate {
                             crossAxisAlignment: pw.CrossAxisAlignment.start,
                             children: [
                               pw.Text(
-                                '${e.position}',
+                                e.position ?? '',
                                 style: pw.TextStyle(
                                   fontWeight: pw.FontWeight.bold,
                                 ),
                               ),
                               pw.Text(
-                                '${e.company} | ${e.startDate} - ${e.endDate}',
+                                '${e.company ?? ''} | ${e.startDate ?? ''} - ${e.endDate ?? ''}',
                               ),
                               pw.Text(e.description ?? ''),
                             ],
@@ -705,8 +817,8 @@ class TimelineTemplate implements ResumeTemplate {
                   font: fontsBold,
                 ),
               ),
-              ...(data.educations != null && data.educations!.isNotEmpty
-                  ? data.educations!
+              ...((data.educations ?? []).isNotEmpty
+                  ? (data.educations ?? [])
                       .map(
                         (e) => pw.Padding(
                           padding: pw.EdgeInsets.symmetric(vertical: 8),
@@ -714,14 +826,14 @@ class TimelineTemplate implements ResumeTemplate {
                             crossAxisAlignment: pw.CrossAxisAlignment.start,
                             children: [
                               pw.Text(
-                                '${e.degree}',
+                                e.degree ?? '',
                                 style: pw.TextStyle(
                                   fontWeight: pw.FontWeight.bold,
                                   font: fontsBold,
                                 ),
                               ),
                               pw.Text(
-                                '${e.school} | ${e.startDate} - ${e.endDate}',
+                                '${e.school ?? ''} | ${e.startDate ?? ''} - ${e.endDate ?? ''}',
                               ),
                               pw.Text(e.description ?? ''),
                             ],
@@ -730,6 +842,7 @@ class TimelineTemplate implements ResumeTemplate {
                       )
                       .toList()
                   : [pw.Text("Sem graduações registradas")]),
+              _buildDisabilitySection(data),
             ],
           );
         },
@@ -738,8 +851,34 @@ class TimelineTemplate implements ResumeTemplate {
     return doc;
   }
 
+  pw.Widget _buildDisabilitySection(ResumeData data) {
+    final content = data.personalInfo?.pcdInfo;
+    if (content == null) {
+      return pw.SizedBox.shrink();
+    }
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.SizedBox(height: 16),
+        pw.Text(
+          'Informações Adicionais',
+          style: pw.TextStyle(
+            fontSize: 18,
+            fontWeight: pw.FontWeight.bold,
+            font: fontsBold,
+          ),
+        ),
+        pw.SizedBox(height: 8),
+        pw.Text(
+          content.disabilityDescription ?? '',
+          style: pw.TextStyle(font: fontsRegular),
+        ),
+      ],
+    );
+  }
+
   @override
-  String get id => 'timeline_template';
+  String get id => 'timeline';
 
   @override
   PlanType get minPlan => PlanType.premium;
@@ -794,7 +933,7 @@ class InfographicTemplate implements ResumeTemplate {
                     ),
                     pw.SizedBox(height: 12),
                     pw.Text(
-                      '${data.personalInfo?.name}',
+                      data.personalInfo?.name ?? '',
                       style: pw.TextStyle(
                         fontSize: 18,
                         fontWeight: pw.FontWeight.bold,
@@ -808,10 +947,10 @@ class InfographicTemplate implements ResumeTemplate {
                         font: fontsBold,
                       ),
                     ),
-                    pw.Text('${data.personalInfo?.email}'),
-                    pw.Text('${data.personalInfo?.phone}'),
-                    for (var link in data.socials!)
-                      pw.Text('${link.platform}: ${link.url}'),
+                    pw.Text(data.personalInfo?.email ?? ''),
+                    pw.Text(data.personalInfo?.phone ?? ''),
+                    for (var link in data.socials ?? [])
+                      pw.Text('${link.platform ?? ''}: ${link.url ?? ''}'),
                     pw.SizedBox(height: 12),
                     pw.Text(
                       "Habilidades",
@@ -820,7 +959,9 @@ class InfographicTemplate implements ResumeTemplate {
                         font: fontsBold,
                       ),
                     ),
-                    ...data.skills!.map((skill) => _buildSkillBar(skill)),
+                    ...(data.skills ?? []).map(
+                      (skill) => _buildSkillBar(skill),
+                    ),
                   ],
                 ),
               ),
@@ -833,7 +974,7 @@ class InfographicTemplate implements ResumeTemplate {
                 child: pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
-                    if (data.objective != null && data.objective!.isNotEmpty)
+                    if (data.objective?.isNotEmpty ?? false)
                       pw.Column(
                         crossAxisAlignment: pw.CrossAxisAlignment.start,
                         children: [
@@ -845,12 +986,11 @@ class InfographicTemplate implements ResumeTemplate {
                             ),
                           ),
                           pw.SizedBox(height: 4),
-                          pw.Text('${data.objective}'),
+                          pw.Text(data.objective ?? ''),
                           pw.SizedBox(height: 12),
                         ],
                       ),
-                    if (data.experiences != null &&
-                        data.experiences!.isNotEmpty)
+                    if ((data.experiences ?? []).isNotEmpty)
                       pw.Column(
                         crossAxisAlignment: pw.CrossAxisAlignment.start,
                         children: [
@@ -862,12 +1002,12 @@ class InfographicTemplate implements ResumeTemplate {
                             ),
                           ),
                           pw.SizedBox(height: 8),
-                          ...data.experiences!.map(
+                          ...(data.experiences ?? []).map(
                             (e) => _buildExperienceBlock(e),
                           ),
                         ],
                       ),
-                    if (data.educations != null && data.educations!.isNotEmpty)
+                    if ((data.educations ?? []).isNotEmpty)
                       pw.Column(
                         crossAxisAlignment: pw.CrossAxisAlignment.start,
                         children: [
@@ -880,13 +1020,14 @@ class InfographicTemplate implements ResumeTemplate {
                             ),
                           ),
                           pw.SizedBox(height: 8),
-                          ...data.educations!.map(
+                          ...(data.educations ?? []).map(
                             (e) => pw.Text(
-                              "${e.startDate} - ${e.endDate ?? 'cursando'} ${e.degree} (${e.school})",
+                              "${e.startDate ?? ''} - ${e.endDate ?? 'cursando'} ${e.degree ?? ''} (${e.school ?? ''})",
                             ),
                           ),
                         ],
                       ),
+                    _buildDisabilitySection(data),
                   ],
                 ),
               ),
@@ -899,11 +1040,52 @@ class InfographicTemplate implements ResumeTemplate {
     return pdf;
   }
 
-  pw.Widget _buildSkillBar(Skill skill) {
+  pw.Widget _buildDisabilitySection(ResumeData data) {
+    final content = data.personalInfo?.pcdInfo;
+    if (content == null) {
+      return pw.SizedBox.shrink();
+    }
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
-        pw.Text('${skill.name}'),
+        pw.SizedBox(height: 16),
+        pw.Text(
+          'Informações Adicionais',
+          style: pw.TextStyle(fontWeight: pw.FontWeight.bold, font: fontsBold),
+        ),
+        pw.SizedBox(height: 8),
+        pw.Text(
+          content.disabilityDescription ?? '',
+          style: pw.TextStyle(font: fontsRegular),
+        ),
+      ],
+    );
+  }
+
+  pw.Widget _buildSkillBar(Skill skill) {
+    // Helper para converter o nível em uma largura proporcional
+    double getSkillWidth(String? level) {
+      const maxWidth = 100.0; // A largura total da barra de fundo
+      switch (level) {
+        case 'Iniciante':
+          return maxWidth * 0.25;
+        case 'Básico':
+          return maxWidth * 0.4;
+        case 'Intermediário':
+          return maxWidth * 0.65;
+        case 'Avançado':
+          return maxWidth * 0.85;
+        case 'Fluente':
+          return maxWidth * 1.0;
+        default:
+          return maxWidth * 0.5; // Padrão para valores inesperados
+      }
+    }
+
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.Text(skill.name ?? ''),
         pw.SizedBox(height: 2),
         pw.Container(
           height: 6,
@@ -913,7 +1095,7 @@ class InfographicTemplate implements ResumeTemplate {
             borderRadius: pw.BorderRadius.circular(2),
           ),
           child: pw.Container(
-            width: 75,
+            width: getSkillWidth(skill.level), // Largura dinâmica aqui
             decoration: pw.BoxDecoration(
               color: PdfColors.blue,
               borderRadius: pw.BorderRadius.circular(2),
@@ -925,25 +1107,25 @@ class InfographicTemplate implements ResumeTemplate {
     );
   }
 
-  pw.Widget _buildExperienceBlock(dynamic exp) {
+  pw.Widget _buildExperienceBlock(Experience exp) {
     return pw.Padding(
       padding: const pw.EdgeInsets.only(bottom: 8),
       child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
           pw.Text(
-            "${exp.period} - ${exp.role} @ ${exp.company}",
+            "${exp.startDate ?? ''} - ${exp.endDate ?? ''} - ${exp.position ?? ''} @ ${exp.company ?? ''}",
             style: pw.TextStyle(
               fontSize: 12,
               fontWeight: pw.FontWeight.bold,
               font: fontsBold,
             ),
           ),
-          if (exp.description.isNotEmpty)
+          if (exp.description?.isNotEmpty ?? false)
             pw.Padding(
               padding: const pw.EdgeInsets.only(top: 2),
               child: pw.Text(
-                exp.description,
+                exp.description ?? '',
                 style: const pw.TextStyle(fontSize: 11),
               ),
             ),
@@ -990,12 +1172,17 @@ class CorporateTemplate implements ResumeTemplate {
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
               pw.Text(
-                '${data.personalInfo?.name}',
+                data.personalInfo?.name ?? '',
                 style: pw.TextStyle(
                   fontSize: 24,
                   fontWeight: pw.FontWeight.bold,
                   font: fontsBold,
                 ),
+              ),
+              pw.SizedBox(height: 4),
+              pw.Text(
+                '${data.personalInfo?.email ?? ''} | ${data.personalInfo?.phone ?? ''}',
+                style: pw.TextStyle(font: fontsRegular, fontSize: 11),
               ),
               pw.SizedBox(height: 8),
               pw.Text(data.objective ?? '', style: pw.TextStyle(fontSize: 12)),
@@ -1007,9 +1194,10 @@ class CorporateTemplate implements ResumeTemplate {
                   font: fontsBold,
                 ),
               ),
-              ...data.educations!.map(
-                (e) =>
-                    pw.Text('\${e.degree}, \${e.institution} (\${e.period})'),
+              ...(data.educations ?? []).map(
+                (e) => pw.Text(
+                  '${e.degree ?? ''}, ${e.school ?? ''} (${e.startDate ?? ''} - ${e.endDate ?? ''})',
+                ),
               ),
               pw.SizedBox(height: 12),
               pw.Text(
@@ -1019,29 +1207,56 @@ class CorporateTemplate implements ResumeTemplate {
                   font: fontsBold,
                 ),
               ),
-              ...data.experiences!.map(
+              ...(data.experiences ?? []).map(
                 (e) => pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
                     pw.Text(
-                      '${e.position}',
+                      e.position ?? '',
                       style: pw.TextStyle(
                         fontWeight: pw.FontWeight.bold,
                         font: fontsBold,
                       ),
                     ),
-                    pw.Text('\${e.company} | \${e.period}'),
+                    pw.Text(
+                      '${e.company ?? ''} | ${e.startDate ?? ''} - ${e.endDate ?? ''}',
+                    ),
                     pw.Text(e.description ?? ''),
                     pw.SizedBox(height: 8),
                   ],
                 ),
               ),
+              _buildDisabilitySection(data),
             ],
           );
         },
       ),
     );
     return doc;
+  }
+
+  pw.Widget _buildDisabilitySection(ResumeData data) {
+    final content = data.personalInfo?.pcdInfo;
+    if (content == null) {
+      return pw.SizedBox.shrink();
+    }
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.SizedBox(height: 12),
+        pw.Divider(),
+        pw.SizedBox(height: 12),
+        pw.Text(
+          'Informações Adicionais',
+          style: pw.TextStyle(fontWeight: pw.FontWeight.bold, font: fontsBold),
+        ),
+        pw.SizedBox(height: 4),
+        pw.Text(
+          content.disabilityDescription ?? '',
+          style: pw.TextStyle(font: fontsRegular),
+        ),
+      ],
+    );
   }
 
   @override
@@ -1082,9 +1297,9 @@ class TechDeveloper implements ResumeTemplate {
               _buildHeader(data),
               pw.SizedBox(height: 16),
               _buildSectionTitle('Resumo Profissional'),
-              if (data.objective != null && data.objective!.isNotEmpty)
+              if (data.objective?.isNotEmpty ?? false)
                 pw.Text(
-                  '${data.objective}',
+                  data.objective ?? '',
                   style: const pw.TextStyle(fontSize: 11),
                 ),
               pw.SizedBox(height: 16),
@@ -1092,27 +1307,28 @@ class TechDeveloper implements ResumeTemplate {
               _buildSkillsGrid(data),
               pw.SizedBox(height: 16),
               _buildSectionTitle('Projetos'),
-              data.projects != null || data.projects!.isNotEmpty
-                  ? pw.SizedBox(height: 16)
-                  : pw.Wrap(
-                    children: data.projects!.map(_buildProjectItem).toList(),
-                  ),
+              if ((data.projects ?? []).isNotEmpty)
+                pw.Wrap(
+                  children:
+                      (data.projects ?? []).map(_buildProjectItem).toList(),
+                ),
               pw.SizedBox(height: 16),
               _buildSectionTitle('Experiência Profissional'),
-              data.experiences != null || data.experiences!.isNotEmpty
-                  ? pw.SizedBox(height: 16)
-                  : pw.Wrap(
-                    children:
-                        data.experiences!.map(_buildExperienceItem).toList(),
-                  ),
+              if ((data.experiences ?? []).isNotEmpty)
+                pw.Wrap(
+                  children:
+                      (data.experiences ?? [])
+                          .map(_buildExperienceItem)
+                          .toList(),
+                ),
               pw.SizedBox(height: 16),
               _buildSectionTitle('Formação Acadêmica'),
-              data.educations != null || data.educations!.isNotEmpty
-                  ? pw.SizedBox(height: 16)
-                  : pw.Wrap(
-                    children:
-                        data.educations!.map(_buildEducationItem).toList(),
-                  ),
+              if ((data.educations ?? []).isNotEmpty)
+                pw.Wrap(
+                  children:
+                      (data.educations ?? []).map(_buildEducationItem).toList(),
+                ),
+              _buildDisabilitySection(data),
             ],
           );
         },
@@ -1127,7 +1343,7 @@ class TechDeveloper implements ResumeTemplate {
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
         pw.Text(
-          '${resume.personalInfo!.name}',
+          resume.personalInfo?.name ?? '',
           style: pw.TextStyle(
             fontSize: 20,
             fontWeight: pw.FontWeight.bold,
@@ -1136,13 +1352,13 @@ class TechDeveloper implements ResumeTemplate {
         ),
         pw.SizedBox(height: 4),
         pw.Text(
-          '${resume.personalInfo!.email} | ${resume.personalInfo!.phone}',
+          '${resume.personalInfo?.email ?? ''} | ${resume.personalInfo?.phone ?? ''}',
           style: const pw.TextStyle(fontSize: 11),
         ),
-        if (resume.socials != null && resume.socials!.isNotEmpty)
-          ...resume.socials!.map(
+        if ((resume.socials ?? []).isNotEmpty)
+          ...(resume.socials ?? []).map(
             (e) => pw.Text(
-              '${e.platform}: ${e.url}',
+              '${e.platform ?? ''}: ${e.url ?? ''}',
               style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey600),
             ),
           ),
@@ -1163,13 +1379,13 @@ class TechDeveloper implements ResumeTemplate {
   }
 
   pw.Widget _buildSkillsGrid(ResumeData resume) {
-    return resume.skills != null && resume.skills!.isNotEmpty
+    return (resume.skills ?? []).isEmpty
         ? pw.Text('Nenhuma Skill adicionada')
         : pw.Wrap(
           spacing: 6,
           runSpacing: 6,
           children:
-              resume.skills!.map((s) {
+              (resume.skills ?? []).map((s) {
                 return pw.Container(
                   padding: const pw.EdgeInsets.symmetric(
                     horizontal: 8,
@@ -1180,7 +1396,7 @@ class TechDeveloper implements ResumeTemplate {
                     borderRadius: pw.BorderRadius.circular(4),
                   ),
                   child: pw.Text(
-                    '${s.name}',
+                    s.name ?? '',
                     style: const pw.TextStyle(fontSize: 10),
                   ),
                 );
@@ -1195,20 +1411,20 @@ class TechDeveloper implements ResumeTemplate {
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
           pw.Text(
-            '${p.name}',
+            p.name ?? '',
             style: pw.TextStyle(
               fontWeight: pw.FontWeight.bold,
               font: fontsBold,
             ),
           ),
-          if (p.technologies != null && p.technologies!.isNotEmpty)
+          if ((p.technologies ?? []).isNotEmpty)
             pw.Text(
-              p.technologies!.join(', '),
+              (p.technologies ?? []).join(', '),
               style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey600),
             ),
-          if (p.description != null && p.description!.isNotEmpty)
+          if (p.description?.isNotEmpty ?? false)
             pw.Text(
-              '${p.description}',
+              p.description ?? '',
               style: const pw.TextStyle(fontSize: 10),
             ),
         ],
@@ -1223,19 +1439,19 @@ class TechDeveloper implements ResumeTemplate {
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
           pw.Text(
-            '${e.position}',
+            e.position ?? '',
             style: pw.TextStyle(
               fontWeight: pw.FontWeight.bold,
               font: fontsBold,
             ),
           ),
           pw.Text(
-            '${e.company} • ${e.startDate}-${e.endDate}',
+            '${e.company ?? ''} • ${e.startDate ?? ''}-${e.endDate ?? ''}',
             style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey600),
           ),
-          if (e.description != null && e.description!.isNotEmpty)
+          if (e.description?.isNotEmpty ?? false)
             pw.Text(
-              '${e.description}',
+              e.description ?? '',
               style: const pw.TextStyle(fontSize: 10),
             ),
         ],
@@ -1247,9 +1463,28 @@ class TechDeveloper implements ResumeTemplate {
     return pw.Padding(
       padding: const pw.EdgeInsets.symmetric(vertical: 4),
       child: pw.Text(
-        '${e.degree}, ${e.school} (${e.startDate}-${e.endDate})',
+        '${e.degree ?? ''}, ${e.school ?? ''} (${e.startDate ?? ''}-${e.endDate ?? ''})',
         style: const pw.TextStyle(fontSize: 10),
       ),
+    );
+  }
+
+  pw.Widget _buildDisabilitySection(ResumeData data) {
+    final content = data.personalInfo?.pcdInfo;
+    if (content == null) {
+      return pw.SizedBox.shrink();
+    }
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.SizedBox(height: 16),
+        _buildSectionTitle('Informações Adicionais'),
+        pw.SizedBox(height: 4),
+        pw.Text(
+          content.disabilityDescription ?? '',
+          style: pw.TextStyle(font: fontsRegular),
+        ),
+      ],
     );
   }
 
@@ -1257,7 +1492,7 @@ class TechDeveloper implements ResumeTemplate {
   String get displayName => 'Desenvolvedor';
 
   @override
-  String get id => 'tech_developer';
+  String get id => 'dev_tec';
 
   @override
   PlanType get minPlan => PlanType.premium;
@@ -1293,33 +1528,35 @@ class StudantTemplate implements ResumeTemplate {
             children: [
               _buildHeader(data),
               pw.SizedBox(height: 12),
-              if (data.objective!.isNotEmpty) ...[
+              if ((data.objective ?? '').isNotEmpty) ...[
                 _buildSectionTitle('Sobre Mim'),
                 pw.Text(
-                  '${data.objective}',
+                  data.objective ?? '',
                   style: const pw.TextStyle(fontSize: 11),
                 ),
                 pw.SizedBox(height: 12),
               ],
-              if (data.educations!.isNotEmpty) ...[
+              if ((data.educations ?? []).isNotEmpty) ...[
                 _buildSectionTitle('Educação'),
-                ...data.educations!.map(_buildEducationItem),
+                ...(data.educations ?? []).map(_buildEducationItem),
                 pw.SizedBox(height: 12),
               ],
-              if (data.projects!.isNotEmpty) ...[
+              if ((data.projects ?? []).isNotEmpty) ...[
                 _buildSectionTitle('Projetos Acadêmicos ou Pessoais'),
-                ...data.projects!.map(_buildProjectItem),
+                ...(data.projects ?? []).map(_buildProjectItem),
                 pw.SizedBox(height: 12),
               ],
-              if (data.certificates!.isNotEmpty) ...[
+              if ((data.certificates ?? []).isNotEmpty) ...[
                 _buildSectionTitle('Certificações'),
-                ...data.certificates!.map(_buildCertItem),
+                ...(data.certificates ?? []).map(_buildCertItem),
                 pw.SizedBox(height: 12),
               ],
-              if (data.skills!.isNotEmpty) ...[
+              if ((data.skills ?? []).isNotEmpty) ...[
                 _buildSectionTitle('Habilidades'),
                 _buildSkillChips(data),
+                pw.SizedBox(height: 12),
               ],
+              _buildDisabilitySection(data),
             ],
           );
         },
@@ -1334,7 +1571,7 @@ class StudantTemplate implements ResumeTemplate {
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
         pw.Text(
-          '${resume.personalInfo?.name}',
+          resume.personalInfo?.name ?? '',
           style: pw.TextStyle(
             fontSize: 20,
             fontWeight: pw.FontWeight.bold,
@@ -1343,13 +1580,13 @@ class StudantTemplate implements ResumeTemplate {
         ),
         pw.SizedBox(height: 4),
         pw.Text(
-          '${resume.personalInfo?.email} | ${resume.personalInfo?.phone}',
+          '${resume.personalInfo?.email ?? ''} | ${resume.personalInfo?.phone ?? ''}',
           style: const pw.TextStyle(fontSize: 11),
         ),
-        if (resume.socials!.isNotEmpty)
-          ...resume.socials!.map(
+        if ((resume.socials ?? []).isNotEmpty)
+          ...(resume.socials ?? []).map(
             (e) => pw.Text(
-              '${e.platform}: ${e.url}',
+              '${e.platform ?? ''}: ${e.url ?? ''}',
               style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey600),
             ),
           ),
@@ -1376,11 +1613,11 @@ class StudantTemplate implements ResumeTemplate {
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
           pw.Text(
-            '${e.degree}, ${e.school}',
+            '${e.degree ?? ''}, ${e.school ?? ''}',
             style: const pw.TextStyle(fontSize: 11),
           ),
           pw.Text(
-            '${e.startDate}-${e.endDate}',
+            '${e.startDate ?? ''}-${e.endDate ?? ''}',
             style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey600),
           ),
         ],
@@ -1395,20 +1632,20 @@ class StudantTemplate implements ResumeTemplate {
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
           pw.Text(
-            '${p.name}',
+            p.name ?? '',
             style: pw.TextStyle(
               fontWeight: pw.FontWeight.bold,
               font: fontsBold,
             ),
           ),
-          if (p.technologies != null && p.technologies!.isNotEmpty)
+          if ((p.technologies ?? []).isNotEmpty)
             pw.Text(
-              p.technologies!.join(', '),
+              (p.technologies ?? []).join(', '),
               style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey600),
             ),
-          if (p.description != null && p.description!.isNotEmpty)
+          if ((p.description ?? '').isNotEmpty)
             pw.Text(
-              '${p.description}',
+              p.description ?? '',
               style: const pw.TextStyle(fontSize: 10),
             ),
         ],
@@ -1420,7 +1657,7 @@ class StudantTemplate implements ResumeTemplate {
     return pw.Padding(
       padding: const pw.EdgeInsets.symmetric(vertical: 2),
       child: pw.Text(
-        '${c.institution} - ${c.courseName}',
+        '${c.institution ?? ''} - ${c.courseName ?? ''}',
         style: const pw.TextStyle(fontSize: 10),
       ),
     );
@@ -1431,7 +1668,7 @@ class StudantTemplate implements ResumeTemplate {
       spacing: 6,
       runSpacing: 6,
       children:
-          resume.skills!.map((s) {
+          (resume.skills ?? []).map((s) {
             return pw.Container(
               padding: const pw.EdgeInsets.symmetric(
                 horizontal: 8,
@@ -1442,7 +1679,7 @@ class StudantTemplate implements ResumeTemplate {
                 borderRadius: pw.BorderRadius.circular(4),
               ),
               child: pw.Text(
-                '${s.name}',
+                s.name ?? '',
                 style: const pw.TextStyle(fontSize: 10),
               ),
             );
@@ -1450,11 +1687,29 @@ class StudantTemplate implements ResumeTemplate {
     );
   }
 
+  pw.Widget _buildDisabilitySection(ResumeData data) {
+    final content = data.personalInfo?.pcdInfo;
+    if (content == null) {
+      return pw.SizedBox.shrink();
+    }
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        _buildSectionTitle('Informações Adicionais'),
+        pw.SizedBox(height: 4),
+        pw.Text(
+          content.disabilityDescription ?? '',
+          style: pw.TextStyle(font: fontsRegular, fontSize: 11),
+        ),
+      ],
+    );
+  }
+
   @override
   String get displayName => 'Primeiro emprego';
 
   @override
-  String get id => 'studant';
+  String get id => 'studant_first_job';
 
   @override
   PlanType get minPlan => PlanType.free;
@@ -1479,8 +1734,6 @@ class InternationalTemplate implements ResumeTemplate {
   }) async {
     await _loadFonts();
 
-    // A responsabilidade de traduzir os dados foi movida para a camada de apresentação (UI).
-    // Este template agora apenas renderiza os dados que recebe, sejam eles originais ou traduzidos.
     final ResumeData dataToBuild = data;
 
     final doc = pw.Document();
@@ -1495,28 +1748,26 @@ class InternationalTemplate implements ResumeTemplate {
               _buildHeader(dataToBuild),
               pw.SizedBox(height: 16),
               _buildSectionTitle('Profile'),
-              if (dataToBuild.objective!.isNotEmpty)
+              if ((dataToBuild.objective ?? '').isNotEmpty)
                 pw.Text(
-                  "${dataToBuild.objective}",
+                  dataToBuild.objective ?? '',
                   style: const pw.TextStyle(fontSize: 11),
                 ),
               pw.SizedBox(height: 16),
               _buildSectionTitle('Work Experience'),
-              ...dataToBuild.experiences!.map(_buildExperienceItem),
+              ...(dataToBuild.experiences ?? []).map(_buildExperienceItem),
               pw.SizedBox(height: 16),
               _buildSectionTitle('Education'),
-              ...dataToBuild.educations!.map(_buildEducationItem),
+              ...(dataToBuild.educations ?? []).map(_buildEducationItem),
               pw.SizedBox(height: 16),
-              if (dataToBuild.languages!.isNotEmpty) ...[
-                _buildSectionTitle(
-                  'Languages',
-                ), // Note: a seção de idiomas não deve ser traduzida
-                ...dataToBuild.languages!.map(_buildLanguageItem),
+              if ((dataToBuild.languages ?? []).isNotEmpty) ...[
+                _buildSectionTitle('Languages'),
+                ...(dataToBuild.languages ?? []).map(_buildLanguageItem),
                 pw.SizedBox(height: 16),
               ],
-              if (dataToBuild.skills!.isNotEmpty) ...[
+              if ((dataToBuild.skills ?? []).isNotEmpty) ...[
                 _buildSectionTitle('Skills'),
-                _buildSkillList(dataToBuild.skills!),
+                _buildSkillList(dataToBuild.skills ?? []),
               ],
             ],
           );
@@ -1532,7 +1783,7 @@ class InternationalTemplate implements ResumeTemplate {
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
         pw.Text(
-          '${resume.personalInfo?.name}',
+          resume.personalInfo?.name ?? '',
           style: pw.TextStyle(
             fontSize: 20,
             fontWeight: pw.FontWeight.bold,
@@ -1541,13 +1792,13 @@ class InternationalTemplate implements ResumeTemplate {
         ),
         pw.SizedBox(height: 4),
         pw.Text(
-          '${resume.personalInfo?.email} | ${resume.personalInfo?.phone}',
+          '${resume.personalInfo?.email ?? ''} | ${resume.personalInfo?.phone ?? ''}',
           style: const pw.TextStyle(fontSize: 11),
         ),
-        if (resume.socials != null && resume.socials!.isNotEmpty)
-          ...resume.socials!.map(
+        if ((resume.socials ?? []).isNotEmpty)
+          ...(resume.socials ?? []).map(
             (e) => pw.Text(
-              '${e.platform}: ${e.url}',
+              '${e.platform ?? ''}: ${e.url ?? ''}',
               style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey600),
             ),
           ),
@@ -1574,19 +1825,19 @@ class InternationalTemplate implements ResumeTemplate {
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
           pw.Text(
-            '${e.position}',
+            e.position ?? '',
             style: pw.TextStyle(
               fontWeight: pw.FontWeight.bold,
               font: fontsBold,
             ),
           ),
           pw.Text(
-            '${e.company} • ${e.startDate}-${e.endDate}',
+            '${e.company ?? ''} • ${e.startDate ?? ''}-${e.endDate ?? ''}',
             style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey600),
           ),
-          if (e.description!.isNotEmpty)
+          if ((e.description ?? '').isNotEmpty)
             pw.Text(
-              '${e.description}',
+              e.description ?? '',
               style: const pw.TextStyle(fontSize: 10),
             ),
         ],
@@ -1598,7 +1849,7 @@ class InternationalTemplate implements ResumeTemplate {
     return pw.Padding(
       padding: const pw.EdgeInsets.symmetric(vertical: 4),
       child: pw.Text(
-        '${e.degree}, ${e.school} (${e.startDate}-${e.endDate})',
+        '${e.degree ?? ''}, ${e.school ?? ''} (${e.startDate ?? ''}-${e.endDate ?? ''})',
         style: const pw.TextStyle(fontSize: 10),
       ),
     );
@@ -1608,7 +1859,7 @@ class InternationalTemplate implements ResumeTemplate {
     return pw.Padding(
       padding: const pw.EdgeInsets.symmetric(vertical: 2),
       child: pw.Text(
-        '${l.language}: ${l.proficiencyLevel}',
+        '${l.language ?? ''}: ${l.proficiencyLevel ?? ''}',
         style: const pw.TextStyle(fontSize: 10),
       ),
     );
@@ -1630,7 +1881,7 @@ class InternationalTemplate implements ResumeTemplate {
                 borderRadius: pw.BorderRadius.circular(4),
               ),
               child: pw.Text(
-                '${s.name}',
+                s.name ?? '',
                 style: const pw.TextStyle(fontSize: 10),
               ),
             );
@@ -1642,7 +1893,7 @@ class InternationalTemplate implements ResumeTemplate {
   String get displayName => 'Internacional';
 
   @override
-  String get id => 'international';
+  String get id => 'internacional';
 
   @override
   PlanType get minPlan => PlanType.premium;

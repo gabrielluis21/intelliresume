@@ -27,6 +27,9 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
   int _currentSkillIndex = 0;
   int _currentSocialIndex = 0;
 
+  // Focus Nodes
+  // A lógica de gerenciamento de foco foi revertida para estabilidade.
+
   final _tabs = <Widget>[
     const Tab(icon: Icon(Icons.person_search_outlined), text: 'Objetivo'),
     const Tab(icon: Icon(Icons.work_outline), text: 'Experiência'),
@@ -146,7 +149,6 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
           ],
         ),
       ),
-
       // 2. Experiências
       _buildFocusedEditorTab(
         context: context,
@@ -154,20 +156,17 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
         itemLabel: 'Experiência',
         currentIndex: _currentExperienceIndex,
         totalItems: resume.experiences?.length ?? 0,
-        formBuilder:
-            (index) => ExperienceForm(
-              key: ValueKey('exp-$index'),
-              index: index,
-              experience: resume.experiences![index],
-            ),
+        formBuilder: (index) => ExperienceForm(
+          key: ValueKey('exp-$index'),
+          index: index,
+          experience: resume.experiences![index],
+        ),
         onPrevious: () => setState(() => _currentExperienceIndex--),
         onNext: () => setState(() => _currentExperienceIndex++),
         onAdd: () {
-          ref
-              .read(localResumeProvider.notifier)
-              .addExperience(resume.experiences![_currentExperienceIndex]);
+          ref.read(localResumeProvider.notifier).addExperience(Experience());
           setState(() {
-            _currentExperienceIndex = resume.experiences!.length;
+            _currentExperienceIndex = (resume.experiences?.length ?? 0);
           });
         },
         onRemove: () {
@@ -175,10 +174,7 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
               .read(localResumeProvider.notifier)
               .removeExperience(_currentExperienceIndex);
           setState(() {
-            _currentExperienceIndex = (_currentExperienceIndex - 1).clamp(
-              0,
-              100,
-            );
+            _currentExperienceIndex = (_currentExperienceIndex - 1).clamp(0, 100);
           });
         },
       ),
@@ -190,20 +186,17 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
         itemLabel: 'Formação',
         currentIndex: _currentEducationIndex,
         totalItems: resume.educations?.length ?? 0,
-        formBuilder:
-            (index) => EducationForm(
-              key: ValueKey('edu-$index'),
-              index: index,
-              education: resume.educations![index],
-            ),
+        formBuilder: (index) => EducationForm(
+          key: ValueKey('edu-${(index + 1)}'),
+          index: index,
+          education: resume.educations![index],
+        ),
         onPrevious: () => setState(() => _currentEducationIndex--),
         onNext: () => setState(() => _currentEducationIndex++),
         onAdd: () {
-          ref
-              .read(localResumeProvider.notifier)
-              .addEducation(resume.educations![_currentEducationIndex]);
+          ref.read(localResumeProvider.notifier).addEducation(Education());
           setState(() {
-            _currentEducationIndex = resume.educations!.length;
+            _currentEducationIndex = (resume.educations?.length ?? 0);
           });
         },
         onRemove: () {
@@ -223,20 +216,17 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
         itemLabel: 'Habilidade',
         currentIndex: _currentSkillIndex,
         totalItems: resume.skills?.length ?? 0,
-        formBuilder:
-            (index) => SkillForm(
-              key: ValueKey('skill-$index'),
-              index: index,
-              skill: resume.skills![index],
-            ),
+        formBuilder: (index) => SkillForm(
+          key: ValueKey('skill-$index'),
+          index: index,
+          skill: resume.skills![index],
+        ),
         onPrevious: () => setState(() => _currentSkillIndex--),
         onNext: () => setState(() => _currentSkillIndex++),
         onAdd: () {
-          ref
-              .read(localResumeProvider.notifier)
-              .addSkill(resume.skills![_currentSkillIndex]);
+          ref.read(localResumeProvider.notifier).addSkill(Skill());
           setState(() {
-            _currentSkillIndex = resume.skills!.length;
+            _currentSkillIndex = (resume.skills?.length ?? 0);
           });
         },
         onRemove: () {
@@ -256,20 +246,17 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
         itemLabel: 'Link Social',
         currentIndex: _currentSocialIndex,
         totalItems: resume.socials?.length ?? 0,
-        formBuilder:
-            (index) => SocialForm(
-              key: ValueKey('social-$index'),
-              index: index,
-              social: resume.socials![index],
-            ),
+        formBuilder: (index) => SocialForm(
+          key: ValueKey('social-$index'),
+          index: index,
+          social: resume.socials![index],
+        ),
         onPrevious: () => setState(() => _currentSocialIndex--),
         onNext: () => setState(() => _currentSocialIndex++),
         onAdd: () {
-          ref
-              .read(localResumeProvider.notifier)
-              .addSocial(resume.socials![_currentSocialIndex]);
+          ref.read(localResumeProvider.notifier).addSocial(Social());
           setState(() {
-            _currentSocialIndex = resume.socials!.length;
+            _currentSocialIndex = (resume.socials?.length ?? 0);
           });
         },
         onRemove: () {
@@ -356,15 +343,28 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
             '$itemLabel${itemLabel.endsWith('l') ? 's' : 's'}',
             context,
           ),
-          _buildFocusedEditorControls(
-            currentIndex: currentIndex,
-            totalItems: totalItems,
-            itemLabel: itemLabel,
-            onPrevious: onPrevious,
-            onNext: onNext,
-          ),
+          if (totalItems > 0)
+            _buildFocusedEditorControls(
+              currentIndex: currentIndex,
+              totalItems: totalItems,
+              itemLabel: itemLabel,
+              onPrevious: onPrevious,
+              onNext: onNext,
+            ),
           const SizedBox(height: 16),
-          if (totalItems > 0) formBuilder(currentIndex),
+          if (totalItems > 0)
+            formBuilder(currentIndex)
+          else
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 32.0),
+              child: Center(
+                child: Text(
+                  'Nenhum${itemLabel.endsWith('a') ? 'a' : ''} $itemLabel adicionad${itemLabel.endsWith('a') ? 'a' : 'o'}.',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
           const SizedBox(height: 24),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,

@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intelliresume/core/providers/cv_provider.dart';
 import 'package:intelliresume/core/providers/user_provider.dart';
+import 'package:intelliresume/data/models/cv_data.dart';
 import 'package:intelliresume/presentation/pages.dart';
+import 'package:intelliresume/presentation/pages/export/export_page.dart';
 import 'package:intelliresume/presentation/widgets/ai_assistant_panel.dart';
 
 class ResumePreviewPage extends ConsumerStatefulWidget {
-  const ResumePreviewPage({super.key});
+  const ResumePreviewPage({super.key, this.resumeData});
+
+  final ResumeData? resumeData;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -27,12 +31,7 @@ class _ResumePreviewPageState extends ConsumerState<ResumePreviewPage>
   void initState() {
     super.initState();
     _tabController = TabController(length: _tabs.length, vsync: this);
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref
-          .read(localResumeProvider.notifier)
-          .updatePersonalInfo(ref.watch(userProfileProvider).value);
-    });
+    print(widget.resumeData?.toMap());
   }
 
   @override
@@ -45,21 +44,23 @@ class _ResumePreviewPageState extends ConsumerState<ResumePreviewPage>
   Widget build(BuildContext context) {
     final tabViews = <Widget>[
       ResumePreview(
-        resumeData: ref.watch(localResumeProvider),
+        resumeData: widget.resumeData ?? ref.watch(localResumeProvider),
         userData: ref.watch(userProfileProvider).value,
         onSectionEdit: (type, index) {},
       ),
       AIAssistantPanel(),
-      Container(child: Text("Exportação aqui")),
+      ExportPage(resumeData: ref.watch(localResumeProvider)),
     ];
-    // TODO: implement build
-    return Column(
-      children: [
-        TabBar(controller: _tabController, isScrollable: true, tabs: _tabs),
-        Expanded(
-          child: TabBarView(controller: _tabController, children: tabViews),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Editor de Currículo'),
+        bottom: TabBar(
+          controller: _tabController,
+          isScrollable: true,
+          tabs: _tabs,
         ),
-      ],
+      ),
+      body: TabBarView(controller: _tabController, children: tabViews),
     );
   }
 }

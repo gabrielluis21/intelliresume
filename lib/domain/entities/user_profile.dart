@@ -10,11 +10,7 @@ class UserProfile {
   final String? profilePictureUrl;
   final bool emailVerified;
   final PlanType plan;
-
-  // Campos de Acessibilidade
-  final bool isPCD;
-  final List<String> disabilityTypes;
-  final String? disabilityDescription;
+  final PcdInfo? pcdInfo;
 
   UserProfile({
     this.uid,
@@ -24,9 +20,7 @@ class UserProfile {
     this.profilePictureUrl,
     this.plan = PlanType.free,
     this.emailVerified = false,
-    this.isPCD = false,
-    this.disabilityTypes = const [],
-    this.disabilityDescription,
+    this.pcdInfo,
   });
 
   UserProfile copyWith({
@@ -36,9 +30,7 @@ class UserProfile {
     String? profilePictureUrl,
     bool? emailVerified,
     PlanType? plan,
-    bool? isPCD,
-    List<String>? disabilityTypes,
-    String? disabilityDescription,
+    PcdInfo? pcdInfo,
   }) {
     return UserProfile(
       uid: uid, // Mantém o uid original
@@ -48,25 +40,20 @@ class UserProfile {
       profilePictureUrl: profilePictureUrl ?? this.profilePictureUrl,
       plan: plan ?? this.plan,
       emailVerified: emailVerified ?? this.emailVerified,
-      isPCD: isPCD ?? this.isPCD,
-      disabilityTypes: disabilityTypes ?? this.disabilityTypes,
-      disabilityDescription: disabilityDescription ?? this.disabilityDescription,
+      pcdInfo: pcdInfo ?? this.pcdInfo,
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'uid': uid,
-        'email': email,
-        'phone': phone,
-        'name': name,
-        'photoURL': profilePictureUrl,
-        'emailVerified': emailVerified,
-        'plan': plan.toString(),
-        // Acessibilidade
-        'isPCD': isPCD,
-        'disabilityTypes': disabilityTypes,
-        'disabilityDescription': disabilityDescription,
-      };
+    'uid': uid,
+    'email': email,
+    'phone': phone,
+    'name': name,
+    'photoURL': profilePictureUrl,
+    'emailVerified': emailVerified,
+    'plan': plan.toString(),
+    'pcdInfo': pcdInfo?.toJson(),
+  };
 
   static UserProfile fromJson(Map<String, dynamic> j) {
     return UserProfile(
@@ -76,10 +63,28 @@ class UserProfile {
       name: j['displayName'],
       profilePictureUrl: j['photoURL'],
       plan: j['plan'] == 'PlanType.premium' ? PlanType.premium : PlanType.free,
-      // Acessibilidade
-      isPCD: j['isPCD'] ?? false,
-      disabilityTypes: List<String>.from(j['disabilityTypes'] ?? []),
-      disabilityDescription: j['disabilityDescription'],
+      pcdInfo: j['pcdInfo'] != null ? PcdInfo.fromJson(j['pcdInfo']) : null,
     );
   }
+}
+
+class PcdInfo {
+  // Campos de Acessibilidade
+  final bool? isPCD;
+  final List<String>? disabilityTypes;
+  final String? disabilityDescription;
+
+  PcdInfo({this.isPCD, this.disabilityTypes, this.disabilityDescription});
+
+  factory PcdInfo.fromJson(Map<String, dynamic> json) => PcdInfo(
+    isPCD: json['isPCD'],
+    disabilityTypes: json['disabilityTypes']?.cast<String>(),
+    disabilityDescription: json['disabilityDescription'],
+  );
+
+  Map<String, dynamic> toJson() => {
+    'isPCD': isPCD,
+    'disabilityTypes': disabilityTypes,
+    'disabilityDescription': disabilityDescription,
+  };
 }

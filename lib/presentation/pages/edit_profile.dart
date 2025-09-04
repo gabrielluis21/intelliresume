@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intelliresume/core/providers/cv_provider.dart';
+import 'package:intelliresume/domain/entities/user_profile.dart';
 import 'package:intelliresume/services/image_upload_service.dart';
 import '../../core/providers/user_provider.dart';
 import '../widgets/layout_template.dart';
@@ -46,9 +47,10 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     if (user != null) {
       _nameController.text = user.name ?? '';
       _phoneController.text = user.phone ?? '';
-      _isPCD = user.isPCD;
-      _selectedDisabilities.addAll(user.disabilityTypes);
-      _disabilityDescriptionController.text = user.disabilityDescription ?? '';
+      _isPCD = user.pcdInfo?.isPCD != null;
+      _selectedDisabilities.addAll(user.pcdInfo!.disabilityTypes!);
+      _disabilityDescriptionController.text =
+          user.pcdInfo?.disabilityDescription ?? '';
     }
   }
 
@@ -88,9 +90,11 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
         name: _nameController.text,
         phone: _phoneController.text,
         profilePictureUrl: finalProfilePictureUrl,
-        isPCD: _isPCD,
-        disabilityTypes: _selectedDisabilities.toList(),
-        disabilityDescription: _disabilityDescriptionController.text,
+        pcdInfo: PcdInfo(
+          isPCD: _isPCD,
+          disabilityTypes: _selectedDisabilities.toList(),
+          disabilityDescription: _disabilityDescriptionController.text,
+        ),
       );
 
       await userProfileNotifier.updateUser(updatedProfile);

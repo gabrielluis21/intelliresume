@@ -57,20 +57,21 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
   }
 
   @override
-  Future<void> deleteProfile(String uid) {
-    // TODO: implement deleteProfile
-    throw UnimplementedError();
+  Future<void> deleteProfile(String uid) async {
+    // Deleta remotamente e depois deleta do cache local.
+    await remote.deleteProfile(uid);
+    await local.deleteProfile(uid);
   }
 
   @override
-  Future<void> updateProfile(UserProfile profile) {
-    // TODO: implement updateProfile
-    throw UnimplementedError();
+  Future<void> updateProfile(UserProfile profile) async {
+    // Atualiza remotamente e depois atualiza o cache local.
+    await remote.updateProfile(profile);
+    await local.saveProfile(profile.uid!, profile.toJson());
   }
 
   @override
-  Future<void> verifyProfileEmail() {
-    // TODO: implement verifyProfileEmail
-    throw UnimplementedError();
+  Future<void> verifyProfileEmail() async {
+    await remote.verifyProfileEmail();
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intelliresume/core/providers/user_provider.dart';
 import 'package:intelliresume/data/datasources/remote/auth_resume_ds.dart';
+import 'package:intelliresume/data/models/cv_data.dart';
 import 'package:intelliresume/presentation/pages/resume_preview_page.dart';
 import 'package:intelliresume/presentation/widgets/ai_assistant_panel.dart';
 //import 'package:intelliresume/presentation/widgets/preview/resume_preview.dart';
@@ -14,33 +15,10 @@ import '../../core/providers/cv_provider.dart';
 import '../../core/utils/app_localizations.dart';
 import '../widgets/form/resume_form.dart';
 
-class ResumeFormPage extends ConsumerStatefulWidget {
+class ResumeFormPage extends ConsumerWidget {
   const ResumeFormPage({super.key});
 
-  @override
-  ConsumerState<ResumeFormPage> createState() => _ResumeFormPageState();
-}
-
-class _ResumeFormPageState extends ConsumerState<ResumeFormPage>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-  int _selectedIndex = 3; // Default to Form page
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  void _onDestinationSelected(int index) {
-    setState(() => _selectedIndex = index);
-
+  void _onDestinationSelected(BuildContext context, int index, WidgetRef ref) {
     switch (index) {
       case 0:
         context.goNamed('home');
@@ -65,18 +43,29 @@ class _ResumeFormPageState extends ConsumerState<ResumeFormPage>
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Sincroniza o userProfile com o localResumeProvider
+    ref.listen<AsyncValue<dynamic>>(userProfileProvider, (previous, next) {
+      final user = next.value;
+      if (user != null) {
+        ref.read(localResumeProvider.notifier).updatePersonalInfo(user);
+      }
+    });
+
     final t = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final isWide =
         MediaQuery.of(context).size.width >
         800; // Aumentado para melhor acomodar o painel
+    
+    // Lê o estado do currículo a partir do provider, que é a única fonte de verdade.
+    final resumeData = ref.watch(localResumeProvider);
 
     return Scaffold(
       appBar: AppBar(title: Text(t.appTitle)),
       drawer: SideMenu(
-        selectedIndex: _selectedIndex,
-        onDestinationSelected: _onDestinationSelected,
+        selectedIndex: 3, // Hardcoded para a página de formulário
+        onDestinationSelected: (index) => _onDestinationSelected(context, index, ref),
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
@@ -173,7 +162,11 @@ class _ResumeFormPageState extends ConsumerState<ResumeFormPage>
                                       ),
                                     ),
                                   ),
-                                  Expanded(child: ResumePreviewPage()),
+                                  Expanded(
+                                    child: ResumePreviewPage(
+                                      resumeData: resumeData,
+                                    ),
+                                  ),
                                 ],
                               ),
                         ),
@@ -206,13 +199,8 @@ class _ResumeFormPageState extends ConsumerState<ResumeFormPage>
                           () => showDialog(
                             context: context,
                             builder: (_) {
-                              final resumeData = ref.read(localResumeProvider);
-                              final userProfile =
-                                  ref.read(userProfileProvider).value;
-                              final fullResume = resumeData.copyWith(
-                                personalInfo: userProfile,
-                              );
-                              return PreviewDialog(resume: fullResume);
+                              final currentResumeData = ref.read(localResumeProvider);
+                              return PreviewDialog(resume: currentResumeData);
                             },
                           ),
                     ),

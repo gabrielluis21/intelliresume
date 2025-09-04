@@ -11,26 +11,30 @@ class SocialLink extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        if (social.url!.isNotEmpty) {
-          // Open the URL in a web browser
-          launchUrl(
-            Uri.parse(social.url!),
-            mode: LaunchMode.externalApplication,
-          ).catchError((error) {
-            // Handle error if the URL cannot be opened
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Could not open URL: ${social.url}')),
-            );
-            return false;
-          });
-        }
-      },
-      child: Chip(
-        label: Text(
-          '${social.platform} - ${social.url}',
-          style: theme.bodyMedium?.copyWith(color: Colors.blue.shade800),
+    return Semantics(
+      link: true,
+      label: 'Abrir perfil em ${social.platform}. Link para ${social.url}',
+      child: InkWell(
+        onTap: () {
+          if (social.url != null && social.url!.isNotEmpty) {
+            // Open the URL in a web browser
+            launchUrl(
+              Uri.parse(social.url!),
+              mode: LaunchMode.externalApplication,
+            ).catchError((error) {
+              // Handle error if the URL cannot be opened
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Could not open URL: ${social.url}')),
+              );
+              return false;
+            });
+          }
+        },
+        child: Chip(
+          label: Text(
+            social.platform ?? '',
+            style: theme.bodyMedium?.copyWith(color: Colors.blue.shade800),
+          ),
         ),
       ),
     );

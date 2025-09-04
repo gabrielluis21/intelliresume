@@ -28,44 +28,51 @@ class ResumeData {
   });
 
   ResumeData.initial()
-      : personalInfo = UserProfile(),
-        about = '',
-        objective = '',
-        experiences = List<Experience>.empty(growable: true),
-        educations = List<Education>.empty(growable: true),
-        skills = List<Skill>.empty(growable: true),
-        socials = List<Social>.empty(growable: true),
-        projects = List<Project>.empty(growable: true),
-        certificates = List<Certificate>.empty(growable: true),
-        languages = List<Language>.empty(growable: true),
-        includePCDInfo = false;
+    : personalInfo = null,
+      about = '',
+      objective = '',
+      experiences = List<Experience>.empty(growable: true),
+      educations = List<Education>.empty(growable: true),
+      skills = List<Skill>.empty(growable: true),
+      socials = List<Social>.empty(growable: true),
+      projects = List<Project>.empty(growable: true),
+      certificates = List<Certificate>.empty(growable: true),
+      languages = List<Language>.empty(growable: true),
+      includePCDInfo = false;
 
   factory ResumeData.fromJson(Map<String, dynamic> json) {
     return ResumeData(
       personalInfo: UserProfile.fromJson(json['personalInfo']),
       about: json['about'] as String?,
       objective: json['objective'] as String?,
-      experiences: (json['experiences'] as List<dynamic>?)
-          ?.map((x) => Experience.fromJson(x))
-          .toList(),
-      educations: (json['education'] as List<dynamic>?)
-          ?.map((x) => Education.fromJson(x))
-          .toList(),
-      socials: (json["socials"] as List<dynamic>?)
-          ?.map((x) => Social.fromJson(x))
-          .toList(),
-      skills: (json['skills'] as List<dynamic>?)
-          ?.map((x) => Skill.fromJson(x))
-          .toList(),
-      projects: (json['projects'] as List<dynamic>?)
-          ?.map((x) => Project.fromJson(x))
-          .toList(),
-      certificates: (json['certificates'] as List<dynamic>?)
-          ?.map((x) => Certificate.fromJson(x))
-          .toList(),
-      languages: (json['languages'] as List<dynamic>?)
-          ?.map((x) => Language.fromJson(x))
-          .toList(),
+      experiences:
+          (json['experiences'] as List<dynamic>?)
+              ?.map((x) => Experience.fromJson(x))
+              .toList(),
+      educations:
+          (json['education'] as List<dynamic>?)
+              ?.map((x) => Education.fromJson(x))
+              .toList(),
+      socials:
+          (json["socials"] as List<dynamic>?)
+              ?.map((x) => Social.fromJson(x))
+              .toList(),
+      skills:
+          (json['skills'] as List<dynamic>?)
+              ?.map((x) => Skill.fromJson(x))
+              .toList(),
+      projects:
+          (json['projects'] as List<dynamic>?)
+              ?.map((x) => Project.fromJson(x))
+              .toList(),
+      certificates:
+          (json['certificates'] as List<dynamic>?)
+              ?.map((x) => Certificate.fromJson(x))
+              .toList(),
+      languages:
+          (json['languages'] as List<dynamic>?)
+              ?.map((x) => Language.fromJson(x))
+              .toList(),
       includePCDInfo: json['includePCDInfo'] ?? false,
     );
   }

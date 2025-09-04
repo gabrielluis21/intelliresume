@@ -28,22 +28,25 @@ class _EducationFormState extends ConsumerState<EducationForm> {
     super.initState();
     _schoolController = TextEditingController(text: widget.education.school);
     _degreeController = TextEditingController(text: widget.education.degree);
-    _startDateController = TextEditingController(text: widget.education.startDate);
+    _startDateController = TextEditingController(
+      text: widget.education.startDate,
+    );
     _endDateController = TextEditingController(text: widget.education.endDate);
+  }
 
-    _schoolController.addListener(_updateEducation);
-    _degreeController.addListener(_updateEducation);
-    _startDateController.addListener(_updateEducation);
-    _endDateController.addListener(_updateEducation);
+  @override
+  void didUpdateWidget(EducationForm oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.education != oldWidget.education) {
+      _schoolController.text = widget.education.school ?? '';
+      _degreeController.text = widget.education.degree ?? '';
+      _startDateController.text = widget.education.startDate ?? '';
+      _endDateController.text = widget.education.endDate ?? '';
+    }
   }
 
   @override
   void dispose() {
-    _schoolController.removeListener(_updateEducation);
-    _degreeController.removeListener(_updateEducation);
-    _startDateController.removeListener(_updateEducation);
-    _endDateController.removeListener(_updateEducation);
-
     _schoolController.dispose();
     _degreeController.dispose();
     _startDateController.dispose();
@@ -58,7 +61,9 @@ class _EducationFormState extends ConsumerState<EducationForm> {
       startDate: _startDateController.text,
       endDate: _endDateController.text,
     );
-    ref.read(localResumeProvider.notifier).updateEducation(widget.index, updatedEducation);
+    ref
+        .read(localResumeProvider.notifier)
+        .updateEducation(widget.index, updatedEducation);
   }
 
   @override
@@ -77,18 +82,39 @@ class _EducationFormState extends ConsumerState<EducationForm> {
               children: [
                 Text(
                   'Formação #${widget.index + 1}',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
-                IconButton(
-                  tooltip: 'Remover esta formação',
-                  icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                  onPressed: () => ref.read(localResumeProvider.notifier).removeEducation(widget.index),
+                Row(
+                  children: [
+                    IconButton(
+                      tooltip: 'Salvarr esta formação',
+                      icon: const Icon(
+                        Icons.save_outlined,
+                        color: Colors.blueAccent,
+                      ),
+                      onPressed: _updateEducation,
+                    ),
+                    IconButton(
+                      tooltip: 'Remover esta formação',
+                      icon: const Icon(
+                        Icons.delete_outline,
+                        color: Colors.redAccent,
+                      ),
+                      onPressed:
+                          () => ref
+                              .read(localResumeProvider.notifier)
+                              .removeEducation(widget.index),
+                    ),
+                  ],
                 ),
               ],
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _schoolController,
+              //onChanged: (_) => _updateEducation(),
               decoration: const InputDecoration(
                 labelText: 'Instituição',
                 border: OutlineInputBorder(),
@@ -98,6 +124,7 @@ class _EducationFormState extends ConsumerState<EducationForm> {
             const SizedBox(height: 12),
             TextFormField(
               controller: _degreeController,
+              //onChanged: (_) => _updateEducation(),
               decoration: const InputDecoration(
                 labelText: 'Curso / Graduação',
                 border: OutlineInputBorder(),
@@ -110,6 +137,7 @@ class _EducationFormState extends ConsumerState<EducationForm> {
                 Expanded(
                   child: TextFormField(
                     controller: _startDateController,
+                    //onChanged: (_) => _updateEducation(),
                     decoration: InputDecoration(
                       labelText: 'Data de Início',
                       border: const OutlineInputBorder(),
@@ -123,7 +151,9 @@ class _EducationFormState extends ConsumerState<EducationForm> {
                             lastDate: DateTime.now(),
                           );
                           if (picked != null) {
-                            _startDateController.text = "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
+                            _startDateController.text =
+                                "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
+                            _updateEducation();
                           }
                         },
                         icon: const Icon(Icons.calendar_today),
@@ -135,6 +165,7 @@ class _EducationFormState extends ConsumerState<EducationForm> {
                 Expanded(
                   child: TextFormField(
                     controller: _endDateController,
+                    //onChanged: (_) => _updateEducation(),
                     decoration: InputDecoration(
                       labelText: 'Data de Término',
                       border: const OutlineInputBorder(),
@@ -148,7 +179,9 @@ class _EducationFormState extends ConsumerState<EducationForm> {
                             lastDate: DateTime.now(),
                           );
                           if (picked != null) {
-                            _endDateController.text = "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
+                            _endDateController.text =
+                                "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
+                            _updateEducation();
                           }
                         },
                         icon: const Icon(Icons.calendar_today),

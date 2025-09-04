@@ -19,7 +19,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/login',
         builder: (context, state) => const LoginPage(),
       ),
-
+      GoRoute(
+        name: 'signup',
+        path: '/signup',
+        builder: (context, state) => const SignupPage(),
+      ),
       GoRoute(
         name: 'profile',
         path: '/profile',

@@ -9,6 +9,7 @@ abstract class UserProfileDataSource {
   Future<void> deleteProfile(String uid);
   Future<void> verifyProfileEmail();
   Stream<UserProfile> watchProfile(String uid);
+  Future<void> updateProfile(UserProfile profile);
 }
 
 class RemoteUserProfileDataSource implements UserProfileDataSource {
@@ -70,5 +71,10 @@ class RemoteUserProfileDataSource implements UserProfileDataSource {
             ),
           );
         });
+  }
+
+  @override
+  Future<void> updateProfile(UserProfile profile) async {
+    await saveProfile(profile);
   }
 }

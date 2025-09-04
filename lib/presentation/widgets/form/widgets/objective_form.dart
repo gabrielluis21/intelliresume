@@ -72,12 +72,16 @@ class _ObjectiveFormState extends ConsumerState<ObjectiveForm> {
                       onPressed: () => _updateObjective(),
                       child: const Text('Salvar'),
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () {
-                        ref.read(localResumeProvider.notifier).removeObjective();
-                        _objectiveController.clear();
-                      },
+                    Semantics(
+                      label: 'Remover objetivo',
+                      child: IconButton(
+                        tooltip: 'Remover objetivo',
+                        icon: const Icon(Icons.delete, color: Colors.red),
+                        onPressed: () {
+                          ref.read(localResumeProvider.notifier).removeObjective();
+                          _objectiveController.clear();
+                        },
+                      ),
                     ),
                   ],
                 ),

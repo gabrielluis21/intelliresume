@@ -6,6 +6,7 @@ abstract class LocalUserProfileDataSource {
   Future<void> saveProfile(String uid, Map<String, dynamic> data);
   Future<Map<String, dynamic>?> fetchProfile(String uid);
   Stream<UserProfile> watchProfile(String uid);
+  Future<void> deleteProfile(String uid);
 }
 
 class HiveUserProfileDataSource implements LocalUserProfileDataSource {
@@ -40,5 +41,11 @@ class HiveUserProfileDataSource implements LocalUserProfileDataSource {
         })
         .where((profile) => profile != null)
         .cast<UserProfile>();
+  }
+
+  @override
+  Future<void> deleteProfile(String uid) async {
+    final box = await Hive.openBox(_boxName);
+    await box.delete(uid);
   }
 }

@@ -54,20 +54,19 @@ class BusinessLogicService {
   /// Templates disponíveis por plano
   static const freeTemplates = <String>{
     'intelli_resume',
-    'classic_minimal',
-    'studant',
+    'classic',
+    'studant_first_job',
     '',
   };
   static const paidTemplates = <String>{
-    'intelli_resume',
-    'classic_minimal',
-    'modern_side',
-    'studant',
-    'executive',
+    'intelliresume_pattern',
+    'classic',
+    'modern_with_sidebar',
+    'timeline',
+    'studant_first_job',
     'infographic',
     'international',
-    'tech_developer',
-    'timeline_template',
+    'dev_tec',
   };
 
   // Defina aqui os templates que são exclusivos do plano Pro, se houver.

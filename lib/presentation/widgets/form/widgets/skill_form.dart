@@ -22,16 +22,19 @@ class _SkillFormState extends ConsumerState<SkillForm> {
     super.initState();
     _nameController = TextEditingController(text: widget.skill.name);
     _levelController = TextEditingController(text: widget.skill.level);
+  }
 
-    _nameController.addListener(_updateSkill);
-    _levelController.addListener(_updateSkill);
+  @override
+  void didUpdateWidget(SkillForm oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.skill != oldWidget.skill) {
+      _nameController.text = widget.skill.name ?? '';
+      _levelController.text = widget.skill.level ?? '';
+    }
   }
 
   @override
   void dispose() {
-    _nameController.removeListener(_updateSkill);
-    _levelController.removeListener(_updateSkill);
-
     _nameController.dispose();
     _levelController.dispose();
     super.dispose();
@@ -42,7 +45,9 @@ class _SkillFormState extends ConsumerState<SkillForm> {
       name: _nameController.text,
       level: _levelController.text,
     );
-    ref.read(localResumeProvider.notifier).updateSkill(widget.index, updatedSkill);
+    ref
+        .read(localResumeProvider.notifier)
+        .updateSkill(widget.index, updatedSkill);
   }
 
   @override
@@ -60,6 +65,7 @@ class _SkillFormState extends ConsumerState<SkillForm> {
                 Expanded(
                   child: TextFormField(
                     controller: _nameController,
+                    //onChanged: (_) => _updateSkill(),
                     decoration: const InputDecoration(
                       labelText: 'Habilidade',
                       border: OutlineInputBorder(),
@@ -71,6 +77,7 @@ class _SkillFormState extends ConsumerState<SkillForm> {
                 Expanded(
                   child: TextFormField(
                     controller: _levelController,
+                    //onChanged: (_) => _updateSkill(),
                     decoration: const InputDecoration(
                       labelText: 'Nível (Ex: Avançado)',
                       border: OutlineInputBorder(),
@@ -80,9 +87,23 @@ class _SkillFormState extends ConsumerState<SkillForm> {
                 ),
                 const SizedBox(width: 8),
                 IconButton(
+                  tooltip: 'Salvar esta habilidade',
+                  icon: const Icon(
+                    Icons.save_outlined,
+                    color: Colors.blueAccent,
+                  ),
+                  onPressed: _updateSkill,
+                ),
+                IconButton(
                   tooltip: 'Remover esta habilidade',
-                  icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                  onPressed: () => ref.read(localResumeProvider.notifier).removeSkill(widget.index),
+                  icon: const Icon(
+                    Icons.delete_outline,
+                    color: Colors.redAccent,
+                  ),
+                  onPressed:
+                      () => ref
+                          .read(localResumeProvider.notifier)
+                          .removeSkill(widget.index),
                 ),
               ],
             ),

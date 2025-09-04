@@ -13,9 +13,11 @@ class SignupPage extends ConsumerStatefulWidget {
 class _SignupPageState extends ConsumerState<SignupPage> {
   final _formKey = GlobalKey<FormState>();
   String name = '', email = '', password = '', confirm = '';
+  String? disabilityInfo;
   bool _loading = false;
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
+  bool _showDisabilityField = false;
   String? _errorMessage;
 
   Future<void> _signup() async {
@@ -36,7 +38,12 @@ class _SignupPageState extends ConsumerState<SignupPage> {
     }
 
     try {
-      await AuthService.instance.signUp(email: email, password: password, displayName: name);
+      await AuthService.instance.signUp(
+        email: email,
+        password: password,
+        displayName: name,
+        disabilityInfo: disabilityInfo, // <-- Parâmetro agora ativado
+      );
       if (mounted) context.goNamed('home');
     } on Exception catch (e) {
       setState(() {
@@ -144,6 +151,43 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                           return null;
                         },
                         onSaved: (v) => confirm = v!,
+                      ),
+                      const SizedBox(height: 24),
+                      // --- CAMPO DE ACESSIBILIDADE ---
+                      Semantics(
+                        label: 'Opção para informar dados de acessibilidade ou deficiência.',
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text('Informar dados de acessibilidade?'),
+                                Switch(
+                                  value: _showDisabilityField,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _showDisabilityField = value;
+                                      if (!value) {
+                                        disabilityInfo = null; // Limpa a informação se o usuário desmarcar
+                                      }
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                            if (_showDisabilityField) ...[
+                              const SizedBox(height: 8),
+                              TextFormField(
+                                decoration: const InputDecoration(
+                                  labelText: 'Descrição (opcional)',
+                                  prefixIcon: Icon(Icons.accessibility_new),
+                                  helperText: 'Ex: Necessito de intérprete de Libras.',
+                                ),
+                                onSaved: (v) => disabilityInfo = v?.trim(),
+                              ),
+                            ],
+                          ],
+                        ),
                       ),
                       const SizedBox(height: 24),
                       if (_errorMessage != null)

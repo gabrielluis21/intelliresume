@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intelliresume/core/providers/editor_providers.dart';
-import 'package:intelliresume/core/templates/resume_template.dart';
 import '../../../data/models/cv_data.dart';
 import '../../../domain/entities/user_profile.dart';
 import 'widgets/header_section.dart';
@@ -92,21 +91,32 @@ class ResumePreview extends ConsumerWidget {
       required Widget child,
       required SectionType sectionType,
     }) {
-      return InkWell(
-        onTap: () => onSectionEdit(sectionType, null),
-        child: Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: textTheme.titleMedium),
-                const SizedBox(height: 16),
-                if (isEmpty)
-                  buildEmptyState(icon: emptyStateIcon, message: emptyStateText)
-                else
-                  child,
-              ],
+      return Semantics(
+        label:
+            'Seção de ${title.toLowerCase()}, toque para editar o conteúdo desta seção',
+        button: true,
+        child: InkWell(
+          onTap: () => onSectionEdit(sectionType, null),
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Semantics(
+                    header: true,
+                    child: Text(title, style: textTheme.titleMedium),
+                  ),
+                  const SizedBox(height: 16),
+                  if (isEmpty)
+                    buildEmptyState(
+                      icon: emptyStateIcon,
+                      message: emptyStateText,
+                    )
+                  else
+                    child,
+                ],
+              ),
             ),
           ),
         ),
@@ -164,9 +174,14 @@ class ResumePreview extends ConsumerWidget {
             runSpacing: 8,
             children:
                 data.skills!.asMap().entries.map((entry) {
-                  return InkWell(
-                    onTap: () => onSectionEdit(SectionType.skill, entry.key),
-                    child: SkillChip(skills: entry.value),
+                  return Semantics(
+                    label:
+                        'Habilidade: ${entry.value.name}, nível ${entry.value.level}. Toque para editar.',
+                    button: true,
+                    child: InkWell(
+                      onTap: () => onSectionEdit(SectionType.skill, entry.key),
+                      child: SkillChip(skills: entry.value),
+                    ),
                   );
                 }).toList(),
           ),
@@ -183,39 +198,19 @@ class ResumePreview extends ConsumerWidget {
             runSpacing: 8,
             children:
                 data.socials!.asMap().entries.map((entry) {
-                  return InkWell(
-                    onTap: () => onSectionEdit(SectionType.social, entry.key),
-                    child: SocialLink(social: entry.value, theme: textTheme),
+                  return Semantics(
+                    label:
+                        'Link social: ${entry.value.platform}. Toque para editar.',
+                    button: true,
+                    child: InkWell(
+                      onTap: () => onSectionEdit(SectionType.social, entry.key),
+                      child: SocialLink(social: entry.value, theme: textTheme),
+                    ),
                   );
                 }).toList(),
           ),
         ),
-
-        const SizedBox(height: 24),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: ElevatedButton.icon(
-            icon: const Icon(Icons.picture_as_pdf_outlined),
-            label: const Text("Exportar para PDF"),
-            onPressed: () => _showExportOptions(context, ref),
-            style: ElevatedButton.styleFrom(
-              minimumSize: const Size(double.infinity, 50),
-            ),
-          ),
-        ),
       ],
     );
-  }
-
-  void _showExportOptions(BuildContext context, WidgetRef ref) {
-    // ... (o resto do código permanece o mesmo)
-  }
-
-  Future<void> _exportResume(
-    BuildContext context,
-    WidgetRef ref,
-    ResumeTemplate template,
-  ) async {
-    // ... (o resto do código permanece o mesmo)
   }
 }

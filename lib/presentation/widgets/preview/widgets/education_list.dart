@@ -7,7 +7,7 @@ import '../../../../data/models/cv_data.dart';
 class EducationList extends ConsumerWidget {
   // Changed to ConsumerWidget
   final List<Education> items;
-  final TextTheme theme;
+  final TextTheme? theme;
 
   const EducationList({super.key, required this.items, required this.theme});
 
@@ -19,28 +19,40 @@ class EducationList extends ConsumerWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: items.length,
-      itemBuilder:
-          (c, i) => InkWell(
-            // Wrapped with InkWell
+      itemBuilder: (c, i) {
+        final item = items[i];
+        return Semantics(
+          label:
+              'Formação ${i + 1}: ${item.degree} em ${item.school}. Toque para editar.',
+          child: ListTile(
+            leading: const Icon(Icons.school_outlined),
+            title: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "${item.school} - ${item.degree}",
+                  style: theme?.bodyMedium?.copyWith(height: 1.5),
+                ),
+                Text(
+                  "${item.startDate} - ${item.endDate ?? 'Atual'}",
+                  style: theme!.bodySmall?.copyWith(height: 1.2),
+                ),
+              ],
+            ),
+            subtitle: Text(
+              item.description ?? '',
+              style: theme!.bodySmall?.copyWith(height: 1.2),
+            ),
             onTap: () {
-              // Set the edit request for the tapped item
               ref.read(editRequestProvider.notifier).state = EditRequest(
                 section: SectionType.education,
                 index: i,
               );
             },
-            child: ListTile(
-              leading: const Icon(Icons.school_outlined),
-              title: Text(
-                "${items[i].school} - ${items[i].degree}",
-                style: theme.bodyMedium?.copyWith(height: 1.5),
-              ),
-              subtitle: Text(
-                "${items[i].startDate} - ${items[i].endDate ?? 'Atual'}",
-                style: theme.bodySmall?.copyWith(height: 1.2),
-              ),
-            ),
           ),
+        );
+      },
     );
   }
 }

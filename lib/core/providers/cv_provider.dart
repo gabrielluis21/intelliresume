@@ -80,6 +80,7 @@ class LocalResumeNotifier extends StateNotifier<ResumeData> {
   void updateSocial(int index, Social social) {
     final newSocials = List<Social>.from(state.socials!);
     newSocials[index] = social;
+    state = state.copyWith(socials: newSocials);
   }
 
   void removeSocial(int index) {
