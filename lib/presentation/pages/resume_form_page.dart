@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intelliresume/core/providers/user_provider.dart';
 import 'package:intelliresume/data/datasources/remote/auth_resume_ds.dart';
-import 'package:intelliresume/data/models/cv_data.dart';
 import 'package:intelliresume/presentation/pages/resume_preview_page.dart';
 import 'package:intelliresume/presentation/widgets/ai_assistant_panel.dart';
 //import 'package:intelliresume/presentation/widgets/preview/resume_preview.dart';

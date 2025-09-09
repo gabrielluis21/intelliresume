@@ -53,17 +53,16 @@ class BusinessLogicService {
 
   /// Templates disponíveis por plano
   static const freeTemplates = <String>{
-    'intelli_resume',
-    'classic',
-    'studant_first_job',
-    '',
-  };
-  static const paidTemplates = <String>{
     'intelliresume_pattern',
     'classic',
+    'studant_first_job',
+  };
+  static const paidTemplates = <String>{
+    //'intelliresume_pattern',
+    //'classic',
     'modern_with_sidebar',
     'timeline',
-    'studant_first_job',
+    //'studant_first_job',
     'infographic',
     'international',
     'dev_tec',

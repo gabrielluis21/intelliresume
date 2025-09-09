@@ -553,6 +553,204 @@ class ModernSidebarTemplate implements ResumeTemplate {
     fontsBold = await PdfGoogleFonts.nunitoSansBold();
   }
 
+  /// Builds the left sidebar widget.
+  pw.Widget _buildSidebar(
+    ResumeData resumeData,
+    pw.Font ttf,
+    PdfColor sidebarColor,
+    PdfColor textColor,
+  ) {
+    final skills = resumeData.skills ?? [];
+
+    return pw.Container(
+      width: 210, // A4 width is 595, this is roughly 35%
+      color: sidebarColor,
+      padding: const pw.EdgeInsets.symmetric(horizontal: 24, vertical: 30),
+      child: pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        children: [
+          pw.Text(
+            resumeData.personalInfo?.name?.toUpperCase() ?? 'YOUR NAME',
+            style: pw.TextStyle(
+              color: textColor,
+              fontSize: 26,
+              fontWeight: pw.FontWeight.bold,
+              height: 1.2,
+            ),
+          ),
+          pw.SizedBox(height: 8),
+          pw.Container(height: 2, width: 50, color: textColor),
+          pw.SizedBox(height: 40),
+          _buildSidebarInfo(resumeData.personalInfo?.email, textColor),
+          _buildSidebarInfo(resumeData.personalInfo?.phone, textColor),
+          // The cv_data model does not have an address field in UserProfile.
+          // Add it to your model or use a placeholder if needed.
+          // _buildSidebarInfo('Your City, Country', textColor),
+          pw.Spacer(),
+          if (skills.isNotEmpty) ...[
+            pw.Text(
+              'Skills',
+              style: pw.TextStyle(
+                color: textColor,
+                fontSize: 18,
+                fontWeight: pw.FontWeight.bold,
+              ),
+            ),
+            pw.SizedBox(height: 12),
+            pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children:
+                  skills
+                      .map(
+                        (skill) => pw.Padding(
+                          padding: const pw.EdgeInsets.only(bottom: 5),
+                          child: pw.Text(
+                            '• ${skill.name ?? ''}',
+                            style: pw.TextStyle(
+                              color: textColor.shade(0.85),
+                              fontSize: 11,
+                              height: 1.4,
+                            ),
+                          ),
+                        ),
+                      )
+                      .toList(),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  /// Builds the main content area on the right.
+  pw.Widget _buildMainContent(ResumeData resumeData, pw.Font ttf) {
+    return pw.Expanded(
+      child: pw.Padding(
+        padding: const pw.EdgeInsets.symmetric(horizontal: 30, vertical: 30),
+        child: pw.Column(
+          crossAxisAlignment: pw.CrossAxisAlignment.start,
+          children: [
+            // Profile Section
+            if (resumeData.about != null && resumeData.about!.isNotEmpty) ...[
+              _buildSectionTitle('Profile'),
+              pw.Text(
+                resumeData.about!,
+                style: const pw.TextStyle(fontSize: 10.5, height: 1.6),
+                textAlign: pw.TextAlign.justify,
+              ),
+              pw.SizedBox(height: 24),
+            ],
+            // Experience Section
+            if (resumeData.experiences != null &&
+                resumeData.experiences!.isNotEmpty) ...[
+              _buildSectionTitle('Experience'),
+              ...resumeData.experiences!.map(
+                (exp) => _buildExperienceItem(
+                  title: exp.position?.toUpperCase() ?? 'JOB TITLE',
+                  subtitle:
+                      '${exp.company ?? 'Company'} | ${exp.startDate ?? ''} - ${exp.endDate ?? 'Present'}',
+                  description: exp.description,
+                ),
+              ),
+            ],
+            // Education Section
+            if (resumeData.educations != null &&
+                resumeData.educations!.isNotEmpty) ...[
+              _buildSectionTitle('Education'),
+              ...resumeData.educations!.map(
+                (edu) => _buildExperienceItem(
+                  title: edu.degree?.toUpperCase() ?? 'DEGREE / COURSE',
+                  subtitle:
+                      '${edu.school ?? 'Institution'} | ${edu.startDate ?? ''} - ${edu.endDate ?? ''}',
+                  description: edu.description,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Helper to build a line of info in the sidebar.
+  pw.Widget _buildSidebarInfo(String? text, PdfColor color) {
+    if (text == null || text.isEmpty) return pw.SizedBox.shrink();
+    return pw.Padding(
+      padding: const pw.EdgeInsets.only(bottom: 8),
+      child: pw.Text(
+        text,
+        style: pw.TextStyle(color: color.shade(0.85), fontSize: 10.5),
+      ),
+    );
+  }
+
+  /// Helper to build a section title with a divider.
+  pw.Widget _buildSectionTitle(String title) {
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.Text(
+          title.toUpperCase(),
+          style: pw.TextStyle(
+            fontSize: 18,
+            fontWeight: pw.FontWeight.bold,
+            letterSpacing: 1.1,
+          ),
+        ),
+        pw.SizedBox(height: 6),
+        pw.Divider(height: 1, thickness: 1, color: PdfColors.grey300),
+        pw.SizedBox(height: 16),
+      ],
+    );
+  }
+
+  /// Helper to build an item for Experience or Education sections.
+  pw.Widget _buildExperienceItem({
+    required String title,
+    required String subtitle,
+    String? description,
+  }) {
+    final points =
+        description?.split('\n').where((s) => s.trim().isNotEmpty).toList() ??
+        [];
+
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.Text(
+          title,
+          style: pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold),
+        ),
+        pw.SizedBox(height: 4),
+        pw.Text(
+          subtitle,
+          style: const pw.TextStyle(fontSize: 11, color: PdfColors.grey700),
+        ),
+        if (points.isNotEmpty) pw.SizedBox(height: 10),
+        ...points.map(
+          (point) => pw.Container(
+            padding: const pw.EdgeInsets.only(left: 8, bottom: 5),
+            child: pw.Row(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Text('•', style: const pw.TextStyle(fontSize: 11)),
+                pw.SizedBox(width: 5),
+                pw.Expanded(
+                  child: pw.Text(
+                    point.trim(),
+                    textAlign: pw.TextAlign.justify,
+                    style: const pw.TextStyle(fontSize: 10.5, height: 1.4),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        pw.SizedBox(height: 20),
+      ],
+    );
+  }
+
   @override
   Future<pw.Document> buildPdf(
     ResumeData data,
@@ -560,178 +758,30 @@ class ModernSidebarTemplate implements ResumeTemplate {
     String? targetLanguage,
   }) async {
     await _loadFonts();
-    final doc = pw.Document();
-    doc.addPage(
+    final pdf = pw.Document();
+
+    final sidebarColor = PdfColor.fromHex('#2C2A63');
+    final textColor = PdfColors.white;
+
+    pdf.addPage(
       pw.Page(
+        theme: pw.ThemeData.withFont(base: fontsRegular, bold: fontsBold),
         pageFormat: PdfPageFormat.a4,
         margin: pw.EdgeInsets.zero,
-        build: (context) {
+        build: (pw.Context context) {
           return pw.Row(
             children: [
-              // Sidebar
-              pw.Container(
-                width: 150,
-                color: PdfColors.grey200,
-                padding: pw.EdgeInsets.all(16),
-                child: pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    pw.Text(
-                      data.personalInfo?.name ?? '',
-                      style: pw.TextStyle(
-                        fontSize: 20,
-                        fontWeight: pw.FontWeight.bold,
-                      ),
-                    ),
-                    pw.SizedBox(height: 12),
-                    pw.Text(
-                      'Habilidades',
-                      style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-                    ),
-                    ...((data.skills ?? []).isNotEmpty
-                        ? (data.skills ?? [])
-                            .map((s) => pw.Text('• ${s.name ?? ''}'))
-                            .toList()
-                        : [pw.Text('Sem habilibdades registradas')]),
-                    pw.SizedBox(height: 12),
-                    pw.Text(
-                      'Contato',
-                      style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-                    ),
-                    pw.Text(
-                      data.personalInfo?.email ?? '',
-                      style: pw.TextStyle(fontSize: 10),
-                    ),
-                    pw.SizedBox(height: 4),
-                    pw.Text(
-                      data.personalInfo?.phone ?? '',
-                      style: pw.TextStyle(fontSize: 10),
-                    ),
-                    pw.SizedBox(height: 8),
-                    ...((data.socials ?? []).isNotEmpty
-                        ? (data.socials ?? [])
-                            .map(
-                              (l) => pw.Text(
-                                '${l.platform ?? ''}: ${l.url ?? ''}',
-                              ),
-                            )
-                            .toList()
-                        : [pw.Text('Sem redes sociais registrdas')]),
-                  ],
-                ),
-              ),
-              // Main
-              pw.Expanded(
-                child: pw.Padding(
-                  padding: pw.EdgeInsets.all(24),
-                  child: pw.Column(
-                    crossAxisAlignment: pw.CrossAxisAlignment.start,
-                    children: [
-                      pw.Text(
-                        'Experiências',
-                        style: pw.TextStyle(
-                          fontSize: 18,
-                          fontWeight: pw.FontWeight.bold,
-                          font: fontsBold,
-                        ),
-                      ),
-                      ...((data.experiences ?? []).isNotEmpty
-                          ? (data.experiences ?? [])
-                              .map(
-                                (e) => pw.Padding(
-                                  padding: pw.EdgeInsets.symmetric(vertical: 8),
-                                  child: pw.Column(
-                                    crossAxisAlignment:
-                                        pw.CrossAxisAlignment.start,
-                                    children: [
-                                      pw.Text(
-                                        e.position ?? '',
-                                        style: pw.TextStyle(
-                                          fontWeight: pw.FontWeight.bold,
-                                          font: fontsBold,
-                                        ),
-                                      ),
-                                      pw.Text(
-                                        '${e.company ?? ''} | ${e.startDate ?? ''} - ${e.endDate ?? ''}',
-                                      ),
-                                      pw.Text(e.description ?? ''),
-                                    ],
-                                  ),
-                                ),
-                              )
-                              .toList()
-                          : [pw.Text("Sem experiência registrada")]),
-                      pw.Text(
-                        'Graduação',
-                        style: pw.TextStyle(
-                          fontSize: 18,
-                          fontWeight: pw.FontWeight.bold,
-                          font: fontsBold,
-                        ),
-                      ),
-                      ...((data.educations ?? []).isNotEmpty
-                          ? (data.educations ?? [])
-                              .map(
-                                (e) => pw.Padding(
-                                  padding: pw.EdgeInsets.symmetric(vertical: 8),
-                                  child: pw.Column(
-                                    crossAxisAlignment:
-                                        pw.CrossAxisAlignment.start,
-                                    children: [
-                                      pw.Text(
-                                        e.degree ?? '',
-                                        style: pw.TextStyle(
-                                          fontWeight: pw.FontWeight.bold,
-                                          font: fontsBold,
-                                        ),
-                                      ),
-                                      pw.Text(
-                                        '${e.school ?? ''} | ${e.startDate ?? ''} - ${e.endDate ?? ''}',
-                                      ),
-                                      pw.Text(e.description ?? ''),
-                                    ],
-                                  ),
-                                ),
-                              )
-                              .toList()
-                          : [pw.Text("Sem graduações registradas")]),
-                      _buildDisabilitySection(data),
-                    ],
-                  ),
-                ),
-              ),
+              // Left Sidebar
+              _buildSidebar(data, fontsRegular!, sidebarColor, textColor),
+              // Right Main Content
+              _buildMainContent(data, fontsRegular!),
             ],
           );
         },
       ),
     );
-    return doc;
-  }
 
-  pw.Widget _buildDisabilitySection(ResumeData data) {
-    final content = data.personalInfo?.pcdInfo;
-    if (content == null) {
-      return pw.SizedBox.shrink();
-    }
-    return pw.Column(
-      crossAxisAlignment: pw.CrossAxisAlignment.start,
-      children: [
-        pw.SizedBox(height: 16),
-        pw.Text(
-          'Informações Adicionais',
-          style: pw.TextStyle(
-            fontSize: 18,
-            fontWeight: pw.FontWeight.bold,
-            font: fontsBold,
-          ),
-        ),
-        pw.SizedBox(height: 8),
-        pw.Text(
-          content.disabilityDescription ?? '',
-          style: pw.TextStyle(font: fontsRegular),
-        ),
-      ],
-    );
+    return pdf;
   }
 
   @override
@@ -1511,197 +1561,196 @@ class StudantTemplate implements ResumeTemplate {
 
   @override
   Future<pw.Document> buildPdf(
-    ResumeData data,
+    ResumeData resumeData,
     BuildContext context, {
     String? targetLanguage,
   }) async {
     await _loadFonts();
-    final doc = pw.Document();
+    final pdf = pw.Document();
 
-    doc.addPage(
+    pdf.addPage(
       pw.Page(
-        pageFormat: PdfPageFormat.a4,
-        margin: const pw.EdgeInsets.symmetric(horizontal: 32, vertical: 24),
-        build: (context) {
+        build: (pw.Context context) {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              _buildHeader(data),
-              pw.SizedBox(height: 12),
-              if ((data.objective ?? '').isNotEmpty) ...[
-                _buildSectionTitle('Sobre Mim'),
-                pw.Text(
-                  data.objective ?? '',
-                  style: const pw.TextStyle(fontSize: 11),
+              // --- CABEÇALHO ---
+              _buildHeader(resumeData),
+              pw.SizedBox(height: 20),
+
+              // --- CONTEÚDO PRINCIPAL (DUAS COLUNAS) ---
+              pw.Expanded(
+                child: pw.Row(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    // --- COLUNA DA ESQUERDA ---
+                    pw.Expanded(flex: 5, child: _buildLeftColumn(resumeData)),
+                    pw.SizedBox(width: 30),
+
+                    // --- COLUNA DA DIREITA ---
+                    pw.Expanded(flex: 5, child: _buildRightColumn(resumeData)),
+                  ],
                 ),
-                pw.SizedBox(height: 12),
-              ],
-              if ((data.educations ?? []).isNotEmpty) ...[
-                _buildSectionTitle('Educação'),
-                ...(data.educations ?? []).map(_buildEducationItem),
-                pw.SizedBox(height: 12),
-              ],
-              if ((data.projects ?? []).isNotEmpty) ...[
-                _buildSectionTitle('Projetos Acadêmicos ou Pessoais'),
-                ...(data.projects ?? []).map(_buildProjectItem),
-                pw.SizedBox(height: 12),
-              ],
-              if ((data.certificates ?? []).isNotEmpty) ...[
-                _buildSectionTitle('Certificações'),
-                ...(data.certificates ?? []).map(_buildCertItem),
-                pw.SizedBox(height: 12),
-              ],
-              if ((data.skills ?? []).isNotEmpty) ...[
-                _buildSectionTitle('Habilidades'),
-                _buildSkillChips(data),
-                pw.SizedBox(height: 12),
-              ],
-              _buildDisabilitySection(data),
+              ),
+
+              // --- RODAPÉ / CONTATO ---
+              _buildFooter(resumeData),
             ],
           );
         },
       ),
     );
 
-    return doc;
+    return pdf;
   }
 
-  pw.Widget _buildHeader(ResumeData resume) {
+  pw.Widget _buildHeader(ResumeData data) {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
         pw.Text(
-          resume.personalInfo?.name ?? '',
-          style: pw.TextStyle(
-            fontSize: 20,
-            fontWeight: pw.FontWeight.bold,
-            font: fontsBold,
-          ),
+          data.personalInfo?.name ?? 'Nome não informado',
+          style: pw.TextStyle(fontSize: 40, fontWeight: pw.FontWeight.bold),
         ),
         pw.SizedBox(height: 4),
         pw.Text(
-          '${resume.personalInfo?.email ?? ''} | ${resume.personalInfo?.phone ?? ''}',
-          style: const pw.TextStyle(fontSize: 11),
+          // Usando o campo "objetivo" como subtítulo, conforme o design.
+          data.objective ?? 'Estudante de Engenharia de Software',
+          style: const pw.TextStyle(fontSize: 14, color: PdfColors.grey700),
         ),
-        if ((resume.socials ?? []).isNotEmpty)
-          ...(resume.socials ?? []).map(
-            (e) => pw.Text(
-              '${e.platform ?? ''}: ${e.url ?? ''}',
-              style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey600),
+      ],
+    );
+  }
+
+  pw.Widget _buildLeftColumn(ResumeData data) {
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        // --- SEÇÃO EDUCAÇÃO ---
+        _buildSectionTitle('Educação'),
+        ...(data.educations != null && data.educations!.isNotEmpty
+            ? data.educations!.map(
+              (edu) => pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                children: [
+                  pw.Text(
+                    "${edu.school}",
+                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                  ),
+                  pw.Text(
+                    '${edu.startDate} - ${edu.endDate}',
+                    style: const pw.TextStyle(color: PdfColors.grey600),
+                  ),
+                  pw.Text("${edu.degree}"),
+                  pw.SizedBox(height: 10),
+                ],
+              ),
+            )
+            : [pw.Text("Sem experiências registradas")]),
+        pw.SizedBox(height: 20),
+
+        // --- SEÇÃO CURSOS (Exemplo estático) ---
+        _buildSectionTitle('Cursos'),
+        data.certificates == null || data.certificates!.isEmpty
+            ? pw.Text("Sem certificados registrados")
+            : pw.Column(
+              children:
+                  data.certificates!
+                      .map(
+                        (cert) =>
+                            pw.Text('${cert.courseName} - ${cert.courseName}'),
+                      )
+                      .toList(),
             ),
+        pw.SizedBox(height: 20),
+
+        // --- SEÇÃO HABILIDADES ---
+        _buildSectionTitle('Habilidades'),
+        data.skills == null || data.skills!.isEmpty
+            ? pw.Text("Sem habilidades registradas")
+            : pw.Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children:
+                  data.skills!
+                      .map((skill) => _buildSkillChip(skill.name!))
+                      .toList(),
+            ),
+      ],
+    );
+  }
+
+  pw.Widget _buildRightColumn(ResumeData data) {
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        // --- SEÇÃO PROJETOS (usando Experiências) ---
+        _buildSectionTitle('Projetos'),
+        ...data.experiences!.map(
+          (exp) => pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text(
+                "${exp.company}",
+                style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+              ),
+              pw.Text(
+                '${exp.startDate} - ${exp.endDate}',
+                style: const pw.TextStyle(color: PdfColors.grey600),
+              ),
+              pw.Text('${exp.description}'),
+              pw.SizedBox(height: 10),
+            ],
           ),
+        ),
+        pw.SizedBox(height: 20),
+
+        // --- SEÇÃO SOBRE MIM ---
+        _buildSectionTitle('Sobre Mim'),
+        pw.Text(
+          data.objective ??
+              'Estudante de Engenharia de Software com sólida formação acadêmica e experiência prática em desenvolvimento de aplicações web e móveis.',
+        ),
+      ],
+    );
+  }
+
+  pw.Widget _buildFooter(ResumeData data) {
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.SizedBox(height: 20),
+        pw.Text(data.personalInfo?.email ?? ''),
+        pw.SizedBox(height: 4),
+        pw.Text(data.personalInfo?.phone ?? ''),
       ],
     );
   }
 
   pw.Widget _buildSectionTitle(String title) {
-    return pw.Text(
-      title,
-      style: pw.TextStyle(
-        fontSize: 13,
-        fontWeight: pw.FontWeight.bold,
-        font: fontsBold,
-        color: PdfColors.indigo,
-      ),
-    );
-  }
-
-  pw.Widget _buildEducationItem(Education e) {
-    return pw.Padding(
-      padding: const pw.EdgeInsets.symmetric(vertical: 4),
-      child: pw.Column(
-        crossAxisAlignment: pw.CrossAxisAlignment.start,
-        children: [
-          pw.Text(
-            '${e.degree ?? ''}, ${e.school ?? ''}',
-            style: const pw.TextStyle(fontSize: 11),
-          ),
-          pw.Text(
-            '${e.startDate ?? ''}-${e.endDate ?? ''}',
-            style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey600),
-          ),
-        ],
-      ),
-    );
-  }
-
-  pw.Widget _buildProjectItem(Project p) {
-    return pw.Padding(
-      padding: const pw.EdgeInsets.symmetric(vertical: 4),
-      child: pw.Column(
-        crossAxisAlignment: pw.CrossAxisAlignment.start,
-        children: [
-          pw.Text(
-            p.name ?? '',
-            style: pw.TextStyle(
-              fontWeight: pw.FontWeight.bold,
-              font: fontsBold,
-            ),
-          ),
-          if ((p.technologies ?? []).isNotEmpty)
-            pw.Text(
-              (p.technologies ?? []).join(', '),
-              style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey600),
-            ),
-          if ((p.description ?? '').isNotEmpty)
-            pw.Text(
-              p.description ?? '',
-              style: const pw.TextStyle(fontSize: 10),
-            ),
-        ],
-      ),
-    );
-  }
-
-  pw.Widget _buildCertItem(Certificate c) {
-    return pw.Padding(
-      padding: const pw.EdgeInsets.symmetric(vertical: 2),
-      child: pw.Text(
-        '${c.institution ?? ''} - ${c.courseName ?? ''}',
-        style: const pw.TextStyle(fontSize: 10),
-      ),
-    );
-  }
-
-  pw.Widget _buildSkillChips(ResumeData resume) {
-    return pw.Wrap(
-      spacing: 6,
-      runSpacing: 6,
-      children:
-          (resume.skills ?? []).map((s) {
-            return pw.Container(
-              padding: const pw.EdgeInsets.symmetric(
-                horizontal: 8,
-                vertical: 4,
-              ),
-              decoration: pw.BoxDecoration(
-                color: PdfColors.grey200,
-                borderRadius: pw.BorderRadius.circular(4),
-              ),
-              child: pw.Text(
-                s.name ?? '',
-                style: const pw.TextStyle(fontSize: 10),
-              ),
-            );
-          }).toList(),
-    );
-  }
-
-  pw.Widget _buildDisabilitySection(ResumeData data) {
-    final content = data.personalInfo?.pcdInfo;
-    if (content == null) {
-      return pw.SizedBox.shrink();
-    }
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
-        _buildSectionTitle('Informações Adicionais'),
-        pw.SizedBox(height: 4),
         pw.Text(
-          content.disabilityDescription ?? '',
-          style: pw.TextStyle(font: fontsRegular, fontSize: 11),
+          title,
+          style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
         ),
+        pw.SizedBox(height: 10),
       ],
+    );
+  }
+
+  pw.Widget _buildSkillChip(String skillName) {
+    return pw.Container(
+      padding: const pw.EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: const pw.BoxDecoration(
+        color: PdfColors.blue400,
+        borderRadius: pw.BorderRadius.all(pw.Radius.circular(12)),
+      ),
+      child: pw.Text(
+        skillName,
+        style: const pw.TextStyle(color: PdfColors.white, fontSize: 10),
+      ),
     );
   }
 
