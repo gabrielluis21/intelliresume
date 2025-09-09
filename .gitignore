@@ -120,3 +120,4 @@ app.*.symbols
 
 **/lib/core/app_config.dart
 .env
+.env.example

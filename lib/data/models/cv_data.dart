@@ -133,6 +133,53 @@ class ResumeData {
       includePCDInfo: includePCDInfo ?? this.includePCDInfo,
     );
   }
+
+  /// Converte os dados do currículo para uma string formatada para a IA.
+  String toFormattedString() {
+    final buffer = StringBuffer();
+
+    if (personalInfo?.name != null && personalInfo!.name!.isNotEmpty) {
+      buffer.writeln('# NOME');
+      buffer.writeln(personalInfo!.name);
+      buffer.writeln();
+    }
+
+    if (objective != null && objective!.isNotEmpty) {
+      buffer.writeln('# OBJETIVO');
+      buffer.writeln(objective);
+      buffer.writeln();
+    }
+
+    if (experiences != null && experiences!.isNotEmpty) {
+      buffer.writeln('# EXPERIÊNCIA PROFISSIONAL');
+      for (final exp in experiences!) {
+        buffer.writeln('## ${exp.position ?? ''} em ${exp.company ?? ''}');
+        if (exp.description != null && exp.description!.isNotEmpty) {
+          buffer.writeln(exp.description);
+        }
+        buffer.writeln();
+      }
+    }
+
+    if (educations != null && educations!.isNotEmpty) {
+      buffer.writeln('# EDUCAÇÃO');
+      for (final edu in educations!) {
+        buffer.writeln('## ${edu.degree ?? ''} em ${edu.school ?? ''}');
+        if (edu.description != null && edu.description!.isNotEmpty) {
+          buffer.writeln(edu.description);
+        }
+        buffer.writeln();
+      }
+    }
+
+    if (skills != null && skills!.isNotEmpty) {
+      buffer.writeln('# HABILIDADES');
+      buffer.writeln(skills!.map((s) => s.name).join(', '));
+      buffer.writeln();
+    }
+
+    return buffer.toString();
+  }
 }
 
 class Experience {
