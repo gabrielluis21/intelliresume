@@ -119,5 +119,5 @@ app.*.symbols
 !/dev/ci/**/Gemfile.lock
 
 **/lib/core/app_config.dart
-.env
+**/assets/.env
 .env.example
