@@ -98,7 +98,6 @@ flutter:
 
   uses-material-design: true
   assets:
-    - .env
     - assets/docx/template.docx
     - assets/fonts/Roboto-Regular.ttf
     - assets/images/resume_example.png

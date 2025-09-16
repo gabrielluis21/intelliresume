@@ -15,9 +15,9 @@ class BuyPage extends ConsumerWidget {
           const SnackBar(content: Text('Plano Premium ativado com sucesso!')),
         );
       } else if (next.error != null) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(next.error!)));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(next.error!)),
+        );
       }
     });
 
@@ -52,13 +52,12 @@ class BuyPage extends ConsumerWidget {
             const Spacer(),
             ElevatedButton.icon(
               icon: const Icon(Icons.lock_open),
-              label: Text(
-                purchaseState.isProcessing ? 'Processando...' : 'Assinar Agora',
-              ),
-              onPressed:
-                  purchaseState.isProcessing
-                      ? null
-                      : () => _initiatePurchase(context, ref),
+              label: Text(purchaseState.isProcessing
+                  ? 'Processando...'
+                  : 'Assinar Agora'),
+              onPressed: purchaseState.isProcessing
+                  ? null
+                  : () => _initiatePurchase(context, ref),
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size.fromHeight(50),
               ),
@@ -73,27 +72,26 @@ class BuyPage extends ConsumerWidget {
   Future<void> _initiatePurchase(BuildContext context, WidgetRef ref) async {
     final purchaseController = ref.read(purchaseControllerProvider.notifier);
     await purchaseController.initiatePurchase(
-      primaryUrl: 'https://buy.stripe.com/eVq4gAa4U4GoeNO9R1cwg00',
+      primaryUrl: 'https://buy.stripe.com/test_abc123456',
       fallbackUrl: 'https://mpago.la/123ABC',
-      showFallbackDialog:
-          (title, content) => showDialog<bool>(
-            context: context,
-            builder:
-                (ctx) => AlertDialog(
-                  title: Text(title),
-                  content: Text(content),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(ctx, false),
-                      child: const Text('Não, obrigado'),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.pop(ctx, true),
-                      child: const Text('Sim, tentar'),
-                    ),
-                  ],
-                ),
-          ),
+      showFallbackDialog: (title, content) => showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Não, obrigado'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('Sim, tentar'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
+
