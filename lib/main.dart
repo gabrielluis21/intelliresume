@@ -5,7 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'core/providers/user_provider.dart';
+import 'core/providers/user/user_provider.dart';
 import 'data/datasources/local/local_user_profile_ds.dart';
 import 'data/datasources/remote/remote_user_profile_ds.dart';
 import 'data/repositories/user_profile_repository.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intelliresume/core/providers/user_provider.dart';
+import 'package:intelliresume/core/providers/user/user_provider.dart';
 import 'package:intelliresume/data/datasources/remote/auth_resume_ds.dart';
 import 'package:intelliresume/presentation/pages/resume_preview_page.dart';
 import 'package:intelliresume/presentation/widgets/ai_assistant_panel.dart';
@@ -10,7 +10,7 @@ import 'package:intelliresume/presentation/widgets/preview_dialog.dart';
 import 'package:intelliresume/presentation/widgets/side_menu.dart';
 import 'package:multi_split_view/multi_split_view.dart';
 //import 'package:printing/printing';
-import '../../core/providers/cv_provider.dart';
+import '../../core/providers/resume/cv_provider.dart';
 import '../../core/utils/app_localizations.dart';
 import '../widgets/form/resume_form.dart';
 
@@ -56,7 +56,7 @@ class ResumeFormPage extends ConsumerWidget {
     final isWide =
         MediaQuery.of(context).size.width >
         800; // Aumentado para melhor acomodar o painel
-    
+
     // Lê o estado do currículo a partir do provider, que é a única fonte de verdade.
     final resumeData = ref.watch(localResumeProvider);
 
@@ -64,7 +64,8 @@ class ResumeFormPage extends ConsumerWidget {
       appBar: AppBar(title: Text(t.appTitle)),
       drawer: SideMenu(
         selectedIndex: 3, // Hardcoded para a página de formulário
-        onDestinationSelected: (index) => _onDestinationSelected(context, index, ref),
+        onDestinationSelected:
+            (index) => _onDestinationSelected(context, index, ref),
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
@@ -198,7 +199,9 @@ class ResumeFormPage extends ConsumerWidget {
                           () => showDialog(
                             context: context,
                             builder: (_) {
-                              final currentResumeData = ref.read(localResumeProvider);
+                              final currentResumeData = ref.read(
+                                localResumeProvider,
+                              );
                               return PreviewDialog(resume: currentResumeData);
                             },
                           ),

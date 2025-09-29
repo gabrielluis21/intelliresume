@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/providers/cv_provider.dart';
+import '../../../../core/providers/resume/cv_provider.dart';
 
 class ObjectiveForm extends ConsumerStatefulWidget {
   final String objective;
@@ -78,7 +78,9 @@ class _ObjectiveFormState extends ConsumerState<ObjectiveForm> {
                         tooltip: 'Remover objetivo',
                         icon: const Icon(Icons.delete, color: Colors.red),
                         onPressed: () {
-                          ref.read(localResumeProvider.notifier).removeObjective();
+                          ref
+                              .read(localResumeProvider.notifier)
+                              .removeObjective();
                           _objectiveController.clear();
                         },
                       ),

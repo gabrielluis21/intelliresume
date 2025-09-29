@@ -2,11 +2,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intelliresume/core/providers/resume_template_provider.dart';
+import 'package:intelliresume/core/providers/resume/resume_template_provider.dart';
 import 'package:intelliresume/data/models/cv_data.dart';
 import 'package:intelliresume/presentation/widgets/template_selector.dart';
 
-import '../../core/providers/export_provider.dart';
+import '../../core/providers/export/export_provider.dart';
 import '../../core/utils/document_creator.dart';
 
 class ExportButtons extends ConsumerWidget {

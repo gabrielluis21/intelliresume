@@ -2,7 +2,7 @@
 // Lógica de negócios integrada a UserProfile e UserProfileProvider
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intelliresume/core/providers/user_provider.dart';
+import 'package:intelliresume/core/providers/user/user_provider.dart';
 import 'package:intelliresume/domain/entities/user_profile.dart';
 import 'package:intelliresume/domain/entities/plan_type.dart';
 

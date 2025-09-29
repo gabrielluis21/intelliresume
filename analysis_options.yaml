@@ -17,6 +17,7 @@ analyzer:
     must_be_immutable: ignore
     depend_on_referenced_packages: ignore
     deprecated_member_use: ignore
+    unused_element: ignore
 include: package:flutter_lints/flutter.yaml
 
 

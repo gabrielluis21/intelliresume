@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intelliresume/core/providers/user_provider.dart';
+import 'package:intelliresume/core/providers/user/user_provider.dart';
 import 'package:intelliresume/domain/entities/plan_type.dart';
 import '../widgets/layout_template.dart';
 
@@ -15,21 +15,22 @@ class ProfilePage extends ConsumerWidget {
 
     return LayoutTemplate(
       selectedIndex: 1,
-      child: user == null
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildProfileHeader(context, user),
-                  const SizedBox(height: 24),
-                  _buildSubscriptionCard(context, user),
-                  const SizedBox(height: 24),
-                  _buildQuickActions(context),
-                ],
+      child:
+          user == null
+              ? const Center(child: CircularProgressIndicator())
+              : SingleChildScrollView(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildProfileHeader(context, user),
+                    const SizedBox(height: 24),
+                    _buildSubscriptionCard(context, user),
+                    const SizedBox(height: 24),
+                    _buildQuickActions(context),
+                  ],
+                ),
               ),
-            ),
     );
   }
 
@@ -38,15 +39,17 @@ class ProfilePage extends ConsumerWidget {
       children: [
         CircleAvatar(
           radius: 40,
-          backgroundImage: user.profilePictureUrl != null
-              ? NetworkImage(user.profilePictureUrl!)
-              : null,
-          child: user.profilePictureUrl == null
-              ? Text(
-                  user.name?.substring(0, 1).toUpperCase() ?? 'U',
-                  style: const TextStyle(fontSize: 32),
-                )
-              : null,
+          backgroundImage:
+              user.profilePictureUrl != null
+                  ? NetworkImage(user.profilePictureUrl!)
+                  : null,
+          child:
+              user.profilePictureUrl == null
+                  ? Text(
+                    user.name?.substring(0, 1).toUpperCase() ?? 'U',
+                    style: const TextStyle(fontSize: 32),
+                  )
+                  : null,
         ),
         const SizedBox(width: 16),
         Expanded(
@@ -55,7 +58,9 @@ class ProfilePage extends ConsumerWidget {
             children: [
               Text(
                 user.name ?? 'Usuário',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 4),
               Text(
@@ -120,10 +125,7 @@ class ProfilePage extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Ações Rápidas',
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
+        Text('Ações Rápidas', style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 16),
         ListTile(
           leading: const Icon(Icons.edit),

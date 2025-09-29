@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intelliresume/core/providers/accessibility_provider.dart';
-import 'package:intelliresume/core/providers/locale_provider.dart';
+import 'package:intelliresume/core/providers/accessibility/accessibility_provider.dart';
+import 'package:intelliresume/core/providers/languages/locale_provider.dart';
 import 'core/routes/app_routes.dart';
 import 'core/themes.dart';
 import 'core/utils/app_localizations.dart';

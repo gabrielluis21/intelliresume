@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intelliresume/core/providers/cv_provider.dart';
-import 'package:intelliresume/core/providers/editor_providers.dart';
+import 'package:intelliresume/core/providers/resume/cv_provider.dart';
+import 'package:intelliresume/core/providers/editor/editor_providers.dart';
 import 'package:intelliresume/data/models/cv_data.dart';
 import 'package:intelliresume/presentation/widgets/form/widgets/objective_form.dart';
 
@@ -156,11 +156,12 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
         itemLabel: 'Experiência',
         currentIndex: _currentExperienceIndex,
         totalItems: resume.experiences?.length ?? 0,
-        formBuilder: (index) => ExperienceForm(
-          key: ValueKey('exp-$index'),
-          index: index,
-          experience: resume.experiences![index],
-        ),
+        formBuilder:
+            (index) => ExperienceForm(
+              key: ValueKey('exp-$index'),
+              index: index,
+              experience: resume.experiences![index],
+            ),
         onPrevious: () => setState(() => _currentExperienceIndex--),
         onNext: () => setState(() => _currentExperienceIndex++),
         onAdd: () {
@@ -174,7 +175,10 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
               .read(localResumeProvider.notifier)
               .removeExperience(_currentExperienceIndex);
           setState(() {
-            _currentExperienceIndex = (_currentExperienceIndex - 1).clamp(0, 100);
+            _currentExperienceIndex = (_currentExperienceIndex - 1).clamp(
+              0,
+              100,
+            );
           });
         },
       ),
@@ -186,11 +190,12 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
         itemLabel: 'Formação',
         currentIndex: _currentEducationIndex,
         totalItems: resume.educations?.length ?? 0,
-        formBuilder: (index) => EducationForm(
-          key: ValueKey('edu-${(index + 1)}'),
-          index: index,
-          education: resume.educations![index],
-        ),
+        formBuilder:
+            (index) => EducationForm(
+              key: ValueKey('edu-${(index + 1)}'),
+              index: index,
+              education: resume.educations![index],
+            ),
         onPrevious: () => setState(() => _currentEducationIndex--),
         onNext: () => setState(() => _currentEducationIndex++),
         onAdd: () {
@@ -216,11 +221,12 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
         itemLabel: 'Habilidade',
         currentIndex: _currentSkillIndex,
         totalItems: resume.skills?.length ?? 0,
-        formBuilder: (index) => SkillForm(
-          key: ValueKey('skill-$index'),
-          index: index,
-          skill: resume.skills![index],
-        ),
+        formBuilder:
+            (index) => SkillForm(
+              key: ValueKey('skill-$index'),
+              index: index,
+              skill: resume.skills![index],
+            ),
         onPrevious: () => setState(() => _currentSkillIndex--),
         onNext: () => setState(() => _currentSkillIndex++),
         onAdd: () {
@@ -246,11 +252,12 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
         itemLabel: 'Link Social',
         currentIndex: _currentSocialIndex,
         totalItems: resume.socials?.length ?? 0,
-        formBuilder: (index) => SocialForm(
-          key: ValueKey('social-$index'),
-          index: index,
-          social: resume.socials![index],
-        ),
+        formBuilder:
+            (index) => SocialForm(
+              key: ValueKey('social-$index'),
+              index: index,
+              social: resume.socials![index],
+            ),
         onPrevious: () => setState(() => _currentSocialIndex--),
         onNext: () => setState(() => _currentSocialIndex++),
         onAdd: () {

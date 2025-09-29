@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Necessário para o provider remoto
-import 'package:intelliresume/core/providers/user_provider.dart';
+import 'package:intelliresume/core/providers/user/user_provider.dart';
 
-import '../../data/models/cv_data.dart';
-import '../../domain/entities/user_profile.dart';
+import '../../../data/models/cv_data.dart';
+import '../../../domain/entities/user_profile.dart';
 
 // --- PROVIDER DE ESTADO LOCAL ---
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intelliresume/core/providers/purchase_provider.dart';
+import 'package:intelliresume/core/providers/purchages/purchase_provider.dart';
 import 'package:intelliresume/core/utils/app_localizations.dart';
 
 class PricingSection extends ConsumerWidget {

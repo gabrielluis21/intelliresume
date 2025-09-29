@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/providers/cv_provider.dart';
+import '../../../../core/providers/resume/cv_provider.dart';
 import '../../../../data/models/cv_data.dart';
 
 class ExperienceForm extends ConsumerStatefulWidget {

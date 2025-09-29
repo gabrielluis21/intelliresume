@@ -8,6 +8,9 @@ import 'package:intelliresume/domain/entities/user_profile.dart';
 import 'package:intelliresume/domain/entities/plan_type.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+// Provider para a instância do FirebaseAuth
+final firebaseAuthProvider = Provider<FirebaseAuth>((ref) => FirebaseAuth.instance);
+
 // Provider para o repositório
 final userProfileRepositoryProvider = Provider<UserProfileRepository>((ref) {
   final local = HiveUserProfileDataSource();
@@ -18,20 +21,22 @@ final userProfileRepositoryProvider = Provider<UserProfileRepository>((ref) {
 // Provider para o perfil do usuário
 final userProfileProvider =
     StateNotifierProvider<UserProfileNotifier, AsyncValue<UserProfile?>>((ref) {
-      final repository = ref.watch(userProfileRepositoryProvider);
-      return UserProfileNotifier(repository);
-    });
+  final repository = ref.watch(userProfileRepositoryProvider);
+  final auth = ref.watch(firebaseAuthProvider);
+  return UserProfileNotifier(repository, auth);
+});
 
 class UserProfileNotifier extends StateNotifier<AsyncValue<UserProfile?>> {
   final UserProfileRepository _repository;
+  final FirebaseAuth _auth;
   StreamSubscription? _subscription;
 
-  UserProfileNotifier(this._repository) : super(const AsyncLoading()) {
+  UserProfileNotifier(this._repository, this._auth) : super(const AsyncLoading()) {
     _init();
   }
 
   Future<void> _init() async {
-    final user = FirebaseAuth.instance.currentUser;
+    final user = _auth.currentUser;
     if (user == null) {
       state = const AsyncData(null);
       return;

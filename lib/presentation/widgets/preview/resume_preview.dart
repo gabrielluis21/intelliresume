@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intelliresume/core/providers/editor_providers.dart';
+import 'package:intelliresume/core/providers/editor/editor_providers.dart';
 import '../../../data/models/cv_data.dart';
 import '../../../domain/entities/user_profile.dart';
 import 'widgets/header_section.dart';

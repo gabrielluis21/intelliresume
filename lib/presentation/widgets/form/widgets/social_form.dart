@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../data/models/cv_data.dart';
-import '../../../../core/providers/cv_provider.dart';
+import '../../../../core/providers/resume/cv_provider.dart';
 
 class SocialForm extends ConsumerStatefulWidget {
   final int index;

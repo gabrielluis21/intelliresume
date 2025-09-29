@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intelliresume/core/providers/busines_logic_intelliresume.dart';
-import 'package:intelliresume/core/providers/resume_template_provider.dart';
+import 'package:intelliresume/core/providers/resume/resume_template_provider.dart';
 import 'package:intelliresume/core/templates/resume_template.dart';
 
 class TemplateSelector extends ConsumerWidget {

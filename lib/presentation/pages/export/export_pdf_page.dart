@@ -1,7 +1,7 @@
 // --- PDF Preview Screen ---
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intelliresume/core/providers/export_provider.dart';
+import 'package:intelliresume/core/providers/export/export_provider.dart';
 import 'package:printing/printing.dart';
 import 'package:url_launcher/url_launcher.dart';
 

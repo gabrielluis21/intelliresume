@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intelliresume/core/providers/ai_providers.dart';
-import 'package:intelliresume/core/providers/cv_provider.dart';
+import 'package:intelliresume/core/providers/AI/ai_providers.dart';
+import 'package:intelliresume/core/providers/resume/cv_provider.dart';
 import 'package:intelliresume/data/models/cv_data.dart';
 
 class AIAssistantPanel extends ConsumerWidget {
@@ -45,7 +45,9 @@ class AIAssistantPanel extends ConsumerWidget {
               title: 'Objetivo',
               content: resumeData.objective!,
               onApply: (suggestion) {
-                ref.read(localResumeProvider.notifier).updateObjective(suggestion);
+                ref
+                    .read(localResumeProvider.notifier)
+                    .updateObjective(suggestion);
               },
             ),
           ..._buildExperiencePanels(context, ref, resumeData.experiences ?? []),
@@ -79,7 +81,9 @@ class AIAssistantPanel extends ConsumerWidget {
           // Aqui, idealmente, a IA retornaria apenas a descrição corrigida.
           // A lógica de "diff" e aplicação parcial seria mais robusta.
           final newExperience = exp.copyWith(description: suggestion);
-          ref.read(localResumeProvider.notifier).updateExperience(index, newExperience);
+          ref
+              .read(localResumeProvider.notifier)
+              .updateExperience(index, newExperience);
         },
       );
     }).toList();
@@ -99,10 +103,7 @@ class AIAssistantPanel extends ConsumerWidget {
         children: [
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: AIResultWidget(
-              contentToAnalyze: content,
-              onApply: onApply,
-            ),
+            child: AIResultWidget(contentToAnalyze: content, onApply: onApply),
           ),
         ],
       ),
@@ -130,8 +131,7 @@ class _AIResultWidgetState extends ConsumerState<AIResultWidget> {
   String? _resultText;
   String? _errorText;
 
-  Future<void> _handleAIAction(
-      Future<String> Function(String) aiAction) async {
+  Future<void> _handleAIAction(Future<String> Function(String) aiAction) async {
     if (widget.contentToAnalyze.trim().isEmpty) {
       setState(() {
         _errorText = "Não há conteúdo para analisar.";
@@ -179,7 +179,8 @@ class _AIResultWidgetState extends ConsumerState<AIResultWidget> {
             ElevatedButton.icon(
               icon: const Icon(Icons.spellcheck),
               label: const Text('Corrigir e Otimizar'),
-              onPressed: _isLoading ? null : () => _handleAIAction(aiService.correct),
+              onPressed:
+                  _isLoading ? null : () => _handleAIAction(aiService.correct),
             ),
             // Outros botões como "Traduzir" podem ser adicionados aqui
           ],
@@ -203,9 +204,7 @@ class _AIResultWidgetState extends ConsumerState<AIResultWidget> {
             child: Text(
               _errorText ?? 'Clique em um botão para iniciar a análise.',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                color: _errorText != null ? Colors.red : null,
-              ),
+              style: TextStyle(color: _errorText != null ? Colors.red : null),
             ),
           ),
       ],
@@ -225,7 +224,10 @@ class _AIResultWidgetState extends ConsumerState<AIResultWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Sugestão da IA:', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text(
+              'Sugestão da IA:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 8),
             SelectableText(suggestion),
             const SizedBox(height: 16),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intelliresume/core/providers/translate_provider.dart';
+import 'package:intelliresume/core/providers/languages/translate_provider.dart';
 import 'package:intelliresume/data/models/cv_data.dart';
 
 final selectedLanguageProvider = StateProvider<String>((ref) => 'en');

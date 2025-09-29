@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intelliresume/core/providers/accessibility_provider.dart';
-import 'package:intelliresume/core/providers/locale_provider.dart';
+import 'package:intelliresume/core/providers/accessibility/accessibility_provider.dart';
+import 'package:intelliresume/core/providers/languages/locale_provider.dart';
 import 'package:intelliresume/presentation/widgets/ad_banner.dart';
 import 'package:intelliresume/web_app/pages/sections/about_section.dart';
 import 'package:intelliresume/web_app/pages/sections/contact_section.dart';

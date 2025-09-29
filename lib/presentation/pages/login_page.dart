@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intelliresume/core/providers/cv_provider.dart';
-import '../../core/providers/user_provider.dart';
+import 'package:intelliresume/core/providers/resume/cv_provider.dart';
+import '../../core/providers/user/user_provider.dart';
 import '../../data/datasources/remote/auth_resume_ds.dart';
 import '../../core/utils/app_localizations.dart';
 
@@ -18,6 +18,22 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   bool _loading = false;
   bool _obscurePassword = true;
   String? _errorMessage;
+
+  Future<void> _forgetPassword(String? email) async {
+    setState(() {
+      _loading = true;
+    });
+    if (email != null && email.isEmpty) return;
+    setState(() {
+      _loading = false;
+      _errorMessage = 'Preencha o campo email';
+    });
+    await AuthService.instance.sendPasswordReset(email: email!);
+    setState(() {
+      _loading = false;
+      _errorMessage = 'Um email foi enviado para $email';
+    });
+  }
 
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
@@ -128,18 +144,29 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         onSaved: (v) => password = v!,
                       ),
                       const SizedBox(height: 24),
-                      if (_errorMessage != null)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 16.0),
-                          child: Text(
-                            _errorMessage!,
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.error,
-                              fontWeight: FontWeight.bold,
+                      _errorMessage != null
+                          ? Padding(
+                            padding: const EdgeInsets.only(bottom: 16.0),
+                            child: Text(
+                              _errorMessage!,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.error,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                            textAlign: TextAlign.center,
+                          )
+                          : SizedBox.shrink(),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: () => _forgetPassword(email),
+                            child: Text(t.forgotPassword),
                           ),
                         ),
+                      ),
                       SizedBox(
                         width: double.infinity,
                         height: 50,

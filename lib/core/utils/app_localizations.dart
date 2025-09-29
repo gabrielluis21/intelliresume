@@ -67,6 +67,7 @@ class AppLocalizations {
       'noHistory': 'No History',
       'history': 'History',
       'formTitle': 'Fill the form',
+      'forgetPassword': 'Forgot Password?',
       'save': 'Save',
       'cancel': 'Cancel',
       'aboutIntelliTitle': 'About IntelliResume',
@@ -113,6 +114,7 @@ class AppLocalizations {
       'formTitle': 'Preencha o formulário',
       'save': 'Salvar',
       'cancel': 'Cancelar',
+      'forgetPassword': 'Esqueci minha senha',
       'aboutIntelliTitle': 'Sobre o IntelliResume',
       'aboutIntelliDescription':
           'O IntelliResume nasceu da necessidade de simplificar e otimizar a criação de currículos para um mercado de trabalho cada vez mais global e competitivo.\n\nNossa plataforma utiliza Inteligência Artificial para ajudar você a construir um currículo impactante, adaptado para diferentes países e culturas, e traduzido profissionalmente. Queremos que você se destaque e conquiste a vaga dos seus sonhos, onde quer que ela esteja.',
@@ -190,6 +192,8 @@ class AppLocalizations {
       _localizedValues[locale.languageCode]!['aboutIntelliDescription']!;
   String get accessibilityInfo =>
       _localizedValues[locale.languageCode]!['accessibilityInfo']!;
+  String get forgotPassword =>
+      _localizedValues[locale.languageCode]!['forgetPassword']!;
 }
 
 class _AppLocalizationsDelegate

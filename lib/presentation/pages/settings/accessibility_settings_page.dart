@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intelliresume/core/providers/accessibility_provider.dart';
+import 'package:intelliresume/core/providers/accessibility/accessibility_provider.dart';
 
 class AccessibilitySettingsPage extends ConsumerWidget {
   const AccessibilitySettingsPage({super.key});
@@ -11,9 +11,7 @@ class AccessibilitySettingsPage extends ConsumerWidget {
     final notifier = ref.read(accessibilityProvider.notifier);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Configurações de Acessibilidade'),
-      ),
+      appBar: AppBar(title: const Text('Configurações de Acessibilidade')),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
@@ -28,7 +26,9 @@ class AccessibilitySettingsPage extends ConsumerWidget {
           const Divider(),
           SwitchListTile(
             title: const Text('Texto em Negrito'),
-            subtitle: const Text('Deixa todo o texto do aplicativo em negrito.'),
+            subtitle: const Text(
+              'Deixa todo o texto do aplicativo em negrito.',
+            ),
             value: settings.boldText,
             onChanged: (bool value) {
               notifier.toggleBoldText(value);
@@ -37,7 +37,9 @@ class AccessibilitySettingsPage extends ConsumerWidget {
           const Divider(),
           ListTile(
             title: const Text('Tamanho da Fonte'),
-            subtitle: Text('Escala atual: ${settings.fontScale.toStringAsFixed(1)}x'),
+            subtitle: Text(
+              'Escala atual: ${settings.fontScale.toStringAsFixed(1)}x',
+            ),
           ),
           Slider(
             value: settings.fontScale,

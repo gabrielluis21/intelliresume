@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intelliresume/core/providers/cv_provider.dart';
+import 'package:intelliresume/core/providers/resume/cv_provider.dart';
 import 'package:intelliresume/domain/entities/user_profile.dart';
 import 'package:intelliresume/services/image_upload_service.dart';
-import '../../core/providers/user_provider.dart';
+import '../../core/providers/user/user_provider.dart';
 import '../widgets/layout_template.dart';
 
 class EditProfilePage extends ConsumerStatefulWidget {
