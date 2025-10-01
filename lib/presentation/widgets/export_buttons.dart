@@ -22,24 +22,32 @@ class ExportButtons extends ConsumerWidget {
         ElevatedButton.icon(
           icon: const Icon(Icons.picture_as_pdf),
           label: const Text('PDF'),
-          onPressed: selectedTemplate == null
-              ? null
-              : () async {
-                  final pdf = await selectedTemplate.buildPdf(resumeData, context);
-                  context.goNamed('preview-pdf', extra: pdf);
-                },
+          onPressed:
+              selectedTemplate != null
+                  ? () async {
+                    final pdf = await selectedTemplate.buildPdf(
+                      resumeData,
+                      context,
+                    );
+                    context.goNamed('preview-pdf', extra: pdf);
+                  }
+                  : null,
         ),
         const SizedBox(width: 5),
         // Botão Imprimir
         ElevatedButton.icon(
           icon: const Icon(Icons.print),
           label: const Text('Imprimir'),
-          onPressed: selectedTemplate == null
-              ? null
-              : () async {
-                  final pdf = await selectedTemplate.buildPdf(resumeData, context);
-                  await exportService.printDocument(pdf);
-                },
+          onPressed:
+              selectedTemplate == null
+                  ? null
+                  : () async {
+                    final pdf = await selectedTemplate.buildPdf(
+                      resumeData,
+                      context,
+                    );
+                    await exportService.printDocument(pdf);
+                  },
         ),
         const SizedBox(width: 5),
         const TemplateSelector(),

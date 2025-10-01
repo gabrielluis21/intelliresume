@@ -249,7 +249,7 @@ class _AIAssistantPanelState extends ConsumerState<AIAssistantPanel> {
     if (resumeContent.trim().isEmpty) {
       return const Center(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.0),
           child: Text(
             'Seu currículo está vazio. Adicione seções e conteúdo para vê-lo aqui.',
             textAlign: TextAlign.center,

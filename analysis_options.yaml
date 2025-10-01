@@ -18,6 +18,8 @@ analyzer:
     depend_on_referenced_packages: ignore
     deprecated_member_use: ignore
     unused_element: ignore
+    unnecessary_null_comparison: ignore
+    unused_local_variable: ignore
 include: package:flutter_lints/flutter.yaml
 
 
