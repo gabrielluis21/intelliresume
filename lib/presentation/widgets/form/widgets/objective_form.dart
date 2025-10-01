@@ -54,6 +54,9 @@ class _ObjectiveFormState extends ConsumerState<ObjectiveForm> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextField(
+                onChanged: (value) {
+                  ref.read(localResumeProvider.notifier).updateObjective(value);
+                },
                 maxLines: 6,
                 minLines: 1,
                 keyboardType: TextInputType.multiline,

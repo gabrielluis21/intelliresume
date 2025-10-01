@@ -144,6 +144,12 @@ class ResumeData {
       buffer.writeln();
     }
 
+    if (about != null && about!.isNotEmpty) {
+      buffer.writeln('# SOBRE MIM');
+      buffer.writeln(about);
+      buffer.writeln();
+    }
+
     if (objective != null && objective!.isNotEmpty) {
       buffer.writeln('# OBJETIVO');
       buffer.writeln(objective);
@@ -154,6 +160,7 @@ class ResumeData {
       buffer.writeln('# EXPERIÊNCIA PROFISSIONAL');
       for (final exp in experiences!) {
         buffer.writeln('## ${exp.position ?? ''} em ${exp.company ?? ''}');
+        buffer.writeln('### De ${exp.startDate ?? ''} - ${exp.endDate ?? ''}');
         if (exp.description != null && exp.description!.isNotEmpty) {
           buffer.writeln(exp.description);
         }
@@ -165,6 +172,7 @@ class ResumeData {
       buffer.writeln('# EDUCAÇÃO');
       for (final edu in educations!) {
         buffer.writeln('## ${edu.degree ?? ''} em ${edu.school ?? ''}');
+        buffer.writeln('### De ${edu.startDate ?? ''} - ${edu.endDate ?? ''}');
         if (edu.description != null && edu.description!.isNotEmpty) {
           buffer.writeln(edu.description);
         }
@@ -175,6 +183,12 @@ class ResumeData {
     if (skills != null && skills!.isNotEmpty) {
       buffer.writeln('# HABILIDADES');
       buffer.writeln(skills!.map((s) => s.name).join(', '));
+      buffer.writeln();
+    }
+
+    if (socials != null && socials!.isNotEmpty) {
+      buffer.writeln('# REDES SOCIAIS');
+      buffer.writeln(socials!.map((s) => s.platform).join(', '));
       buffer.writeln();
     }
 

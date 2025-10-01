@@ -126,52 +126,74 @@ class OpenAIService implements AIService, TemplateTranslationService {
 
   @override
   Future<String> correct(String text) async {
-    final chat = await _openAI.onChatCompletion(
-      request: ChatCompleteText(
-        model: GptTurboChatModel(),
-        messages: [
-          Map.of({
-            'role': Role.system,
-            'content': 'Corrija erros gramaticais e de estilo:',
-          }),
-          Map.of({'role': Role.user, 'content': text}),
-        ],
-      ),
-    );
-    return chat!.choices.first.message!.content;
+    if (!_isInitialized) return text;
+    try {
+      final chat = await _openAI.onChatCompletion(
+        request: ChatCompleteText(
+          model: GptTurboChatModel(),
+          messages: [
+            Map.of({
+              'role': Role.system,
+              'content':
+                  'Corrija erros gramaticais e de estilo, retornando apenas o texto corrigido:',
+            }),
+            Map.of({'role': Role.user, 'content': text}),
+          ],
+        ),
+      );
+      return chat?.choices.first.message?.content ?? text;
+    } catch (e) {
+      print('Erro ao chamar a API OpenAI para correção: $e');
+      return text;
+    }
   }
 
   @override
   Future<String> evaluate(String text) async {
-    final chat = await _openAI.onChatCompletion(
-      request: ChatCompleteText(
-        model: GptTurboChatModel(),
-        messages: [
-          Map.of({
-            'role': Role.system,
-            'content': 'Você é um recrutador sênior. Avalie o currículo:',
-          }),
-          Map.of({'role': Role.user, 'content': text}),
-        ],
-      ),
-    );
-    return chat!.choices.first.message!.content;
+    if (!_isInitialized) return 'Serviço de IA não inicializado.';
+    try {
+      final chat = await _openAI.onChatCompletion(
+        request: ChatCompleteText(
+          model: GptTurboChatModel(),
+          messages: [
+            Map.of({
+              'role': Role.system,
+              'content':
+                  'Você é um recrutador sênior. Avalie o seguinte texto de currículo, fornecendo sugestões claras e concisas para melhoria e me retorne o resultado:',
+            }),
+            Map.of({'role': Role.user, 'content': text}),
+          ],
+        ),
+      );
+      return chat?.choices.first.message?.content ??
+          'Não foi possível obter uma avaliação.';
+    } catch (e) {
+      print('Erro ao chamar a API OpenAI para avaliação: $e');
+      return 'Ocorreu um erro ao processar a avaliação. Tente novamente.';
+    }
   }
 
   @override
   Future<String> translate(String text, String to) async {
-    final chat = await _openAI.onChatCompletion(
-      request: ChatCompleteText(
-        model: GptTurboChatModel(),
-        messages: [
-          Map.of({
-            'role': Role.system,
-            'content': 'Traduza o texto para $to, mantendo nomes e formatação.',
-          }),
-          Map.of({'role': Role.user, 'content': text}),
-        ],
-      ),
-    );
-    return chat!.choices.first.message!.content;
+    if (!_isInitialized) return text;
+    try {
+      final chat = await _openAI.onChatCompletion(
+        request: ChatCompleteText(
+          model: GptTurboChatModel(),
+          messages: [
+            Map.of({
+              'role': Role.system,
+              'content':
+                  'Traduza o texto a seguir para $to, mantendo nomes e formatação. Retorne apenas o texto traduzido.',
+            }),
+            Map.of({'role': Role.user, 'content': text}),
+          ],
+        ),
+      );
+      return chat?.choices.first.message?.content ?? text;
+    } catch (e) {
+      print('Erro ao chamar a API OpenAI para tradução: $e');
+      return text;
+    }
   }
 }

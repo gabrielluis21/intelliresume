@@ -2,12 +2,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intelliresume/core/providers/resume/resume_template_provider.dart';
+import 'package:intelliresume/core/providers/export/export_provider.dart';
 import 'package:intelliresume/data/models/cv_data.dart';
+import 'package:intelliresume/presentation/pages/export/export_page.dart';
 import 'package:intelliresume/presentation/widgets/template_selector.dart';
-
-import '../../core/providers/export/export_provider.dart';
-import '../../core/utils/document_creator.dart';
 
 class ExportButtons extends ConsumerWidget {
   final ResumeData resumeData;
@@ -16,41 +14,36 @@ class ExportButtons extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final exportService = ref.read(exportProvider);
-    int idx;
+    final selectedTemplate = ref.watch(selectedTemplateProvider);
 
     return Row(
       children: [
         // Botão PDF
         ElevatedButton.icon(
-          icon: Icon(Icons.picture_as_pdf),
-          label: Text('PDF'),
-          onPressed: () {
-            final template = ref.read(selectedTemplateProvider);
-            final pdf = DocumentBuilder(template).generate(resumeData, context);
-            context.goNamed('preview-pdf', extra: pdf);
-
-            //await exportService.exportToPDF(pdf);
-          },
+          icon: const Icon(Icons.picture_as_pdf),
+          label: const Text('PDF'),
+          onPressed: selectedTemplate == null
+              ? null
+              : () async {
+                  final pdf = await selectedTemplate.buildPdf(resumeData, context);
+                  context.goNamed('preview-pdf', extra: pdf);
+                },
         ),
-        SizedBox(width: 5),
+        const SizedBox(width: 5),
         // Botão Imprimir
         ElevatedButton.icon(
-          icon: Icon(Icons.print),
-          label: Text('Imprimir'),
-          onPressed: () async {
-            idx = ref.read(selectedTemplateIndexProvider);
-            final template = ref.read(availableTemplatesProvider)[idx];
-            //var pdf = DocumentBuilder.buildPDF(context, resumeData);
-            final pdf = DocumentBuilder(template).generate(resumeData, context);
-            await exportService.printDocument(pdf);
-          },
+          icon: const Icon(Icons.print),
+          label: const Text('Imprimir'),
+          onPressed: selectedTemplate == null
+              ? null
+              : () async {
+                  final pdf = await selectedTemplate.buildPdf(resumeData, context);
+                  await exportService.printDocument(pdf);
+                },
         ),
-        SizedBox(width: 5),
-        TemplateSelector(),
-        SizedBox(width: 5),
-        /* ref.read(availableTemplatesProvider)[idx].id == 'international'
-            ? LanguageSelector(resume: resumeData)
-            : SizedBox.shrink(), */
+        const SizedBox(width: 5),
+        const TemplateSelector(),
+        const SizedBox(width: 5),
       ],
     );
   }

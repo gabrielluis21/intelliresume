@@ -76,6 +76,7 @@ dependencies:
   multi_split_view: ^3.6.0
   flutter_dotenv: ^5.2.1
   webview_flutter: ^4.9.0
+  google_generative_ai: ^0.2.0
 
 
 dev_dependencies:

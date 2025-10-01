@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intelliresume/core/providers/resume/cv_provider.dart';
 import 'package:intelliresume/core/providers/editor/editor_providers.dart';
 import 'package:intelliresume/data/models/cv_data.dart';
+import 'package:intelliresume/presentation/widgets/form/widgets/about_me_form.dart';
 import 'package:intelliresume/presentation/widgets/form/widgets/objective_form.dart';
 
 import 'widgets/education_form.dart';
@@ -31,6 +32,7 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
   // A lógica de gerenciamento de foco foi revertida para estabilidade.
 
   final _tabs = <Widget>[
+    const Tab(icon: Icon(Icons.person_search_outlined), text: 'Sobre Mim'),
     const Tab(icon: Icon(Icons.person_search_outlined), text: 'Objetivo'),
     const Tab(icon: Icon(Icons.work_outline), text: 'Experiência'),
     const Tab(icon: Icon(Icons.school_outlined), text: 'Educação'),
@@ -63,6 +65,8 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
 
     setState(() {
       switch (request.section) {
+        case SectionType.about:
+          break;
         case SectionType.experience:
           _currentExperienceIndex = request.index!;
           break;
@@ -138,7 +142,18 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
     final textTheme = Theme.of(context).textTheme;
 
     final tabViews = <Widget>[
-      // 1. Objetivo
+      // 1. Sobre Mim
+      SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildSectionHeader('Sobre Mim', context),
+            AboutMeForm(about: resume.about ?? ''),
+          ],
+        ),
+      ),
+      // 2. Objetivo
       SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(

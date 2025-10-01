@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intelliresume/core/providers/busines_logic_intelliresume.dart';
 import 'package:intelliresume/core/providers/resume/resume_template_provider.dart';
 import 'package:intelliresume/core/templates/resume_template.dart';
 
@@ -9,37 +8,52 @@ class TemplateSelector extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Obtém o serviço de lógica de negócio
-    final logic = ref.watch(businessLogicServiceProvider);
-    // Todos os templates disponíveis na plataforma
-    final allTemplates = ResumeTemplate.allTemplates;
-    // Filtra templates conforme plano do usuário (Free x Premium)
-    final filteredTemplates =
-        allTemplates.where((t) => logic.canUseTemplate(t.id)).toList();
-    final selected = ref.watch(selectedTemplateProvider);
+    // 1. Observa o FutureProvider que prepara a lista de templates
+    final availableTemplatesAsync = ref.watch(availableTemplatesProvider);
 
-    return SizedBox(
-      width: 220,
-      child: DropdownButton<ResumeTemplate>(
-        value: selected,
-        items:
-            filteredTemplates
-                .map(
-                  (element) => DropdownMenuItem(
-                    value: element,
-                    child: Text(element.displayName),
-                  ),
-                )
-                .toList(),
-        onChanged: (idx) {
-          if (idx != null) {
-            print(idx);
-            ref.read(selectedTemplateProvider.notifier).state = idx;
-          }
-        },
-        hint: const Text('Selecione um template'),
-        isExpanded: true,
-      ),
+    // 2. Usa o .when para lidar com os estados de carregamento, erro e sucesso
+    return availableTemplatesAsync.when(
+      loading:
+          () => const SizedBox(
+            width: 220,
+            child: Center(child: CircularProgressIndicator()),
+          ),
+      error:
+          (err, stack) =>
+              SizedBox(width: 220, child: Text('Erro ao carregar templates')),
+      data: (filteredTemplates) {
+        // Uma vez que os dados carregam, garantimos que um template inicial seja selecionado.
+        final selected = ref.watch(selectedTemplateProvider);
+        if (selected == null && filteredTemplates.isNotEmpty) {
+          Future.microtask(() {
+            ref.read(selectedTemplateProvider.notifier).state =
+                filteredTemplates.first;
+          });
+        }
+
+        return SizedBox(
+          width: 220,
+          child: DropdownButton<ResumeTemplate>(
+            value: selected,
+            items:
+                filteredTemplates
+                    .map(
+                      (element) => DropdownMenuItem(
+                        value: element,
+                        child: Text(element.displayName),
+                      ),
+                    )
+                    .toList(),
+            onChanged: (template) {
+              if (template != null) {
+                ref.read(selectedTemplateProvider.notifier).state = template;
+              }
+            },
+            hint: const Text('Selecione um template'),
+            isExpanded: true,
+          ),
+        );
+      },
     );
   }
 }

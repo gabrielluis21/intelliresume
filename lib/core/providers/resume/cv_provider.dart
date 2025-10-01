@@ -101,6 +101,10 @@ class LocalResumeNotifier extends StateNotifier<ResumeData> {
     state = state.copyWith(objective: objective);
   }
 
+  void updateAbout(String about) {
+    state = state.copyWith(about: about);
+  }
+
   void removeObjective() {
     state = state.copyWith(objective: '');
   }

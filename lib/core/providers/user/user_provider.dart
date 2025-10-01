@@ -1,37 +1,35 @@
 import 'dart:async';
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intelliresume/data/datasources/local/local_user_profile_ds.dart';
-import 'package:intelliresume/data/datasources/remote/remote_user_profile_ds.dart';
-import 'package:intelliresume/data/repositories/user_profile_repository.dart';
-import 'package:intelliresume/domain/entities/user_profile.dart';
-import 'package:intelliresume/domain/entities/plan_type.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intelliresume/core/providers/data/data_provider.dart'; // NOVA IMPORTAÇÃO
+import 'package:intelliresume/data/repositories/user_profile_repository.dart';
+import 'package:intelliresume/domain/entities/plan_type.dart';
+import 'package:intelliresume/domain/entities/user_profile.dart';
 
 // Provider para a instância do FirebaseAuth
-final firebaseAuthProvider = Provider<FirebaseAuth>((ref) => FirebaseAuth.instance);
+final firebaseAuthProvider = Provider<FirebaseAuth>(
+  (ref) => FirebaseAuth.instance,
+);
 
-// Provider para o repositório
-final userProfileRepositoryProvider = Provider<UserProfileRepository>((ref) {
-  final local = HiveUserProfileDataSource();
-  final remote = RemoteUserProfileDataSource();
-  return UserProfileRepositoryImpl(remote: remote, local: local);
-});
+// A DEFINIÇÃO ANTIGA DO userProfileRepositoryProvider FOI REMOVIDA DAQUI.
 
 // Provider para o perfil do usuário
 final userProfileProvider =
     StateNotifierProvider<UserProfileNotifier, AsyncValue<UserProfile?>>((ref) {
-  final repository = ref.watch(userProfileRepositoryProvider);
-  final auth = ref.watch(firebaseAuthProvider);
-  return UserProfileNotifier(repository, auth);
-});
+      // AGORA ELE USA O PROVIDER CENTRALIZADO!
+      final repository = ref.watch(userProfileRepositoryProvider);
+      final auth = ref.watch(firebaseAuthProvider);
+      return UserProfileNotifier(repository, auth);
+    });
 
 class UserProfileNotifier extends StateNotifier<AsyncValue<UserProfile?>> {
   final UserProfileRepository _repository;
   final FirebaseAuth _auth;
   StreamSubscription? _subscription;
 
-  UserProfileNotifier(this._repository, this._auth) : super(const AsyncLoading()) {
+  UserProfileNotifier(this._repository, this._auth)
+    : super(const AsyncLoading()) {
     _init();
   }
 

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intelliresume/core/providers/resume/cv_provider.dart';
-import '../../core/providers/user/user_provider.dart';
+import 'package:intelliresume/core/providers/data/data_provider.dart';
+import 'package:intelliresume/core/providers/domain_providers.dart';
 import '../../data/datasources/remote/auth_resume_ds.dart';
 import '../../core/utils/app_localizations.dart';
 
@@ -49,8 +50,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         password: password,
       );
 
-      final userProfileRepository = ref.read(userProfileRepositoryProvider);
-      final user = await userProfileRepository.watchProfile(logged.uid).first;
+      final loadUserProfile = ref.read(loadUserProfileUseCaseProvider);
+      final user = await loadUserProfile(logged.uid);
       ref.read(localResumeProvider.notifier).updatePersonalInfo(user);
 
       if (mounted) context.goNamed('home');

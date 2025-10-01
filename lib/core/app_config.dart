@@ -7,4 +7,10 @@ class AppConfig {
 
   // Lê a chave pública do Stripe a partir do arquivo .env
   static final stripePublicKey = dotenv.env['STRIPE_PUBLIC_KEY'] ?? '';
+
+  // Lê a chave da API do Google Gemini a partir do arquivo .env
+  static final geminiApiKey = dotenv.env['GEMINI_API_KEY'] ?? '';
+
+  // Lê o provedor de IA selecionado a partir do arquivo .env
+  static final aiProvider = dotenv.env['AI_PROVIDER'] ?? '';
 }

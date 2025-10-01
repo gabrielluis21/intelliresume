@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intelliresume/core/providers/resume/cv_provider.dart';
 import 'package:intelliresume/domain/entities/user_profile.dart';
 import 'package:intelliresume/services/image_upload_service.dart';
+import 'package:intelliresume/core/providers/domain_providers.dart';
 import '../../core/providers/user/user_provider.dart';
 import '../widgets/layout_template.dart';
 
@@ -67,7 +68,6 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     setState(() => _loading = true);
 
     try {
-      final userProfileNotifier = ref.read(userProfileProvider.notifier);
       final currentProfile = ref.read(userProfileProvider).value;
 
       if (currentProfile == null) {
@@ -97,7 +97,8 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
         ),
       );
 
-      await userProfileNotifier.updateUser(updatedProfile);
+      final saveUseCase = ref.read(saveUserProfileUseCaseProvider);
+      await saveUseCase(updatedProfile);
       ref.read(localResumeProvider.notifier).updatePersonalInfo(updatedProfile);
 
       if (mounted) {

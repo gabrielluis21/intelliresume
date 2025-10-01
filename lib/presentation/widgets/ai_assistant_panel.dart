@@ -1,140 +1,62 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intelliresume/core/providers/AI/ai_providers.dart';
+import 'package:intelliresume/core/providers/AI/usage_provider.dart';
+import 'package:intelliresume/core/providers/domain_providers.dart';
 import 'package:intelliresume/core/providers/resume/cv_provider.dart';
-import 'package:intelliresume/data/models/cv_data.dart';
+import 'package:intelliresume/core/providers/user/user_provider.dart';
 
-class AIAssistantPanel extends ConsumerWidget {
+class AIAssistantPanel extends ConsumerStatefulWidget {
   const AIAssistantPanel({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final resumeData = ref.watch(localResumeProvider);
-
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            'Assistente de IA',
-            style: Theme.of(context).textTheme.titleLarge,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Selecione uma seção para analisar e otimizar seu conteúdo.',
-            style: Theme.of(context).textTheme.bodyMedium,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 24),
-          _buildSectionPanel(
-            context: context,
-            ref: ref,
-            title: 'Currículo Completo',
-            content: resumeData.toFormattedString(),
-            onApply: (suggestion) {
-              // A lógica para aplicar ao currículo inteiro é mais complexa
-              // e pode ser implementada no futuro.
-            },
-          ),
-          if (resumeData.objective != null && resumeData.objective!.isNotEmpty)
-            _buildSectionPanel(
-              context: context,
-              ref: ref,
-              title: 'Objetivo',
-              content: resumeData.objective!,
-              onApply: (suggestion) {
-                ref
-                    .read(localResumeProvider.notifier)
-                    .updateObjective(suggestion);
-              },
-            ),
-          ..._buildExperiencePanels(context, ref, resumeData.experiences ?? []),
-        ],
-      ),
-    );
-  }
-
-  List<Widget> _buildExperiencePanels(
-    BuildContext context,
-    WidgetRef ref,
-    List<Experience> experiences,
-  ) {
-    return experiences.asMap().entries.map((entry) {
-      final index = entry.key;
-      final exp = entry.value;
-      final title = 'Experiência: ${exp.position ?? 'N/A'}';
-      final content = '''
-        Cargo: ${exp.position}
-        Empresa: ${exp.company}
-        Período: ${exp.startDate} - ${exp.endDate}
-        Descrição: ${exp.description}
-      ''';
-
-      return _buildSectionPanel(
-        context: context,
-        ref: ref,
-        title: title,
-        content: content,
-        onApply: (suggestion) {
-          // Aqui, idealmente, a IA retornaria apenas a descrição corrigida.
-          // A lógica de "diff" e aplicação parcial seria mais robusta.
-          final newExperience = exp.copyWith(description: suggestion);
-          ref
-              .read(localResumeProvider.notifier)
-              .updateExperience(index, newExperience);
-        },
-      );
-    }).toList();
-  }
-
-  Widget _buildSectionPanel({
-    required BuildContext context,
-    required WidgetRef ref,
-    required String title,
-    required String content,
-    required ValueChanged<String> onApply,
-  }) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      child: ExpansionTile(
-        title: Text(title),
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: AIResultWidget(contentToAnalyze: content, onApply: onApply),
-          ),
-        ],
-      ),
-    );
-  }
+  ConsumerState<AIAssistantPanel> createState() => _AIAssistantPanelState();
 }
 
-// Widget interno para gerenciar o estado de cada chamada de IA
-class AIResultWidget extends ConsumerStatefulWidget {
-  final String contentToAnalyze;
-  final ValueChanged<String> onApply;
-
-  const AIResultWidget({
-    super.key,
-    required this.contentToAnalyze,
-    required this.onApply,
-  });
-
-  @override
-  ConsumerState<AIResultWidget> createState() => _AIResultWidgetState();
-}
-
-class _AIResultWidgetState extends ConsumerState<AIResultWidget> {
+class _AIAssistantPanelState extends ConsumerState<AIAssistantPanel> {
   bool _isLoading = false;
   String? _resultText;
   String? _errorText;
 
-  Future<void> _handleAIAction(Future<String> Function(String) aiAction) async {
-    if (widget.contentToAnalyze.trim().isEmpty) {
+  Future<void> _runAi(Future<String> Function(String) getResult) async {
+    // --- NOVA LÓGICA DESACOPLADA ---
+    final canUseAI = ref.read(canUseAIUseCaseProvider);
+    final userId = ref.read(userProfileProvider).value?.uid;
+    final currentInteractions = ref.read(usageTrackerProvider).aiInteractions;
+
+    if (userId == null) {
+      // Se não houver usuário, não faz nada.
+      // Idealmente, o painel nem estaria visível.
+      return;
+    }
+
+    final bool podeUsar = await canUseAI(
+      userId: userId,
+      currentAiInteractions: currentInteractions,
+    );
+
+    if (!podeUsar) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Limite de interações com IA atingido no plano gratuito.',
+            ),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+      return;
+    }
+    // --- FIM DA NOVA LÓGICA ---
+
+    final resumeContent = ref.read(localResumeProvider).toFormattedString();
+
+    if (resumeContent.trim().isEmpty) {
       setState(() {
-        _errorText = "Não há conteúdo para analisar.";
+        _errorText =
+            "Seu currículo está vazio. Adicione conteúdo para usar a IA.";
+        _resultText = null;
       });
       return;
     }
@@ -146,10 +68,13 @@ class _AIResultWidgetState extends ConsumerState<AIResultWidget> {
     });
 
     try {
-      // O prompt pode ser melhorado para dar mais contexto à IA
       final prompt =
-          'Você é um especialista em recrutamento. Revise e corrija o seguinte texto para um currículo, melhorando o impacto e a clareza:\n\n${widget.contentToAnalyze}';
-      final result = await aiAction(prompt);
+          'Você é um especialista em recrutamento. Analise o seguinte currículo:\\n\\n$resumeContent';
+      final result = await getResult(prompt);
+
+      // Registra o uso da IA (lógica de UI)
+      ref.read(usageTrackerProvider.notifier).incrementAI();
+
       setState(() {
         _resultText = result;
       });
@@ -158,9 +83,11 @@ class _AIResultWidgetState extends ConsumerState<AIResultWidget> {
         _errorText = "Ocorreu um erro ao contatar a IA: $e";
       });
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -168,83 +95,171 @@ class _AIResultWidgetState extends ConsumerState<AIResultWidget> {
   Widget build(BuildContext context) {
     final aiService = ref.watch(aiServiceProvider);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Wrap(
-          alignment: WrapAlignment.center,
-          spacing: 8.0,
-          runSpacing: 8.0,
-          children: [
-            ElevatedButton.icon(
-              icon: const Icon(Icons.spellcheck),
-              label: const Text('Corrigir e Otimizar'),
-              onPressed:
-                  _isLoading ? null : () => _handleAIAction(aiService.correct),
-            ),
-            // Outros botões como "Traduzir" podem ser adicionados aqui
-          ],
-        ),
-        const SizedBox(height: 16),
-        if (_isLoading)
-          const Center(child: CircularProgressIndicator())
-        else if (_resultText != null)
-          _buildResultCard(
-            original: widget.contentToAnalyze,
-            suggestion: _resultText!,
-            onApply: () {
-              widget.onApply(_resultText!);
-              setState(() {
-                _resultText = null; // Limpa o resultado após aplicar
-              });
-            },
-          )
-        else
-          Center(
-            child: Text(
-              _errorText ?? 'Clique em um botão para iniciar a análise.',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: _errorText != null ? Colors.red : null),
-            ),
+    return Card(
+      elevation: 2,
+      margin: const EdgeInsets.all(8),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: Colors.grey.shade300),
+      ),
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              // Top buttons
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildActionButton(
+                    text: 'Traduzir',
+                    onPressed:
+                        _isLoading
+                            ? null
+                            // TODO: Allow user to select language
+                            : () => _runAi((p) => aiService.translate(p, 'en')),
+                    backgroundColor: const Color(0xFFD7F9E9), // Light green
+                    foregroundColor: Colors.black,
+                  ),
+                  _buildActionButton(
+                    text: 'Pontos fortes e fracos',
+                    onPressed:
+                        _isLoading ? null : () => _runAi(aiService.evaluate),
+                    backgroundColor: const Color(0xFFD6EAF8), // Light blue
+                    foregroundColor: Colors.black,
+                  ),
+                  _buildActionButton(
+                    text: 'Correção ortográfica',
+                    onPressed:
+                        _isLoading ? null : () => _runAi(aiService.correct),
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.black,
+                    isOutlined: true,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              // ResultCard
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.black, width: 1.5),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: _buildResultContent(),
+              ),
+              const SizedBox(height: 16),
+              // Bottom buttons
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      // TODO: Implement resume generation
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF303F9F), // Dark blue
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
+                    ),
+                    child: const Text('Gerar currículo'),
+                  ),
+                  const SizedBox(width: 12),
+                  OutlinedButton(
+                    onPressed: () {
+                      // TODO: Implement expand panel
+                    },
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.black,
+                      side: const BorderSide(color: Colors.black),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
+                    ),
+                    child: const Text('Expandir'),
+                  ),
+                ],
+              ),
+            ],
           ),
-      ],
+        ),
+      ),
     );
   }
 
-  Widget _buildResultCard({
-    required String original,
-    required String suggestion,
-    required VoidCallback onApply,
+  Widget _buildActionButton({
+    required String text,
+    required VoidCallback? onPressed,
+    required Color backgroundColor,
+    required Color foregroundColor,
+    bool isOutlined = false,
   }) {
-    return Card(
-      elevation: 0,
-      color: Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.3),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Sugestão da IA:',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            SelectableText(suggestion),
-            const SizedBox(height: 16),
-            Center(
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.check),
-                label: const Text('Aplicar Sugestão'),
-                onPressed: onApply,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                ),
-              ),
-            ),
-          ],
+    return Flexible(
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: backgroundColor,
+          foregroundColor: foregroundColor,
+          side: isOutlined ? const BorderSide(color: Colors.black) : null,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          elevation: isOutlined ? 0 : null,
         ),
+        child: Text(text, textAlign: TextAlign.center),
       ),
+    );
+  }
+
+  Widget _buildResultContent() {
+    final resumeContent = ref.watch(localResumeProvider).toFormattedString();
+
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (_errorText != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            _errorText!,
+            style: const TextStyle(color: Colors.red),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
+    // If there's a result from the AI, show it.
+    if (_resultText != null) {
+      return Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SelectableText(_resultText!),
+      );
+    }
+    // Otherwise, show the original resume content.
+    if (resumeContent.trim().isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            'Seu currículo está vazio. Adicione seções e conteúdo para vê-lo aqui.',
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: SelectableText(resumeContent),
     );
   }
 }

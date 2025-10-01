@@ -46,7 +46,7 @@ class PricingSection extends ConsumerWidget {
                 context,
                 ref,
                 title: AppLocalizations.of(context).premiumPlan,
-                price: 'R\$14,90/mês',
+                price: 'R\$29,00/mês',
                 description:
                     AppLocalizations.of(context).planPremiumDetailsShort,
                 isPremium: true,
@@ -122,7 +122,7 @@ class PricingSection extends ConsumerWidget {
   Future<void> _initiatePurchase(BuildContext context, WidgetRef ref) async {
     final purchaseController = ref.read(purchaseControllerProvider.notifier);
     final success = await purchaseController.initiatePurchase(
-      primaryUrl: 'https://buy.stripe.com/test_abc123456',
+      primaryUrl: 'https://buy.stripe.com/eVq4gAa4U4GoeNO9R1cwg00',
       fallbackUrl: 'https://mpago.la/123ABC',
       showFallbackDialog:
           (title, content) => showDialog<bool>(

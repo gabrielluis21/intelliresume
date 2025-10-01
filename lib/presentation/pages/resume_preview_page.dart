@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intelliresume/core/providers/editor/editor_providers.dart';
 import 'package:intelliresume/core/providers/resume/cv_provider.dart';
 import 'package:intelliresume/core/providers/user/user_provider.dart';
-import 'package:intelliresume/data/models/cv_data.dart';
 import 'package:intelliresume/presentation/pages.dart';
 import 'package:intelliresume/presentation/pages/export/export_page.dart';
 import 'package:intelliresume/presentation/widgets/ai_assistant_panel.dart';
 
 class ResumePreviewPage extends ConsumerStatefulWidget {
-  const ResumePreviewPage({super.key, this.resumeData});
-
-  final ResumeData? resumeData;
+  const ResumePreviewPage({super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -31,7 +29,7 @@ class _ResumePreviewPageState extends ConsumerState<ResumePreviewPage>
   void initState() {
     super.initState();
     _tabController = TabController(length: _tabs.length, vsync: this);
-    print(widget.resumeData?.toMap());
+    print(ref.read(localResumeProvider).toMap());
   }
 
   @override
@@ -44,9 +42,14 @@ class _ResumePreviewPageState extends ConsumerState<ResumePreviewPage>
   Widget build(BuildContext context) {
     final tabViews = <Widget>[
       ResumePreview(
-        resumeData: widget.resumeData ?? ref.watch(localResumeProvider),
+        resumeData: ref.watch(localResumeProvider),
         userData: ref.watch(userProfileProvider).value,
-        onSectionEdit: (type, index) {},
+        onSectionEdit: (type, index) {
+          ref.read(editRequestProvider.notifier).state = EditRequest(
+            section: type,
+            index: index,
+          );
+        },
       ),
       AIAssistantPanel(),
       ExportPage(resumeData: ref.watch(localResumeProvider)),

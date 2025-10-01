@@ -123,7 +123,8 @@ class _ExperienceFormState extends ConsumerState<ExperienceForm> {
             TextFormField(
               focusNode: widget.companyFocusNode,
               controller: _companyController,
-              //onChanged: (_) => _updateExperience(),
+
+              ///onChanged: (_) => _updateExperience(),
               decoration: const InputDecoration(
                 labelText: 'Empresa',
                 border: OutlineInputBorder(),
@@ -174,7 +175,8 @@ class _ExperienceFormState extends ConsumerState<ExperienceForm> {
                 Expanded(
                   child: TextFormField(
                     controller: _endDateController,
-                    //onChanged: (_) => _updateExperience(),
+
+                    ///onChanged: (_) => _updateExperience(),
                     decoration: InputDecoration(
                       labelText: 'Data de Término',
                       border: const OutlineInputBorder(),
@@ -203,7 +205,7 @@ class _ExperienceFormState extends ConsumerState<ExperienceForm> {
             const SizedBox(height: 12),
             TextFormField(
               controller: _descriptionController,
-              //onChanged: (_) => _updateExperience(),
+              onChanged: (_) => _updateExperience(),
               decoration: const InputDecoration(
                 labelText: 'Descrição (opcional)',
                 border: OutlineInputBorder(),

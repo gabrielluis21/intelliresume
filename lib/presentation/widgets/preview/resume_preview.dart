@@ -134,6 +134,18 @@ class ResumePreview extends ConsumerWidget {
         const SizedBox(height: 8),
 
         buildSectionCard(
+          title: 'Sobre Mim',
+          emptyStateText: 'Faça um breve resumo sobre você.',
+          emptyStateIcon: Icons.person_outline,
+          isEmpty: data?.about?.isEmpty ?? true,
+          sectionType: SectionType.about,
+          child: SelectableText(
+            data?.about ?? "",
+            style: textTheme.bodyMedium?.copyWith(height: 1.5),
+          ),
+        ),
+
+        buildSectionCard(
           title: t.objective,
           emptyStateText: t.noObjectives,
           emptyStateIcon: Icons.track_changes_outlined,

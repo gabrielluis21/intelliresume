@@ -163,9 +163,7 @@ class ResumeFormPage extends ConsumerWidget {
                                     ),
                                   ),
                                   Expanded(
-                                    child: ResumePreviewPage(
-                                      resumeData: resumeData,
-                                    ),
+                                    child: ResumePreviewPage(),
                                   ),
                                 ],
                               ),
