@@ -11,8 +11,8 @@ final openAIServiceProvider = Provider<OpenAIService>((ref) {
 
 /// Provider que instancia o serviço de IA do Google Gemini com a chave de API.
 final geminiServiceProvider = Provider<GeminiService>((ref) {
-  final apiKey = AppConfig.geminiApiKey;
-  return GeminiService(apiKey: apiKey);
+  ///final apiKey = AppConfig.geminiApiKey;
+  return GeminiService();
 });
 
 /// Provider para o serviço de IA voltado ao usuário.

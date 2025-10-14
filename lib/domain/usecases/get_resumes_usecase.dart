@@ -1,12 +1,12 @@
 import 'package:intelliresume/data/models/cv_model.dart';
 import 'package:intelliresume/domain/repositories/resume_repository.dart';
 
-class SaveResumeUseCase {
+class GetResumesUsecase {
   final ResumeRepository repository;
-  SaveResumeUseCase(this.repository);
 
-  Future<void> call(String userId, CVModel resume) {
-    return repository.saveResume(userId, resume);
+  GetResumesUsecase(this.repository);
+
+  Stream<List<CVModel>> call(String userId) {
+    return repository.getResumes(userId);
   }
 }
-

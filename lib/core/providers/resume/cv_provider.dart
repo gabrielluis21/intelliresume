@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Necessário para o provider remoto
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intelliresume/core/providers/user/user_provider.dart';
 
 import '../../../data/models/cv_data.dart';
@@ -7,20 +7,33 @@ import '../../../domain/entities/user_profile.dart';
 
 // --- PROVIDER DE ESTADO LOCAL ---
 
+import 'dart:async';
+import 'package:flutter/foundation.dart';
+import 'package:intelliresume/core/providers/domain_providers.dart';
+
+
+// --- PROVIDER DE ESTADO LOCAL ---
+
 /// Notifier que contém a lógica de estado para o currículo sendo editado na UI.
 class LocalResumeNotifier extends StateNotifier<ResumeData> {
-  LocalResumeNotifier() : super(ResumeData.initial());
+  final Ref _ref;
+
+  LocalResumeNotifier(this._ref) : super(ResumeData.initial()) {
+    // Listen to userProfileProvider changes
+    _ref.listen<AsyncValue<UserProfile?>>(userProfileProvider, (previous, next) {
+      final newUserProfile = next.value;
+      // Update personalInfo in ResumeData when userProfile changes
+      state = state.copyWith(personalInfo: newUserProfile);
+    });
+  }
 
   /// Inicializa o estado com dados vindos do backend (usado no modo de edição).
   void initialize(ResumeData initialData) {
-    state = initialData;
+    // Ensure personalInfo from the current user is merged
+    final currentUserProfile = _ref.read(userProfileProvider).value;
+    state = initialData.copyWith(personalInfo: currentUserProfile);
   }
 
-  void updatePersonalInfo(UserProfile? userProfile) {
-    state = state.copyWith(personalInfo: userProfile);
-  }
-
-  // ... todos os outros métodos (addExperience, updateSkill, etc.) permanecem aqui ...
   // Experiências
   void addExperience(Experience? newExperience) {
     state = state.copyWith(
@@ -38,6 +51,44 @@ class LocalResumeNotifier extends StateNotifier<ResumeData> {
     final newExperiences = List<Experience>.from(state.experiences!);
     newExperiences.removeAt(index);
     state = state.copyWith(experiences: newExperiences);
+  }
+
+  // Projetos
+  void addProject(Project? newProject) {
+    state = state.copyWith(
+      projects: [...state.projects!, newProject!],
+    );
+  }
+
+  void updateProject(int index, Project project) {
+    final newProjects = List<Project>.from(state.projects!);
+    newProjects[index] = project;
+    state = state.copyWith(projects: newProjects);
+  }
+
+  void removeProject(int index) {
+    final newProjects = List<Project>.from(state.projects!);
+    newProjects.removeAt(index);
+    state = state.copyWith(projects: newProjects);
+  }
+
+  // Certificados
+  void addCertificate(Certificate? newCertificate) {
+    state = state.copyWith(
+      certificates: [...state.certificates!, newCertificate!],
+    );
+  }
+
+  void updateCertificate(int index, Certificate certificate) {
+    final newCertificates = List<Certificate>.from(state.certificates!);
+    newCertificates[index] = certificate;
+    state = state.copyWith(certificates: newCertificates);
+  }
+
+  void removeCertificate(int index) {
+    final newCertificates = List<Certificate>.from(state.certificates!);
+    newCertificates.removeAt(index);
+    state = state.copyWith(certificates: newCertificates);
   }
 
   // Educação
@@ -108,13 +159,18 @@ class LocalResumeNotifier extends StateNotifier<ResumeData> {
   void removeObjective() {
     state = state.copyWith(objective: '');
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 }
 
 /// Provider que expõe o [LocalResumeNotifier].
 /// A UI (formulário e preview) irá observar este provider para obter os dados ao vivo.
 final localResumeProvider =
     StateNotifierProvider<LocalResumeNotifier, ResumeData>((ref) {
-      return LocalResumeNotifier();
+      return LocalResumeNotifier(ref);
     });
 
 // --- PROVIDER DE DADOS REMOTOS ---

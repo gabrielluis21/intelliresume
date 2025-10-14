@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intelliresume/core/providers/resume/cv_provider.dart';
 import 'package:intelliresume/domain/entities/user_profile.dart';
 import 'package:intelliresume/services/image_upload_service.dart';
 import 'package:intelliresume/core/providers/domain_providers.dart';
@@ -99,7 +98,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
 
       final saveUseCase = ref.read(saveUserProfileUseCaseProvider);
       await saveUseCase(updatedProfile);
-      ref.read(localResumeProvider.notifier).updatePersonalInfo(updatedProfile);
+      //ref.read(localResumeProvider.notifier).updatePersonalInfo(updatedProfile);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

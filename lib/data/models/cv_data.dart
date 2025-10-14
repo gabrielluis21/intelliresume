@@ -188,7 +188,19 @@ class ResumeData {
 
     if (socials != null && socials!.isNotEmpty) {
       buffer.writeln('# REDES SOCIAIS');
-      buffer.writeln(socials!.map((s) => s.platform).join(', '));
+      buffer.writeln({socials!.map((s) => s.platform).join(', ')});
+      buffer.writeln();
+    }
+
+    if (projects != null && projects!.isNotEmpty) {
+      buffer.writeln('# PROJETOS');
+      buffer.writeln(projects!.map((p) => p.name).join(', '));
+      buffer.writeln();
+    }
+
+    if (certificates != null && certificates!.isNotEmpty) {
+      buffer.writeln('# REDES SOCIAIS');
+      buffer.writeln(certificates!.map((c) => c.courseName).join(', '));
       buffer.writeln();
     }
 
@@ -327,43 +339,60 @@ class Social {
 class Project {
   String? name;
   String? description;
-  List<String>? technologies;
   String? url;
+  String? startYear;
+  String? endYear;
+  List<String>? attachments;
 
-  Project({this.name, this.description, this.technologies, this.url});
+  Project({
+    this.name,
+    this.description,
+    this.url,
+    this.startYear,
+    this.endYear,
+    this.attachments,
+  });
 
   Map<String, dynamic> toJson() {
     return {
       'name': name,
       'description': description,
-      'technologies': technologies != null ? technologies?.map((e) => e) : [],
       'url': url,
+      'startYear': startYear,
+      'endYear': endYear,
+      'attachments': attachments,
     };
   }
 
   factory Project.fromJson(Map<String, dynamic> json) {
     return Project(
-      name: json['name'] as String,
-      description: json['description'] as String,
-      technologies:
-          json['tecnologies'] != null
-              ? List<String>.of(json['technologies'].map((e) => e))
-              : List<String>.empty(growable: true),
-      url: json['url'] as String,
+      name: json['name'] as String?,
+      description: json['description'] as String?,
+      url: json['url'] as String?,
+      startYear: json['startYear'] as String?,
+      endYear: json['endYear'] as String?,
+      attachments:
+          (json['attachments'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList(),
     );
   }
 
   Project copyWith({
     String? name,
     String? description,
-    List<String>? technologies,
     String? url,
+    String? startYear,
+    String? endYear,
+    List<String>? attachments,
   }) {
     return Project(
       name: name ?? this.name,
       description: description ?? this.description,
-      technologies: technologies ?? this.technologies,
       url: url ?? this.url,
+      startYear: startYear ?? this.startYear,
+      endYear: endYear ?? this.endYear,
+      attachments: attachments ?? this.attachments,
     );
   }
 }
@@ -371,48 +400,63 @@ class Project {
 class Certificate {
   String? courseName;
   String? institution;
-  String? issueDate;
+  String? workload;
+  String? startDate;
+  String? endDate;
   String? certificateUrl;
-  bool? isOnline;
+  List<String>? attachments;
 
   Certificate({
     this.courseName,
     this.institution,
-    this.issueDate,
+    this.workload,
+    this.startDate,
+    this.endDate,
     this.certificateUrl,
-    this.isOnline,
+    this.attachments,
   });
 
   Certificate copyWith({
     String? courseName,
     String? institution,
-    String? issueDate,
+    String? workload,
+    String? startDate,
+    String? endDate,
     String? certificateUrl,
-    bool? isOnline,
+    List<String>? attachments,
   }) {
     return Certificate(
       courseName: courseName ?? this.courseName,
       institution: institution ?? this.institution,
-      issueDate: issueDate ?? this.issueDate,
+      workload: workload ?? this.workload,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
       certificateUrl: certificateUrl ?? this.certificateUrl,
-      isOnline: isOnline ?? this.isOnline,
+      attachments: attachments ?? this.attachments,
     );
   }
 
   Map<String, dynamic> toJson() => {
     'courseName': courseName,
     'institution': institution,
-    'issueDate': issueDate,
+    'workload': workload,
+    'startDate': startDate,
+    'endDate': endDate,
     'certificateUrl': certificateUrl,
-    'isOnline': isOnline,
+    'attachments': attachments,
   };
 
   factory Certificate.fromJson(Map<String, dynamic> json) => Certificate(
-    courseName: json['courseName'],
-    institution: json['institution'],
-    issueDate: json['issueDate'],
-    certificateUrl: json['certificateUrl'],
-    isOnline: json['isOnline'],
+    courseName: json['courseName'] as String?,
+    institution: json['institution'] as String?,
+    workload: json['workload'] as String?,
+    startDate: json['startDate'] as String?,
+    endDate: json['endDate'] as String?,
+    certificateUrl: json['certificateUrl'] as String?,
+    attachments:
+        (json['attachments'] as List<dynamic>?)
+            ?.map((e) => e as String)
+            .toList(),
   );
 }
 

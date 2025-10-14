@@ -4,7 +4,9 @@ import 'package:intelliresume/core/providers/resume/cv_provider.dart';
 import 'package:intelliresume/core/providers/editor/editor_providers.dart';
 import 'package:intelliresume/data/models/cv_data.dart';
 import 'package:intelliresume/presentation/widgets/form/widgets/about_me_form.dart';
+import 'package:intelliresume/presentation/widgets/form/widgets/certificate_form.dart';
 import 'package:intelliresume/presentation/widgets/form/widgets/objective_form.dart';
+import 'package:intelliresume/presentation/widgets/form/widgets/project_form.dart';
 
 import 'widgets/education_form.dart';
 import 'widgets/experience_form.dart';
@@ -12,7 +14,8 @@ import 'widgets/skill_form.dart';
 import 'widgets/social_form.dart';
 
 class ResumeForm extends ConsumerStatefulWidget {
-  const ResumeForm({super.key});
+  final ResumeData? resume;
+  const ResumeForm({super.key, this.resume});
 
   @override
   ConsumerState<ResumeForm> createState() => _ResumeFormState();
@@ -27,6 +30,8 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
   int _currentEducationIndex = 0;
   int _currentSkillIndex = 0;
   int _currentSocialIndex = 0;
+  int _currentProjectIndex = 0;
+  int _currentCertificateIndex = 0;
 
   // Focus Nodes
   // A lógica de gerenciamento de foco foi revertida para estabilidade.
@@ -38,6 +43,8 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
     const Tab(icon: Icon(Icons.school_outlined), text: 'Educação'),
     const Tab(icon: Icon(Icons.lightbulb_outline), text: 'Habilidades'),
     const Tab(icon: Icon(Icons.link_outlined), text: 'Social'),
+    const Tab(icon: Icon(Icons.folder_outlined), text: 'Projetos'),
+    const Tab(icon: Icon(Icons.badge_outlined), text: 'Certificados'),
     const Tab(
       icon: Icon(Icons.accessibility_new_outlined),
       text: 'Acessibilidade',
@@ -50,7 +57,8 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
     _tabController = TabController(length: _tabs.length, vsync: this);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(localResumeProvider.notifier).initialize(ResumeData.initial());
+      final initialData = widget.resume ?? ResumeData.initial();
+      ref.read(localResumeProvider.notifier).initialize(initialData);
     });
   }
 
@@ -80,6 +88,12 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
           _currentSocialIndex = request.index!;
           break;
         case SectionType.objective:
+          break;
+        case SectionType.project:
+          _currentProjectIndex = request.index!;
+          break;
+        case SectionType.certificate:
+          _currentCertificateIndex = request.index!;
           break;
       }
     });
@@ -291,7 +305,72 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
         },
       ),
 
-      // 6. Acessibilidade
+      // 6. Projetos
+      _buildFocusedEditorTab(
+        context: context,
+        resume: resume,
+        itemLabel: 'Projeto',
+        currentIndex: _currentProjectIndex,
+        totalItems: resume.projects?.length ?? 0,
+        formBuilder:
+            (index) => ProjectForm(
+              key: ValueKey('project-$index'),
+              index: index,
+              project: resume.projects![index],
+            ),
+        onPrevious: () => setState(() => _currentProjectIndex--),
+        onNext: () => setState(() => _currentProjectIndex++),
+        onAdd: () {
+          ref.read(localResumeProvider.notifier).addProject(Project());
+          setState(() {
+            _currentProjectIndex = (resume.projects?.length ?? 0);
+          });
+        },
+        onRemove: () {
+          ref
+              .read(localResumeProvider.notifier)
+              .removeProject(_currentProjectIndex);
+          setState(() {
+            _currentProjectIndex = (_currentProjectIndex - 1).clamp(0, 100);
+          });
+        },
+      ),
+
+      // 7. Certificados
+      _buildFocusedEditorTab(
+        context: context,
+        resume: resume,
+        itemLabel: 'Certificado',
+        currentIndex: _currentCertificateIndex,
+        totalItems: resume.certificates?.length ?? 0,
+        formBuilder:
+            (index) => CertificateForm(
+              key: ValueKey('certificate-$index'),
+              index: index,
+              certificate: resume.certificates![index],
+            ),
+        onPrevious: () => setState(() => _currentCertificateIndex--),
+        onNext: () => setState(() => _currentCertificateIndex++),
+        onAdd: () {
+          ref.read(localResumeProvider.notifier).addCertificate(Certificate());
+          setState(() {
+            _currentCertificateIndex = (resume.certificates?.length ?? 0);
+          });
+        },
+        onRemove: () {
+          ref
+              .read(localResumeProvider.notifier)
+              .removeCertificate(_currentCertificateIndex);
+          setState(() {
+            _currentCertificateIndex = (_currentCertificateIndex - 1).clamp(
+              0,
+              100,
+            );
+          });
+        },
+      ),
+
+      // 8. Acessibilidade
       SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(

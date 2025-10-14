@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intelliresume/core/providers/data/data_provider.dart';
 import 'package:intelliresume/core/providers/user/user_provider.dart';
+import 'package:intelliresume/domain/repositories/resume_repository.dart';
 import 'package:intelliresume/domain/usecases/can_use_ai_usecase.dart';
 import 'package:intelliresume/domain/usecases/can_use_template_usecase.dart';
 import 'package:intelliresume/domain/usecases/save_resume_usecase.dart'; // NOVA IMPORTAÇÃO
@@ -12,7 +13,7 @@ import 'package:intelliresume/domain/usecases/load_user_profile_usecase.dart';
 
 final saveResumeUseCaseProvider = Provider<SaveResumeUseCase>((ref) {
   final repository = ref.watch(resumeRepositoryProvider);
-  return SaveResumeUseCase(repository);
+  return SaveResumeUseCase(repository as ResumeRepository);
 });
 
 final updatePlanUseCaseProvider = Provider<UpdatePlanUseCase>((ref) {

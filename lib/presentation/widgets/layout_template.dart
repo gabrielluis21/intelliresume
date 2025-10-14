@@ -1,11 +1,11 @@
-// lib/widgets/layout_template.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intelliresume/core/providers/data/data_provider.dart';
 
-import '../../data/datasources/remote/auth_resume_ds.dart';
-import 'side_menu.dart'; // Criaremos este compon
+import 'side_menu.dart';
 
-class LayoutTemplate extends StatefulWidget {
+class LayoutTemplate extends ConsumerStatefulWidget {
   final Widget child;
   final int selectedIndex;
 
@@ -16,10 +16,10 @@ class LayoutTemplate extends StatefulWidget {
   });
 
   @override
-  State<LayoutTemplate> createState() => _LayoutTemplateState();
+  ConsumerState<LayoutTemplate> createState() => _LayoutTemplateState();
 }
 
-class _LayoutTemplateState extends State<LayoutTemplate> {
+class _LayoutTemplateState extends ConsumerState<LayoutTemplate> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _selectedIndex = 0;
 
@@ -30,6 +30,15 @@ class _LayoutTemplateState extends State<LayoutTemplate> {
   }
 
   void _onDestinationSelected(int index) {
+    // Se o menu lateral estiver aberto (em modo mobile), fecha ele primeiro.
+    if (_scaffoldKey.currentState?.isDrawerOpen ?? false) {
+      Navigator.of(context).pop();
+    }
+
+    // Evita reconstrução desnecessária se o mesmo item for selecionado
+    if (_selectedIndex == index && index != 5)
+      return; // index 5 é o logout, sempre executa
+
     setState(() => _selectedIndex = index);
 
     switch (index) {
@@ -43,14 +52,14 @@ class _LayoutTemplateState extends State<LayoutTemplate> {
         context.goNamed('history');
         break;
       case 3:
-        context.goNamed('form');
+        context.goNamed('editor-new');
         break;
       case 4:
         context.goNamed('settings');
         break;
-      case 5:
-        AuthService.instance.signOut();
-        context.goNamed('login');
+      case 5: // Logout
+        ref.read(signOutUseCaseProvider).call();
+        // A navegação será tratada pelo GoRouter ao detectar a mudança de estado de autenticação
         break;
     }
   }

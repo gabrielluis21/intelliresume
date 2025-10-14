@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intelliresume/data/models/cv_data.dart';
 import 'package:intelliresume/presentation/widgets/layout_template.dart';
 import 'package:pdf/widgets.dart';
 import '../../presentation/pages.dart';
@@ -35,23 +36,17 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const BuyPage(),
       ),
       GoRoute(
-        name: 'form',
-        path: '/form',
-        builder: (context, state) => const ResumeFormPage(),
-        routes: [
-          GoRoute(
-            name: 'preview',
-            path: 'preview',
-            builder: (context, state) => const ResumePreviewPage(),
-          ),
-          GoRoute(
-            name: 'preview-pdf',
-            path: 'preview-pdf',
-            builder:
-                (context, state) =>
-                    PreviewPdfScreen(pdf: state.extra as Document),
-          ),
-        ],
+        name: 'editor-new',
+        path: '/editor',
+        builder: (context, state) => const ResumeFormPage(resumeId: 'new'),
+      ),
+      GoRoute(
+        name: 'editor',
+        path: '/editor/:resumeId',
+        builder: (context, state) {
+          final resumeId = state.pathParameters['resumeId']!;
+          return ResumeFormPage(resumeId: resumeId);
+        },
       ),
       GoRoute(
         name: 'home',
@@ -64,12 +59,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const EditProfilePage(),
       ),
       GoRoute(
+        name: 'history',
         path: '/history',
         builder:
-            (context, state) => LayoutTemplate(
-              selectedIndex: 2,
-              child: const HistoryPage(), // Implemente esta página
-            ),
+            (context, state) =>
+                LayoutTemplate(selectedIndex: 2, child: const HistoryPage()),
       ),
       GoRoute(
         path: '/settings',

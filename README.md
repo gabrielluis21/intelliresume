@@ -20,6 +20,8 @@ Acompanhe o progresso do desenvolvimento do IntelliResume.
   - [x] Suporte base a leitores de tela (Semântica).
   - [ ] Integração e validação da abordagem para VLibras.
 - [ ] **Fase 3: Monetização**
+  - [x] Implementação do fluxo de pagamento no cliente com Stripe PaymentSheet.
+  - [ ] Implementação do endpoint de backend `/create-payment-intent`.
   - [ ] Implementação do Webhook de pagamento seguro na Vercel.
   - [ ] Testes de ponta a ponta do fluxo de assinatura.
 - [ ] **Fase 4: Recursos Pro**

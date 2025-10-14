@@ -11,26 +11,33 @@ class ProfilePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userProfile = ref.watch(userProfileProvider);
-    final user = userProfile.value;
 
     return LayoutTemplate(
       selectedIndex: 1,
-      child:
-          user == null
-              ? const Center(child: CircularProgressIndicator())
-              : SingleChildScrollView(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildProfileHeader(context, user),
-                    const SizedBox(height: 24),
-                    _buildSubscriptionCard(context, user),
-                    const SizedBox(height: 24),
-                    _buildQuickActions(context),
-                  ],
-                ),
-              ),
+      child: userProfile.when(
+        data: (user) {
+          if (user == null) {
+            return const Center(child: Text('Usuário não encontrado.'));
+          }
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildProfileHeader(context, user),
+                const SizedBox(height: 24),
+                _buildSubscriptionCard(context, user),
+                const SizedBox(height: 24),
+                _buildQuickActions(context),
+              ],
+            ),
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stackTrace) => Center(
+          child: Text('Erro ao carregar perfil: $error'),
+        ),
+      ),
     );
   }
 

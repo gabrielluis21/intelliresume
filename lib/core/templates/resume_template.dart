@@ -80,6 +80,8 @@ class IntelliResumePatternTemplate implements ResumeTemplate {
               _buildEducationSection(data.educations ?? [], translated),
               _buildSkillsSection(data.skills ?? [], translated),
               _buildSocialsSection(data.socials ?? [], translated),
+              _buildProjectsSection(data.projects ?? [], translated),
+              _buildCertificatesSection(data.certificates ?? [], translated),
             ],
           );
         },
@@ -87,6 +89,111 @@ class IntelliResumePatternTemplate implements ResumeTemplate {
     );
 
     return pdf;
+  }
+
+  pw.Widget _buildProjectsSection(
+    List<Project> projects,
+    AppLocalizations t,
+  ) {
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.Text(
+          'Projetos',
+          style: pw.TextStyle(
+            fontSize: 18,
+            fontWeight: pw.FontWeight.bold,
+            font: fontsBold,
+          ),
+        ),
+        pw.SizedBox(height: 8),
+        projects.isEmpty
+            ? pw.Text('Nenhum projeto adicionado.', style: pw.TextStyle(font: fontsRegular))
+            : _buildProjectList(projects),
+        pw.SizedBox(height: 20),
+      ],
+    );
+  }
+
+  pw.Widget _buildProjectList(List<Project> projects) {
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        for (var proj in projects)
+          pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text(
+                '- ${proj.name ?? ''} (${proj.startYear} - ${proj.endYear ?? 'Atual'})',
+                style: pw.TextStyle(font: fontsLight),
+              ),
+              if (proj.url?.isNotEmpty ?? false)
+                pw.Text(
+                  '   ${proj.url ?? ''}',
+                  style: pw.TextStyle(font: fontsLight, color: PdfColors.blue),
+                ),
+              if (proj.description?.isNotEmpty ?? false)
+                pw.Text(
+                  '   ${proj.description ?? ''}',
+                  style: pw.TextStyle(font: fontsLight),
+                ),
+              pw.SizedBox(height: 8),
+            ],
+          ),
+      ],
+    );
+  }
+
+  pw.Widget _buildCertificatesSection(
+    List<Certificate> certificates,
+    AppLocalizations t,
+  ) {
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.Text(
+          'Certificados',
+          style: pw.TextStyle(
+            fontSize: 18,
+            fontWeight: pw.FontWeight.bold,
+            font: fontsBold,
+          ),
+        ),
+        pw.SizedBox(height: 8),
+        certificates.isEmpty
+            ? pw.Text('Nenhum certificado adicionado.', style: pw.TextStyle(font: fontsRegular))
+            : _buildCertificateList(certificates),
+        pw.SizedBox(height: 20),
+      ],
+    );
+  }
+
+  pw.Widget _buildCertificateList(List<Certificate> certificates) {
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        for (var cert in certificates)
+          pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text(
+                '- ${cert.courseName ?? ''} - ${cert.institution ?? ''}',
+                style: pw.TextStyle(font: fontsLight),
+              ),
+              pw.Text(
+                '   ${cert.startDate ?? ''} - ${cert.endDate ?? ''}',
+                style: pw.TextStyle(font: fontsLight),
+              ),
+              if (cert.workload?.isNotEmpty ?? false)
+                pw.Text(
+                  '   Carga horária: ${cert.workload ?? ''}',
+                  style: pw.TextStyle(font: fontsLight),
+                ),
+              pw.SizedBox(height: 8),
+            ],
+          ),
+      ],
+    );
   }
 
   @override
@@ -496,6 +603,10 @@ class ClassicMinimalTemplate implements ResumeTemplate {
                       .toList()
                   : [pw.Text('Sem habilibdades registradas')]),
               pw.SizedBox(height: 12),
+              _buildProjectsSection(data),
+              pw.SizedBox(height: 12),
+              _buildCertificatesSection(data),
+              pw.SizedBox(height: 12),
               _buildDisabilitySection(data),
             ],
           );
@@ -503,6 +614,57 @@ class ClassicMinimalTemplate implements ResumeTemplate {
       ),
     );
     return doc;
+  }
+
+  pw.Widget _buildProjectsSection(ResumeData data) {
+    if (data.projects == null || data.projects!.isEmpty) {
+      return pw.SizedBox.shrink();
+    }
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.Text(
+          'Projetos',
+          style: pw.TextStyle(fontWeight: pw.FontWeight.bold, font: fontsBold, fontSize: 18),
+        ),
+        ...data.projects!.map((p) => pw.Padding(
+          padding: pw.EdgeInsets.symmetric(vertical: 8),
+          child: pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text(p.name ?? '', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, font: fontsBold)),
+              pw.Text('${p.startYear} - ${p.endYear}', style: pw.TextStyle(font: fontsLight)),
+              pw.Text(p.description ?? '', style: pw.TextStyle(font: fontsRegular)),
+            ],
+          ),
+        )),
+      ],
+    );
+  }
+
+  pw.Widget _buildCertificatesSection(ResumeData data) {
+    if (data.certificates == null || data.certificates!.isEmpty) {
+      return pw.SizedBox.shrink();
+    }
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.Text(
+          'Certificados',
+          style: pw.TextStyle(fontWeight: pw.FontWeight.bold, font: fontsBold, fontSize: 18),
+        ),
+        ...data.certificates!.map((c) => pw.Padding(
+          padding: pw.EdgeInsets.symmetric(vertical: 8),
+          child: pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text(c.courseName ?? '', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, font: fontsBold)),
+              pw.Text('${c.institution} | ${c.startDate} - ${c.endDate}', style: pw.TextStyle(font: fontsLight)),
+            ],
+          ),
+        )),
+      ],
+    );
   }
 
   pw.Widget _buildDisabilitySection(ResumeData data) {
@@ -663,6 +825,32 @@ class ModernSidebarTemplate implements ResumeTemplate {
                   subtitle:
                       '${edu.school ?? 'Institution'} | ${edu.startDate ?? ''} - ${edu.endDate ?? ''}',
                   description: edu.description,
+                ),
+              ),
+            ],
+            // Projects Section
+            if (resumeData.projects != null &&
+                resumeData.projects!.isNotEmpty) ...[
+              _buildSectionTitle('Projects'),
+              ...resumeData.projects!.map(
+                (proj) => _buildExperienceItem(
+                  title: proj.name?.toUpperCase() ?? 'PROJECT NAME',
+                  subtitle:
+                      '${proj.startYear ?? ''} - ${proj.endYear ?? 'Present'}',
+                  description: proj.description,
+                ),
+              ),
+            ],
+            // Certificates Section
+            if (resumeData.certificates != null &&
+                resumeData.certificates!.isNotEmpty) ...[
+              _buildSectionTitle('Certificates'),
+              ...resumeData.certificates!.map(
+                (cert) => _buildExperienceItem(
+                  title: cert.courseName?.toUpperCase() ?? 'CERTIFICATE NAME',
+                  subtitle:
+                      '${cert.institution ?? 'Institution'} | ${cert.startDate ?? ''} - ${cert.endDate ?? ''}',
+                  description: cert.workload,
                 ),
               ),
             ],
@@ -892,6 +1080,8 @@ class TimelineTemplate implements ResumeTemplate {
                       )
                       .toList()
                   : [pw.Text("Sem graduações registradas")]),
+              _buildProjectsSection(data),
+              _buildCertificatesSection(data),
               _buildDisabilitySection(data),
             ],
           );
@@ -899,6 +1089,67 @@ class TimelineTemplate implements ResumeTemplate {
       ),
     );
     return doc;
+  }
+
+  pw.Widget _buildProjectsSection(ResumeData data) {
+    if (data.projects == null || data.projects!.isEmpty) {
+      return pw.SizedBox.shrink();
+    }
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.SizedBox(height: 16),
+        pw.Text(
+          'Projetos',
+          style: pw.TextStyle(
+            fontSize: 18,
+            fontWeight: pw.FontWeight.bold,
+            font: fontsBold,
+          ),
+        ),
+        ...data.projects!.map((p) => pw.Padding(
+          padding: pw.EdgeInsets.symmetric(vertical: 8),
+          child: pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text(p.name ?? '', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+              pw.Text('${p.startYear} - ${p.endYear}'),
+              pw.Text(p.description ?? ''),
+            ],
+          ),
+        )),
+      ],
+    );
+  }
+
+  pw.Widget _buildCertificatesSection(ResumeData data) {
+    if (data.certificates == null || data.certificates!.isEmpty) {
+      return pw.SizedBox.shrink();
+    }
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.SizedBox(height: 16),
+        pw.Text(
+          'Certificados',
+          style: pw.TextStyle(
+            fontSize: 18,
+            fontWeight: pw.FontWeight.bold,
+            font: fontsBold,
+          ),
+        ),
+        ...data.certificates!.map((c) => pw.Padding(
+          padding: pw.EdgeInsets.symmetric(vertical: 8),
+          child: pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text(c.courseName ?? '', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+              pw.Text('${c.institution} | ${c.startDate} - ${c.endDate}'),
+            ],
+          ),
+        )),
+      ],
+    );
   }
 
   pw.Widget _buildDisabilitySection(ResumeData data) {
@@ -1073,6 +1324,44 @@ class InfographicTemplate implements ResumeTemplate {
                           ...(data.educations ?? []).map(
                             (e) => pw.Text(
                               "${e.startDate ?? ''} - ${e.endDate ?? 'cursando'} ${e.degree ?? ''} (${e.school ?? ''})",
+                            ),
+                          ),
+                        ],
+                      ),
+                    if ((data.projects ?? []).isNotEmpty)
+                      pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.start,
+                        children: [
+                          pw.SizedBox(height: 16),
+                          pw.Text(
+                            "Projetos",
+                            style: pw.TextStyle(
+                              fontWeight: pw.FontWeight.bold,
+                              font: fontsBold,
+                            ),
+                          ),
+                          pw.SizedBox(height: 8),
+                          ...(data.projects ?? []).map(
+                            (p) => _buildExperienceBlock(Experience(company: p.name, startDate: p.startYear, endDate: p.endYear, description: p.description)),
+                          ),
+                        ],
+                      ),
+                    if ((data.certificates ?? []).isNotEmpty)
+                      pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.start,
+                        children: [
+                          pw.SizedBox(height: 16),
+                          pw.Text(
+                            "Certificados",
+                            style: pw.TextStyle(
+                              fontWeight: pw.FontWeight.bold,
+                              font: fontsBold,
+                            ),
+                          ),
+                          pw.SizedBox(height: 8),
+                          ...(data.certificates ?? []).map(
+                            (c) => pw.Text(
+                              "${c.courseName ?? ''} - ${c.institution ?? ''} (${c.startDate ?? ''} - ${c.endDate ?? ''})",
                             ),
                           ),
                         ],
@@ -1276,6 +1565,8 @@ class CorporateTemplate implements ResumeTemplate {
                   ],
                 ),
               ),
+              _buildProjectsSection(data),
+              _buildCertificatesSection(data),
               _buildDisabilitySection(data),
             ],
           );
@@ -1283,6 +1574,59 @@ class CorporateTemplate implements ResumeTemplate {
       ),
     );
     return doc;
+  }
+
+  pw.Widget _buildProjectsSection(ResumeData data) {
+    if (data.projects == null || data.projects!.isEmpty) {
+      return pw.SizedBox.shrink();
+    }
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.SizedBox(height: 12),
+        pw.Text(
+          'Projetos',
+          style: pw.TextStyle(fontWeight: pw.FontWeight.bold, font: fontsBold),
+        ),
+        ...(data.projects ?? []).map(
+          (p) => pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text(p.name ?? '', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, font: fontsBold)),
+              pw.Text('${p.startYear} - ${p.endYear}'),
+              pw.Text(p.description ?? ''),
+              pw.SizedBox(height: 8),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  pw.Widget _buildCertificatesSection(ResumeData data) {
+    if (data.certificates == null || data.certificates!.isEmpty) {
+      return pw.SizedBox.shrink();
+    }
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.SizedBox(height: 12),
+        pw.Text(
+          'Certificados',
+          style: pw.TextStyle(fontWeight: pw.FontWeight.bold, font: fontsBold),
+        ),
+        ...(data.certificates ?? []).map(
+          (c) => pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text(c.courseName ?? '', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, font: fontsBold)),
+              pw.Text('${c.institution} | ${c.startDate} - ${c.endDate}'),
+              pw.SizedBox(height: 8),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 
   pw.Widget _buildDisabilitySection(ResumeData data) {
@@ -1375,8 +1719,15 @@ class TechDeveloper implements ResumeTemplate {
               _buildSectionTitle('Formação Acadêmica'),
               if ((data.educations ?? []).isNotEmpty)
                 pw.Wrap(
-                  children:
+                  children: 
                       (data.educations ?? []).map(_buildEducationItem).toList(),
+                ),
+              pw.SizedBox(height: 16),
+              _buildSectionTitle('Certificados'),
+              if ((data.certificates ?? []).isNotEmpty)
+                pw.Wrap(
+                  children: 
+                      (data.certificates ?? []).map(_buildCertificateItem).toList(),
                 ),
               _buildDisabilitySection(data),
             ],
@@ -1386,6 +1737,16 @@ class TechDeveloper implements ResumeTemplate {
     );
 
     return doc;
+  }
+
+  pw.Widget _buildCertificateItem(Certificate c) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.symmetric(vertical: 4),
+      child: pw.Text(
+        '${c.courseName ?? ''}, ${c.institution ?? ''} (${c.startDate ?? ''}-${c.endDate ?? ''})',
+        style: const pw.TextStyle(fontSize: 10),
+      ),
+    );
   }
 
   pw.Widget _buildHeader(ResumeData resume) {
@@ -1467,9 +1828,14 @@ class TechDeveloper implements ResumeTemplate {
               font: fontsBold,
             ),
           ),
-          if ((p.technologies ?? []).isNotEmpty)
+          if (p.url?.isNotEmpty ?? false)
             pw.Text(
-              (p.technologies ?? []).join(', '),
+              p.url ?? '',
+              style: const pw.TextStyle(fontSize: 10, color: PdfColors.blue),
+            ),
+          if (p.startYear?.isNotEmpty ?? false)
+            pw.Text(
+              '${p.startYear} - ${p.endYear ?? 'Present'}',
               style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey600),
             ),
           if (p.description?.isNotEmpty ?? false)
@@ -1654,11 +2020,20 @@ class StudantTemplate implements ResumeTemplate {
         data.certificates == null || data.certificates!.isEmpty
             ? pw.Text("Sem certificados registrados")
             : pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
               children:
                   data.certificates!
                       .map(
-                        (cert) =>
-                            pw.Text('${cert.courseName} - ${cert.courseName}'),
+                        (cert) => pw.Column(
+                          crossAxisAlignment: pw.CrossAxisAlignment.start,
+                          children: [
+                            pw.Text(cert.courseName ?? '', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                            pw.Text(cert.institution ?? ''),
+                            pw.Text('${cert.startDate} - ${cert.endDate}'),
+                            if (cert.workload?.isNotEmpty ?? false) pw.Text('Carga horária: ${cert.workload}'),
+                            pw.SizedBox(height: 10),
+                          ]
+                        ),
                       )
                       .toList(),
             ),
@@ -1684,25 +2059,28 @@ class StudantTemplate implements ResumeTemplate {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
-        // --- SEÇÃO PROJETOS (usando Experiências) ---
+        // --- SEÇÃO PROJETOS ---
         _buildSectionTitle('Projetos'),
-        ...data.experiences!.map(
-          (exp) => pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
-            children: [
-              pw.Text(
-                "${exp.company}",
-                style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+        ...(data.projects != null && data.projects!.isNotEmpty
+            ? data.projects!.map(
+              (proj) => pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                children: [
+                  pw.Text(
+                    proj.name ?? '',
+                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                  ),
+                  pw.Text(
+                    '${proj.startYear} - ${proj.endYear}',
+                    style: const pw.TextStyle(color: PdfColors.grey600),
+                  ),
+                  if (proj.url?.isNotEmpty ?? false) pw.Text(proj.url ?? ''),
+                  pw.Text(proj.description ?? ''),
+                  pw.SizedBox(height: 10),
+                ],
               ),
-              pw.Text(
-                '${exp.startDate} - ${exp.endDate}',
-                style: const pw.TextStyle(color: PdfColors.grey600),
-              ),
-              pw.Text('${exp.description}'),
-              pw.SizedBox(height: 10),
-            ],
-          ),
-        ),
+            )
+            : [pw.Text("Sem projetos registrados")]),
         pw.SizedBox(height: 20),
 
         // --- SEÇÃO SOBRE MIM ---
@@ -1818,6 +2196,17 @@ class InternationalTemplate implements ResumeTemplate {
                 _buildSectionTitle('Skills'),
                 _buildSkillList(dataToBuild.skills ?? []),
               ],
+              pw.SizedBox(height: 16),
+              if ((dataToBuild.projects ?? []).isNotEmpty) ...[
+                _buildSectionTitle('Projects'),
+                ...(dataToBuild.projects ?? []).map(_buildProjectItem),
+                pw.SizedBox(height: 16),
+              ],
+              if ((dataToBuild.certificates ?? []).isNotEmpty) ...[
+                _buildSectionTitle('Certificates'),
+                ...(dataToBuild.certificates ?? []).map(_buildCertificateItem),
+                pw.SizedBox(height: 16),
+              ],
             ],
           );
         },
@@ -1825,6 +2214,43 @@ class InternationalTemplate implements ResumeTemplate {
     );
 
     return doc;
+  }
+
+  pw.Widget _buildProjectItem(Project p) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.symmetric(vertical: 6),
+      child: pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        children: [
+          pw.Text(
+            p.name ?? '',
+            style: pw.TextStyle(
+              fontWeight: pw.FontWeight.bold,
+              font: fontsBold,
+            ),
+          ),
+          pw.Text(
+            '${p.startYear ?? ''}-${p.endYear ?? ''}',
+            style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey600),
+          ),
+          if ((p.description ?? '').isNotEmpty)
+            pw.Text(
+              p.description ?? '',
+              style: const pw.TextStyle(fontSize: 10),
+            ),
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _buildCertificateItem(Certificate c) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.symmetric(vertical: 4),
+      child: pw.Text(
+        '${c.courseName ?? ''}, ${c.institution ?? ''} (${c.startDate ?? ''}-${c.endDate ?? ''})',
+        style: const pw.TextStyle(fontSize: 10),
+      ),
+    );
   }
 
   pw.Widget _buildHeader(ResumeData resume) {

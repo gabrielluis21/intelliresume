@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intelliresume/core/providers/resume/cv_provider.dart';
-import 'package:intelliresume/core/providers/domain_providers.dart';
-import '../../data/datasources/remote/auth_resume_ds.dart';
+import 'package:intelliresume/core/providers/data/data_provider.dart';
 import '../../core/utils/app_localizations.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
@@ -19,20 +17,38 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   bool _obscurePassword = true;
   String? _errorMessage;
 
-  Future<void> _forgetPassword(String? email) async {
+  Future<void> _forgetPassword() async {
+    _formKey.currentState!.save();
+    if (email.isEmpty || !email.contains('@')) {
+      setState(() {
+        _errorMessage = 'Por favor, insira um e-mail válido para redefinir a senha.';
+      });
+      return;
+    }
+
     setState(() {
       _loading = true;
+      _errorMessage = null;
     });
-    if (email != null && email.isEmpty) return;
-    setState(() {
-      _loading = false;
-      _errorMessage = 'Preencha o campo email';
-    });
-    await AuthService.instance.sendPasswordReset(email: email!);
-    setState(() {
-      _loading = false;
-      _errorMessage = 'Um email foi enviado para $email';
-    });
+
+    try {
+      await ref.read(sendPasswordResetUseCaseProvider).call(email: email);
+      if (mounted) {
+        setState(() {
+          _errorMessage = 'Um e-mail de redefinição foi enviado para $email.';
+        });
+      }
+    } on Exception catch (e) {
+      if (mounted) {
+        setState(() {
+          _errorMessage = e.toString().replaceFirst('Exception: ', '');
+        });
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _loading = false);
+      }
+    }
   }
 
   Future<void> _login() async {
@@ -44,20 +60,18 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     });
 
     try {
-      final logged = await AuthService.instance.signIn(
-        email: email,
-        password: password,
-      );
-
-      final loadUserProfile = ref.read(loadUserProfileUseCaseProvider);
-      final user = await loadUserProfile(logged.uid);
-      ref.read(localResumeProvider.notifier).updatePersonalInfo(user);
+      await ref.read(signInUseCaseProvider).call(
+            email: email,
+            password: password,
+          );
 
       if (mounted) context.goNamed('home');
     } on Exception catch (e) {
-      setState(() {
-        _errorMessage = e.toString().replaceFirst('Exception: ', '');
-      });
+      if (mounted) {
+        setState(() {
+          _errorMessage = e.toString().replaceFirst('Exception: ', '');
+        });
+      }
     } finally {
       if (mounted) {
         setState(() => _loading = false);
@@ -83,7 +97,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Image.asset(
-                        'assets/images/logo.png', // Certifique-se que o caminho está correto
+                        'assets/images/logo.png',
                         height: 80,
                         width: 80,
                         semanticLabel: 'Logo do IntelliResume',
@@ -91,7 +105,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       const SizedBox(height: 16),
                       Text(
                         t.login,
-                        style: Theme.of(context).textTheme.headlineSmall
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineSmall
                             ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
@@ -106,11 +122,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           prefixIcon: const Icon(Icons.email),
                         ),
                         keyboardType: TextInputType.emailAddress,
-                        validator:
-                            (v) =>
-                                (v?.contains('@') == true)
-                                    ? null
-                                    : t.invalidEmail,
+                        validator: (v) =>
+                            (v?.contains('@') == true) ? null : t.invalidEmail,
                         onSaved: (v) => email = v!.trim(),
                       ),
                       const SizedBox(height: 16),
@@ -125,10 +138,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                   ? Icons.visibility_off
                                   : Icons.visibility,
                             ),
-                            tooltip:
-                                _obscurePassword
-                                    ? 'Mostrar senha'
-                                    : 'Ocultar senha',
+                            tooltip: _obscurePassword
+                                ? 'Mostrar senha'
+                                : 'Ocultar senha',
                             onPressed: () {
                               setState(() {
                                 _obscurePassword = !_obscurePassword;
@@ -136,33 +148,30 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             },
                           ),
                         ),
-                        validator:
-                            (v) =>
-                                (v != null && v.length >= 6)
-                                    ? null
-                                    : t.passwordTooShort,
+                        validator: (v) => (v != null && v.length >= 6)
+                            ? null
+                            : t.passwordTooShort,
                         onSaved: (v) => password = v!,
                       ),
                       const SizedBox(height: 24),
-                      _errorMessage != null
-                          ? Padding(
-                            padding: const EdgeInsets.only(bottom: 16.0),
-                            child: Text(
-                              _errorMessage!,
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.error,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.center,
+                      if (_errorMessage != null)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 16.0),
+                          child: Text(
+                            _errorMessage!,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.error,
+                              fontWeight: FontWeight.bold,
                             ),
-                          )
-                          : SizedBox.shrink(),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
                       Padding(
                         padding: const EdgeInsets.only(bottom: 16.0),
                         child: Align(
                           alignment: Alignment.centerRight,
                           child: TextButton(
-                            onPressed: () => _forgetPassword(email),
+                            onPressed: _loading ? null : _forgetPassword,
                             child: Text(t.forgotPassword),
                           ),
                         ),
@@ -172,15 +181,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         height: 50,
                         child: ElevatedButton(
                           onPressed: _loading ? null : _login,
-                          child:
-                              _loading
-                                  ? const CircularProgressIndicator(
-                                    color: Colors.white,
-                                  )
-                                  : Text(
-                                    t.login,
-                                    style: const TextStyle(fontSize: 16),
-                                  ),
+                          child: _loading
+                              ? const CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                )
+                              : Text(
+                                  t.login,
+                                  style: const TextStyle(fontSize: 16),
+                                ),
                         ),
                       ),
                       const SizedBox(height: 16),

@@ -13,7 +13,8 @@ class FirestoreResumeDataSource implements RemoteResumeDataSource {
 
   @override
   Future<void> saveResume(String userId, Map<String, dynamic> data) {
-    return _firestore.collection(_collection).doc(userId).set(data);
+    // This will create a new document in the 'resumes' subcollection for the user
+    return _firestore.collection('users').doc(userId).collection(_collection).add(data);
   }
 
   @override

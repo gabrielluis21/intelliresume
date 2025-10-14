@@ -2,55 +2,44 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intelliresume/core/providers/data/data_provider.dart'; // NOVA IMPORTAÇÃO
+import 'package:intelliresume/core/providers/data/data_provider.dart';
 import 'package:intelliresume/data/repositories/user_profile_repository.dart';
 import 'package:intelliresume/domain/entities/plan_type.dart';
 import 'package:intelliresume/domain/entities/user_profile.dart';
 
-// Provider para a instância do FirebaseAuth
-final firebaseAuthProvider = Provider<FirebaseAuth>(
-  (ref) => FirebaseAuth.instance,
-);
+// Provider para o stream de mudanças de autenticação
+final authStateChangesProvider = StreamProvider<User?>((ref) {
+  final getAuthStateChanges = ref.watch(getAuthStateChangesUseCaseProvider);
+  return getAuthStateChanges();
+});
 
-// A DEFINIÇÃO ANTIGA DO userProfileRepositoryProvider FOI REMOVIDA DAQUI.
-
-// Provider para o perfil do usuário
+// Provider para o perfil do usuário, agora reativo às mudanças de autenticação
 final userProfileProvider =
     StateNotifierProvider<UserProfileNotifier, AsyncValue<UserProfile?>>((ref) {
-      // AGORA ELE USA O PROVIDER CENTRALIZADO!
-      final repository = ref.watch(userProfileRepositoryProvider);
-      final auth = ref.watch(firebaseAuthProvider);
-      return UserProfileNotifier(repository, auth);
+      final userProfileRepository = ref.watch(userProfileRepositoryProvider);
+      // Ouve o provider de autenticação
+      final authState = ref.watch(authStateChangesProvider);
+
+      return UserProfileNotifier(userProfileRepository, authState.valueOrNull);
     });
 
 class UserProfileNotifier extends StateNotifier<AsyncValue<UserProfile?>> {
   final UserProfileRepository _repository;
-  final FirebaseAuth _auth;
-  StreamSubscription? _subscription;
+  final User? _user;
+  StreamSubscription? _profileSubscription;
 
-  UserProfileNotifier(this._repository, this._auth)
+  UserProfileNotifier(this._repository, this._user)
     : super(const AsyncLoading()) {
     _init();
   }
 
-  Future<void> _init() async {
-    final user = _auth.currentUser;
-    if (user == null) {
+  void _init() {
+    if (_user == null) {
       state = const AsyncData(null);
       return;
     }
-
-    // Tenta carregar do cache primeiro
-    try {
-      final cachedProfile = await _repository.getCachedProfile(user.uid);
-      if (cachedProfile != null) {
-        state = AsyncData(cachedProfile);
-      }
-    } catch (_) {}
-
-    // Inicia stream de atualizações em tempo real
-    _subscription = _repository
-        .watchProfile(user.uid)
+    _profileSubscription = _repository
+        .watchProfile(_user.uid)
         .listen(
           (profile) {
             state = AsyncData(profile);
@@ -61,36 +50,20 @@ class UserProfileNotifier extends StateNotifier<AsyncValue<UserProfile?>> {
         );
   }
 
-  // Carrega e atualiza o perfil
-  Future<void> loadUser(String uid) async {
-    state = const AsyncLoading();
-    try {
-      final profile = await _repository.loadProfile(uid);
-      state = AsyncData(profile);
-    } catch (e, st) {
-      state = AsyncError(e, st);
-    }
-  }
-
   // Atualiza o perfil localmente e remotamente
   Future<void> updateUser(UserProfile updatedProfile) async {
-    try {
-      state = const AsyncLoading();
-      await _repository.saveProfile(updatedProfile);
+    final currentUser = state.value;
+    if (currentUser == null) return; // Não faz nada se não houver usuário
 
-      // Atualiza apenas os campos modificados
-      state = state.whenData(
-        (current) => current?.copyWith(
-          name: updatedProfile.name,
-          email: updatedProfile.email,
-          phone: updatedProfile.phone,
-          profilePictureUrl: updatedProfile.profilePictureUrl,
-          plan: updatedProfile.plan,
-          pcdInfo: updatedProfile.pcdInfo,
-        ),
-      );
+    state = const AsyncLoading();
+    try {
+      await _repository.saveProfile(updatedProfile);
+      // O stream já irá notificar o estado com o novo perfil,
+      // então não precisamos atualizar manualmente aqui.
     } catch (e, st) {
       state = AsyncError(e, st);
+      // Se der erro, volta ao estado anterior para manter a UI consistente
+      state = AsyncData(currentUser);
       rethrow;
     }
   }
@@ -106,7 +79,7 @@ class UserProfileNotifier extends StateNotifier<AsyncValue<UserProfile?>> {
 
   @override
   void dispose() {
-    _subscription?.cancel();
+    _profileSubscription?.cancel();
     super.dispose();
   }
 

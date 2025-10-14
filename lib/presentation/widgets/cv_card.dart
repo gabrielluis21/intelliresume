@@ -34,10 +34,25 @@ class CVCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                  child: Text(
-                    cv.title,
-                    style: Theme.of(context).textTheme.titleLarge,
-                    overflow: TextOverflow.ellipsis,
+                  child: Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          cv.title,
+                          style: Theme.of(context).textTheme.titleLarge,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (cv.status == ResumeStatus.draft)
+                        const Padding(
+                          padding: EdgeInsets.only(left: 8.0),
+                          child: Chip(
+                            label: Text('Rascunho'),
+                            padding: EdgeInsets.zero,
+                            visualDensity: VisualDensity.compact,
+                          ),
+                        ),
+                    ],
                   ),
                 ),
                 Row(

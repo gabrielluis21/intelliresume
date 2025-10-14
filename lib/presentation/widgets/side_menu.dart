@@ -1,7 +1,6 @@
-// lib/widgets/side_menu.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intelliresume/data/datasources/remote/auth_resume_ds.dart';
+import 'package:intelliresume/core/providers/user/user_provider.dart';
 
 class SideMenu extends ConsumerWidget {
   final int selectedIndex;
@@ -15,7 +14,7 @@ class SideMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentUser = AuthService.instance.currentUser;
+    final userProfileAsync = ref.watch(userProfileProvider);
 
     return Container(
       width: 240,
@@ -27,22 +26,62 @@ class SideMenu extends ConsumerWidget {
       ),
       child: Column(
         children: [
-          UserAccountsDrawerHeader(
-            accountName: Text(currentUser?.displayName ?? 'Usuário'),
-            accountEmail: Text(currentUser?.email ?? 'email@exemplo.com'),
-            currentAccountPicture: CircleAvatar(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              child: Text(
-                currentUser?.displayName?.substring(0, 1) ?? 'U',
-                style: const TextStyle(fontSize: 24, color: Colors.white),
-              ),
-            ),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary,
-            ),
+          userProfileAsync.when(
+            data: (user) {
+              if (user == null) {
+                // Cabeçalho para usuário deslogado ou estado inicial
+                return UserAccountsDrawerHeader(
+                  accountName: const Text('Bem-vindo!'),
+                  accountEmail: const Text('Faça login ou cadastre-se'),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                );
+              }
+              // Cabeçalho para usuário logado
+              return UserAccountsDrawerHeader(
+                accountName: Text('${user.name}'),
+                accountEmail: Text("${user.email}"),
+                currentAccountPicture: CircleAvatar(
+                  backgroundColor: Theme.of(context).colorScheme.secondary,
+                  backgroundImage:
+                      user.profilePictureUrl != null &&
+                              user.profilePictureUrl!.isNotEmpty
+                          ? NetworkImage(user.profilePictureUrl!)
+                          : null,
+                  child:
+                      user.profilePictureUrl == null ||
+                              user.profilePictureUrl!.isEmpty
+                          ? Text(
+                            user.name != null && user.name!.isNotEmpty
+                                ? user.name!.substring(0, 1).toUpperCase()
+                                : 'U',
+                            style: const TextStyle(
+                              fontSize: 24,
+                              color: Colors.white,
+                            ),
+                          )
+                          : null,
+                ),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              );
+            },
+            loading:
+                () => const SizedBox(
+                  height: 180, // Altura similar ao UserAccountsDrawerHeader
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+            error:
+                (err, stack) => const SizedBox(
+                  height: 180,
+                  child: Center(child: Text('Erro ao carregar perfil')),
+                ),
           ),
           Expanded(
             child: ListView(
+              padding: EdgeInsets.zero, // Remove o padding do ListView
               children: [
                 _buildListTile(
                   context,
@@ -75,12 +114,14 @@ class SideMenu extends ConsumerWidget {
                   label: 'Configurações',
                   index: 4,
                 ),
-                _buildListTile(
-                  context,
-                  icon: Icons.logout,
-                  label: 'Sair',
-                  index: 5,
-                ),
+                // Oculta o botão de sair se o usuário não estiver logado
+                if (userProfileAsync.valueOrNull != null)
+                  _buildListTile(
+                    context,
+                    icon: Icons.logout,
+                    label: 'Sair',
+                    index: 5,
+                  ),
               ],
             ),
           ),
@@ -95,13 +136,20 @@ class SideMenu extends ConsumerWidget {
     required String label,
     required int index,
   }) {
+    final bool isSelected = selectedIndex == index;
     return ListTile(
-      leading: Icon(icon),
-      title: Text(label),
-      selected: selectedIndex == index,
-      selectedTileColor: Theme.of(
-        context,
-      ).colorScheme.primary.withValues(alpha: 0.1),
+      leading: Icon(
+        icon,
+        color: isSelected ? Theme.of(context).colorScheme.primary : null,
+      ),
+      title: Text(
+        label,
+        style: TextStyle(
+          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+        ),
+      ),
+      selected: isSelected,
+      selectedTileColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
       onTap: () => onDestinationSelected(index),
     );
   }

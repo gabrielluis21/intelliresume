@@ -122,7 +122,6 @@ class DeepLResumeTranslator implements ResumeTranslationService {
           (p) async => p.copyWith(
             name: await translateText(p.name!),
             description: await translateText(p.description ?? ''),
-            technologies: await Future.wait(p.technologies!.map(translateText)),
           ),
         ),
       ),
@@ -131,6 +130,7 @@ class DeepLResumeTranslator implements ResumeTranslationService {
           (c) async => c.copyWith(
             courseName: await translateText(c.courseName!),
             institution: await translateText(c.institution!),
+            workload: await translateText(c.workload ?? ''),
           ),
         ),
       ),

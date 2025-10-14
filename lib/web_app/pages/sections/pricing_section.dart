@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intelliresume/core/providers/purchages/purchase_provider.dart';
+import 'package:intelliresume/core/providers/purchases/purchase_provider.dart';
 import 'package:intelliresume/core/utils/app_localizations.dart';
 
 class PricingSection extends ConsumerWidget {
@@ -120,44 +120,6 @@ class PricingSection extends ConsumerWidget {
   }
 
   Future<void> _initiatePurchase(BuildContext context, WidgetRef ref) async {
-    final purchaseController = ref.read(purchaseControllerProvider.notifier);
-    final success = await purchaseController.initiatePurchase(
-      primaryUrl: 'https://buy.stripe.com/eVq4gAa4U4GoeNO9R1cwg00',
-      fallbackUrl: 'https://mpago.la/123ABC',
-      showFallbackDialog:
-          (title, content) => showDialog<bool>(
-            context: context,
-            builder:
-                (ctx) => AlertDialog(
-                  title: Text(title),
-                  content: Text(content),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(ctx, false),
-                      child: const Text('Não, obrigado'),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.pop(ctx, true),
-                      child: const Text('Sim, tentar'),
-                    ),
-                  ],
-                ),
-          ),
-    );
-
-    if (success) {
-      await Future.delayed(const Duration(seconds: 5));
-      await purchaseController.verifyPurchaseStatus();
-      final isPremium = ref.read(purchaseControllerProvider).isPremium;
-      if (isPremium && context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Plano Premium ativado com sucesso!')),
-        );
-      }
-    } else if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Não foi possível iniciar a compra.')),
-      );
-    }
+    await ref.read(purchaseControllerProvider.notifier).initiatePurchase();
   }
 }

@@ -1,85 +1,104 @@
-// lib/pages/history_page.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
-import '../../core/utils/app_localizations.dart';
-import '../../core/routes/app_routes.dart';
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
+import 'package:intelliresume/core/providers/user/user_provider.dart';
+import 'package:intelliresume/data/models/cv_model.dart';
+import 'package:intelliresume/di.dart';
 
-class HistoryPage extends ConsumerStatefulWidget {
+// Provider para o stream de currículos
+final resumesStreamProvider = StreamProvider.autoDispose<List<CVModel>>((ref) {
+  final user = ref.watch(userProfileProvider).value;
+  if (user == null) {
+    return Stream.value([]);
+  }
+  final getResumesUsecase = ref.watch(getResumesUsecaseProvider);
+  return getResumesUsecase(user.uid!);
+});
+
+class HistoryPage extends ConsumerWidget {
   const HistoryPage({super.key});
-  @override
-  ConsumerState<HistoryPage> createState() => _HistoryPageState();
-}
-
-class _HistoryPageState extends ConsumerState<HistoryPage> {
-  List<Map<String, dynamic>> _history = [];
 
   @override
-  void initState() {
-    super.initState();
-    _loadHistory();
-  }
+  Widget build(BuildContext context, WidgetRef ref) {
+    final resumesAsync = ref.watch(resumesStreamProvider);
+    final textTheme = Theme.of(context).textTheme;
 
-  Future<void> _loadHistory() async {
-    final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getStringList('history') ?? [];
-    setState(() {
-      _history = raw.map((e) => jsonDecode(e) as Map<String, dynamic>).toList();
-    });
-  }
-
-  Future<void> _delete(int idx) async {
-    _history.removeAt(idx);
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList(
-      'history',
-      _history.map((e) => jsonEncode(e)).toList(),
-    );
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(t.history)),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child:
-            _history.isEmpty
-                ? Center(
-                  child: Text(
-                    t.noHistory,
-                    style: Theme.of(context).textTheme.bodyLarge,
+      appBar: AppBar(title: const Text('Meus Currículos')),
+      body: resumesAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, stack) => Center(child: Text('Ocorreu um erro: $err')),
+        data: (resumes) {
+          if (resumes.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.folder_off_outlined,
+                    size: 60,
+                    color: Colors.grey,
                   ),
-                )
-                : ListView.separated(
-                  itemCount: _history.length,
-                  separatorBuilder: (_, i) => const Divider(),
-                  itemBuilder: (ctx, i) {
-                    final item = _history[i];
-                    final date = DateTime.parse(item['savedAt'] as String);
-                    return ListTile(
-                      title: Text(item['title'] ?? t.appTitle),
-                      subtitle: Text('${date.toLocal()}'.split('.')[0]),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () => _delete(i),
-                      ),
-                      onTap: () {
-                        ref
-                            .watch(routerProvider)
-                            .goNamed(
-                              'form',
-                              // passe item como argumento para pré-carregar o formulário
-                              extra: item['data'],
-                            );
-                      },
-                    );
+                  const SizedBox(height: 16),
+                  Text('Nenhum currículo salvo.', style: textTheme.titleMedium),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Crie um novo currículo para começar.',
+                    style: TextStyle(color: Colors.grey),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(8.0),
+            itemCount: resumes.length,
+            itemBuilder: (context, index) {
+              final resume = resumes[index];
+              final formattedDate = DateFormat(
+                'dd/MM/yyyy',
+                'pt_BR',
+              ).format(resume.lastModified);
+
+              return Card(
+                margin: const EdgeInsets.symmetric(vertical: 6.0),
+                child: ListTile(
+                  leading: Icon(
+                    resume.status == ResumeStatus.draft
+                        ? Icons.edit_note_rounded
+                        : Icons.check_circle_outline_rounded,
+                    color:
+                        resume.status == ResumeStatus.draft
+                            ? Colors.orange
+                            : Colors.green,
+                  ),
+                  title: Text(
+                    resume.title.isNotEmpty
+                        ? resume.title
+                        : 'Currículo sem título',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text('Atualizado em: $formattedDate'),
+                  trailing: const Icon(Icons.arrow_forward_ios_rounded),
+                  onTap: () {
+                    context.go('/editor/${resume.id}');
                   },
                 ),
+              );
+            },
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        icon: const Icon(Icons.add),
+        label: const Text('Novo Currículo'),
+        onPressed: () {
+          // O 'new' será o identificador para criar um currículo em branco
+          context.go('/editor/new');
+        },
       ),
     );
   }

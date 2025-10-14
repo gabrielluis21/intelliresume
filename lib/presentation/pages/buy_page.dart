@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intelliresume/core/providers/purchages/purchase_provider.dart';
+import 'package:intelliresume/core/providers/purchases/purchase_provider.dart';
 
 class BuyPage extends ConsumerWidget {
   const BuyPage({super.key});
@@ -71,29 +71,6 @@ class BuyPage extends ConsumerWidget {
   }
 
   Future<void> _initiatePurchase(BuildContext context, WidgetRef ref) async {
-    final purchaseController = ref.read(purchaseControllerProvider.notifier);
-    await purchaseController.initiatePurchase(
-      primaryUrl: 'https://buy.stripe.com/eVq4gAa4U4GoeNO9R1cwg00',
-      fallbackUrl: 'https://mpago.la/2NYeBna',
-      showFallbackDialog:
-          (title, content) => showDialog<bool>(
-            context: context,
-            builder:
-                (ctx) => AlertDialog(
-                  title: Text(title),
-                  content: Text(content),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(ctx, false),
-                      child: const Text('Não, obrigado'),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.pop(ctx, true),
-                      child: const Text('Sim, tentar'),
-                    ),
-                  ],
-                ),
-          ),
-    );
+    await ref.read(purchaseControllerProvider.notifier).initiatePurchase();
   }
 }

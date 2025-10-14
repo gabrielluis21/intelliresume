@@ -50,7 +50,16 @@ class _AIAssistantPanelState extends ConsumerState<AIAssistantPanel> {
     }
     // --- FIM DA NOVA LÓGICA ---
 
-    final resumeContent = ref.read(localResumeProvider).toFormattedString();
+    // OBTÉM OS DADOS DO CURRÍCULO E DO USUÁRIO
+    final currentUserProfile = ref.read(userProfileProvider).value;
+    final currentResumeData = ref.read(localResumeProvider);
+
+    // COMBINA OS DADOS DO USUÁRIO COM OS DADOS DO CURRÍCULO ANTES DE ENVIAR PARA A IA
+    final fullResumeData = currentResumeData.copyWith(
+      personalInfo: currentUserProfile,
+    );
+
+    final resumeContent = fullResumeData.toFormattedString();
 
     if (resumeContent.trim().isEmpty) {
       setState(() {
@@ -221,7 +230,16 @@ class _AIAssistantPanelState extends ConsumerState<AIAssistantPanel> {
   }
 
   Widget _buildResultContent() {
-    final resumeContent = ref.watch(localResumeProvider).toFormattedString();
+    // OBTÉM OS DADOS DO CURRÍCULO E DO USUÁRIO
+    final currentUserProfile = ref.watch(userProfileProvider).value;
+    final currentResumeData = ref.watch(localResumeProvider);
+
+    // COMBINA OS DADOS DO USUÁRIO COM OS DADOS DO CURRÍCULO ANTES DE EXIBIR
+    final fullResumeData = currentResumeData.copyWith(
+      personalInfo: currentUserProfile,
+    );
+
+    final resumeContent = fullResumeData.toFormattedString();
 
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());

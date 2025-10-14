@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intelliresume/data/datasources/remote/auth_resume_ds.dart';
+import 'package:intelliresume/core/providers/data/data_provider.dart';
 import '../../core/utils/app_localizations.dart';
 
 class SignupPage extends ConsumerStatefulWidget {
@@ -38,17 +38,19 @@ class _SignupPageState extends ConsumerState<SignupPage> {
     }
 
     try {
-      await AuthService.instance.signUp(
-        email: email,
-        password: password,
-        displayName: name,
-        disabilityInfo: disabilityInfo, // <-- Parâmetro agora ativado
-      );
+      await ref.read(signUpUseCaseProvider).call(
+            email: email,
+            password: password,
+            displayName: name,
+            disabilityInfo: disabilityInfo,
+          );
       if (mounted) context.goNamed('home');
     } on Exception catch (e) {
-      setState(() {
-        _errorMessage = e.toString().replaceFirst('Exception: ', '');
-      });
+      if (mounted) {
+        setState(() {
+          _errorMessage = e.toString().replaceFirst('Exception: ', '');
+        });
+      }
     } finally {
       if (mounted) {
         setState(() => _loading = false);
@@ -81,7 +83,10 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                       const SizedBox(height: 16),
                       Text(
                         t.signup,
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineSmall
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
                       Text(
@@ -122,9 +127,14 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                           labelText: t.password,
                           prefixIcon: const Icon(Icons.lock),
                           suffixIcon: IconButton(
-                            icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
-                            tooltip: _obscurePassword ? 'Mostrar senha' : 'Ocultar senha',
-                            onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                            icon: Icon(_obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility),
+                            tooltip: _obscurePassword
+                                ? 'Mostrar senha'
+                                : 'Ocultar senha',
+                            onPressed: () =>
+                                setState(() => _obscurePassword = !_obscurePassword),
                           ),
                         ),
                         validator: (v) {
@@ -141,9 +151,14 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                           labelText: t.confirmPassword,
                           prefixIcon: const Icon(Icons.lock),
                           suffixIcon: IconButton(
-                            icon: Icon(_obscureConfirm ? Icons.visibility_off : Icons.visibility),
-                            tooltip: _obscureConfirm ? 'Mostrar senha' : 'Ocultar senha',
-                            onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                            icon: Icon(_obscureConfirm
+                                ? Icons.visibility_off
+                                : Icons.visibility),
+                            tooltip: _obscureConfirm
+                                ? 'Mostrar senha'
+                                : 'Ocultar senha',
+                            onPressed: () =>
+                                setState(() => _obscureConfirm = !_obscureConfirm),
                           ),
                         ),
                         validator: (v) {
@@ -155,7 +170,8 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                       const SizedBox(height: 24),
                       // --- CAMPO DE ACESSIBILIDADE ---
                       Semantics(
-                        label: 'Opção para informar dados de acessibilidade ou deficiência.',
+                        label:
+                            'Opção para informar dados de acessibilidade ou deficiência.',
                         child: Column(
                           children: [
                             Row(
@@ -168,7 +184,8 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                                     setState(() {
                                       _showDisabilityField = value;
                                       if (!value) {
-                                        disabilityInfo = null; // Limpa a informação se o usuário desmarcar
+                                        disabilityInfo =
+                                            null; // Limpa a informação se o usuário desmarcar
                                       }
                                     });
                                   },
@@ -181,7 +198,8 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                                 decoration: const InputDecoration(
                                   labelText: 'Descrição (opcional)',
                                   prefixIcon: Icon(Icons.accessibility_new),
-                                  helperText: 'Ex: Necessito de intérprete de Libras.',
+                                  helperText:
+                                      'Ex: Necessito de intérprete de Libras.',
                                 ),
                                 onSaved: (v) => disabilityInfo = v?.trim(),
                               ),
@@ -195,7 +213,9 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                           padding: const EdgeInsets.only(bottom: 16.0),
                           child: Text(
                             _errorMessage!,
-                            style: TextStyle(color: Theme.of(context).colorScheme.error, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.error,
+                                fontWeight: FontWeight.bold),
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -205,8 +225,11 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                         child: ElevatedButton(
                           onPressed: _loading ? null : _signup,
                           child: _loading
-                              ? const CircularProgressIndicator(color: Colors.white)
-                              : Text(t.signup, style: const TextStyle(fontSize: 16)),
+                              ? const CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                )
+                              : Text(t.signup,
+                                  style: const TextStyle(fontSize: 16)),
                         ),
                       ),
                       const SizedBox(height: 16),
