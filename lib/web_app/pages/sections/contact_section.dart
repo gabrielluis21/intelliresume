@@ -19,10 +19,9 @@ class ContactSection extends StatelessWidget {
           Text(
             'Contato',
             semanticsLabel: 'Seção de contato',
-            style: Theme.of(context)
-                .textTheme
-                .headlineSmall
-                ?.copyWith(fontWeight: FontWeight.bold),
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 20),
           Text(
@@ -39,11 +38,14 @@ class ContactSection extends StatelessWidget {
               'suporte@intelliresume.com',
               semanticsLabel: 'E-mail de contato: suport@intelliresume.com',
             ),
-            onTap: () =>
-                launchUrl(Uri.parse('mailto:suporte@intelliresume.com')),
+            onTap:
+                () => launchUrl(Uri.parse('mailto:suporte@intelliresume.com')),
           ),
           ListTile(
-            leading: const Icon(Icons.support_agent_outlined, color: _brandBlue),
+            leading: const Icon(
+              Icons.support_agent_outlined,
+              color: _brandBlue,
+            ),
             title: const Text(
               'Suporte via Chat',
               semanticsLabel: 'Suporte via Chat',

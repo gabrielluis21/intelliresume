@@ -41,8 +41,16 @@ final lightTheme = ThemeData(
     ),
   ),
   textTheme: const TextTheme(
-    titleLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black87),
-    titleMedium: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.black87),
+    titleLarge: TextStyle(
+      fontSize: 24,
+      fontWeight: FontWeight.bold,
+      color: Colors.black87,
+    ),
+    titleMedium: TextStyle(
+      fontSize: 20,
+      fontWeight: FontWeight.w600,
+      color: Colors.black87,
+    ),
     bodyLarge: TextStyle(fontSize: 18, color: Colors.black87),
     bodyMedium: TextStyle(fontSize: 16, color: Colors.black54),
   ),

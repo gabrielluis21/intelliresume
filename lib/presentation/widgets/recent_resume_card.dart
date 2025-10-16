@@ -20,62 +20,68 @@ class RecentResumeCard extends StatelessWidget {
     final bool isDraft = resume.status == ResumeStatus.draft;
 
     return SizedBox(
-      width: 250,
-      height: 190,
-      child: Card(
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(
-                  Icons.article_outlined,
-                  size: 36,
-                  color: theme.colorScheme.primary,
-                ),
-                const Spacer(),
-                Text(
-                  resume.title.isNotEmpty
-                      ? resume.title
-                      : 'Currículo sem título',
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
+      child: Semantics(
+        label:
+            'Currículo: ${resume.title.isNotEmpty ? resume.title : 'Currículo sem título'}, toque para editar',
+        button: true,
+        child: Card(
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.article_outlined,
+                    size: 36,
+                    color: theme.colorScheme.primary,
+                    semanticLabel: 'Ícone de currículo',
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 8),
-                Chip(
-                  avatar: Icon(
-                    isDraft
-                        ? Icons.edit_note_rounded
-                        : Icons.check_circle_outline_rounded,
-                    size: 16,
-                    color:
+                  const Spacer(),
+                  Text(
+                    resume.title.isNotEmpty
+                        ? resume.title
+                        : 'Currículo sem título',
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 8),
+                  Chip(
+                    avatar: Icon(
+                      isDraft
+                          ? Icons.edit_note_rounded
+                          : Icons.check_circle_outline_rounded,
+                      size: 16,
+                      color:
+                          isDraft
+                              ? Colors.orange.shade800
+                              : Colors.green.shade800,
+                    ),
+                    label: Text(
+                      isDraft ? 'Rascunho' : 'Finalizado',
+                      style: theme.textTheme.labelSmall,
+                    ),
+                    backgroundColor:
                         isDraft
-                            ? Colors.orange.shade800
-                            : Colors.green.shade800,
+                            ? Colors.orange.shade100
+                            : Colors.green.shade100,
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    side: BorderSide.none,
                   ),
-                  label: Text(
-                    isDraft ? 'Rascunho' : 'Finalizado',
-                    style: theme.textTheme.labelSmall,
+                  const Spacer(),
+                  Text(
+                    'Editado em: $formattedDate',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: Colors.grey.shade600,
+                    ),
                   ),
-                  backgroundColor:
-                      isDraft ? Colors.orange.shade100 : Colors.green.shade100,
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  side: BorderSide.none,
-                ),
-                const Spacer(),
-                Text(
-                  'Editado em: $formattedDate',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -95,22 +101,25 @@ class AddNewResumeCard extends StatelessWidget {
     return SizedBox(
       width: 160,
       height: 190,
-      child: Card(
-        clipBehavior: Clip.antiAlias,
-        color: theme.colorScheme.surfaceVariant.withOpacity(0.5),
-        child: InkWell(
-          onTap: onTap,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.add_circle_outline_rounded,
-                size: 48,
-                color: theme.colorScheme.primary,
-              ),
-              const SizedBox(height: 12),
-              Text('Criar Novo', style: theme.textTheme.titleSmall),
-            ],
+      child: Semantics(
+        label: 'Criar Novo Currículo, toque para iniciar',
+        button: true,
+        child: Card(
+          child: InkWell(
+            onTap: onTap,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.add_circle_outline_rounded,
+                  size: 48,
+                  color: theme.colorScheme.primary,
+                  semanticLabel: 'Ícone de adicionar novo currículo',
+                ),
+                const SizedBox(height: 12),
+                Text('Criar Novo', style: theme.textTheme.titleSmall),
+              ],
+            ),
           ),
         ),
       ),

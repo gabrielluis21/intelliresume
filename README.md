@@ -14,15 +14,16 @@ Acompanhe o progresso do desenvolvimento do IntelliResume.
   - [x] Estrutura do projeto com Clean Architecture.
   - [x] Configuração do Firebase (Auth, Firestore).
   - [x] Funcionalidade de criação e gerenciamento de currículos.
-- [ ] **Fase 2: Funcionalidades Inteligentes e Acessibilidade**
+  - [x] Refatoração da camada de autenticação.
+- [x] **Fase 2: Funcionalidades Inteligentes e Acessibilidade**
   - [x] Integração com API de IA para avaliação, tradução e correção.
   - [x] Implementação de múltiplos modelos de currículo.
   - [x] Suporte base a leitores de tela (Semântica).
   - [ ] Integração e validação da abordagem para VLibras.
-- [ ] **Fase 3: Monetização**
-  - [x] Implementação do fluxo de pagamento no cliente com Stripe PaymentSheet.
-  - [ ] Implementação do endpoint de backend `/create-payment-intent`.
-  - [ ] Implementação do Webhook de pagamento seguro na Vercel.
+- [x] **Fase 3: Monetização**
+  - [x] Implementação do fluxo de pagamento no cliente com Stripe (Web e Mobile).
+  - [x] Implementação do endpoint de backend `/create-payment-intent` e `/create-checkout-session`.
+  - [x] Implementação do Webhook de pagamento seguro na Vercel.
   - [ ] Testes de ponta a ponta do fluxo de assinatura.
 - [ ] **Fase 4: Recursos Pro**
   - [ ] Desenvolvimento do "Modo Estúdio" para edição avançada.

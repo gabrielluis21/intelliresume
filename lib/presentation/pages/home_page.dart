@@ -11,7 +11,9 @@ class HomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final resumesAsync = ref.watch(resumesStreamProvider); // Usando o provider correto
+    final resumesAsync = ref.watch(
+      resumesStreamProvider,
+    ); // Usando o provider correto
     final userAsync = ref.watch(userProfileProvider);
     final theme = Theme.of(context);
 
@@ -23,17 +25,22 @@ class HomePage extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             userAsync.when(
-              data: (user) => Text(
-                'Olá, ${user?.name ?? 'Usuário'}!',
-                style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-              ),
+              data:
+                  (user) => Text(
+                    'Olá, ${user?.name ?? 'Usuário'}!',
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
               loading: () => const SizedBox(),
               error: (e, s) => const Text('Olá!'),
             ),
             const SizedBox(height: 8),
             Text(
               'Bem-vindo de volta. Pronto para conquistar sua próxima vaga?',
-              style: theme.textTheme.titleMedium?.copyWith(color: Colors.grey.shade700),
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: Colors.grey.shade700,
+              ),
             ),
             const SizedBox(height: 32),
             _buildRecentResumesSection(context, resumesAsync),
@@ -46,7 +53,9 @@ class HomePage extends ConsumerWidget {
   }
 
   Widget _buildRecentResumesSection(
-      BuildContext context, AsyncValue<List<dynamic>> resumesAsync) {
+    BuildContext context,
+    AsyncValue<List<dynamic>> resumesAsync,
+  ) {
     final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -57,7 +66,10 @@ class HomePage extends ConsumerWidget {
           height: 180,
           child: resumesAsync.when(
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (error, stack) => const Center(child: Text('Não foi possível carregar os currículos.')),
+            error:
+                (error, stack) => const Center(
+                  child: Text('Não foi possível carregar os currículos.'),
+                ),
             data: (resumes) {
               if (resumes.isEmpty) {
                 return AddNewResumeCard(onTap: () => context.go('/editor/new'));
@@ -68,12 +80,16 @@ class HomePage extends ConsumerWidget {
                 separatorBuilder: (context, index) => const SizedBox(width: 12),
                 itemBuilder: (context, index) {
                   if (index == resumes.length) {
-                    return AddNewResumeCard(onTap: () => context.go('/editor/new'));
+                    return AddNewResumeCard(
+                      onTap: () => context.go('/editor/new'),
+                    );
                   }
                   final cv = resumes[index];
                   return RecentResumeCard(
                     resume: cv,
-                    onTap: () => context.go('/editor/${cv.id}'), // Navegação correta
+                    onTap:
+                        () =>
+                            context.go('/editor/${cv.id}'), // Navegação correta
                   );
                 },
               );
@@ -104,24 +120,30 @@ class HomePage extends ConsumerWidget {
               icon: Icons.history,
               label: 'Ver Histórico Completo',
               onTap: () => context.go('/history'),
+              iconSemanticLabel: 'Ícone de histórico',
             ),
             _buildActionCard(
               context,
               icon: Icons.palette_outlined,
               label: 'Explorar Modelos',
-              onTap: () { /* Navegar para a galeria de modelos */ },
+              onTap: () {
+                /* Navegar para a galeria de modelos */
+              },
+              iconSemanticLabel: 'Ícone de paleta de cores',
             ),
             _buildActionCard(
               context,
               icon: Icons.workspace_premium_outlined,
               label: 'Minha Assinatura',
               onTap: () => context.go('/buy'),
+              iconSemanticLabel: 'Ícone de assinatura premium',
             ),
             _buildActionCard(
               context,
               icon: Icons.settings_outlined,
               label: 'Ajustes',
               onTap: () => context.go('/settings'),
+              iconSemanticLabel: 'Ícone de configurações',
             ),
           ],
         ),
@@ -129,7 +151,13 @@ class HomePage extends ConsumerWidget {
     );
   }
 
-  Widget _buildActionCard(BuildContext context, {required IconData icon, required String label, required VoidCallback onTap}) {
+  Widget _buildActionCard(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+    required String iconSemanticLabel,
+  }) {
     final theme = Theme.of(context);
     return Card(
       clipBehavior: Clip.antiAlias,
@@ -139,11 +167,14 @@ class HomePage extends ConsumerWidget {
           padding: const EdgeInsets.all(8.0),
           child: Row(
             children: [
-              Icon(icon, size: 28, color: theme.colorScheme.primary),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(label, style: theme.textTheme.titleSmall),
+              Icon(
+                icon,
+                size: 28,
+                color: theme.colorScheme.primary,
+                semanticLabel: iconSemanticLabel,
               ),
+              const SizedBox(width: 12),
+              Expanded(child: Text(label, style: theme.textTheme.titleSmall)),
             ],
           ),
         ),

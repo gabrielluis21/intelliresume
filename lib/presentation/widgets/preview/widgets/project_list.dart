@@ -19,8 +19,7 @@ class ProjectList extends ConsumerWidget {
       itemBuilder: (c, i) {
         final item = items[i];
         return Semantics(
-          label:
-              'Projeto ${i + 1}: ${item.name}. Toque para editar.',
+          label: 'Projeto ${i + 1}: ${item.name}. Toque para editar.',
           child: ListTile(
             leading: const Icon(Icons.folder_outlined),
             title: Column(

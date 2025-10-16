@@ -23,9 +23,9 @@ class FeaturesSection extends StatelessWidget {
           Text(
             'Funcionalidades Inteligentes',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: const Color(0xFF0D47A1),
-                ),
+              fontWeight: FontWeight.bold,
+              color: const Color(0xFF0D47A1),
+            ),
           ),
           const SizedBox(height: 16),
           const Text(
@@ -36,7 +36,9 @@ class FeaturesSection extends StatelessWidget {
           const SizedBox(height: 40),
           Center(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 1200), // Limita a largura do grid
+              constraints: const BoxConstraints(
+                maxWidth: 1200,
+              ), // Limita a largura do grid
               child: Wrap(
                 spacing: 24,
                 runSpacing: 24,
@@ -47,7 +49,8 @@ class FeaturesSection extends StatelessWidget {
                     child: FeatureCard(
                       icon: Icons.auto_awesome,
                       title: 'Avaliação com IA',
-                      description: 'Receba sugestões para tornar seu currículo mais impactante e profissional.',
+                      description:
+                          'Receba sugestões para tornar seu currículo mais impactante e profissional.',
                     ),
                   ),
                   const SizedBox(
@@ -55,7 +58,8 @@ class FeaturesSection extends StatelessWidget {
                     child: FeatureCard(
                       icon: Icons.translate,
                       title: 'Tradução Automática',
-                      description: 'Adapte seu currículo para vagas internacionais com tradução para múltiplos idiomas.',
+                      description:
+                          'Adapte seu currículo para vagas internacionais com tradução para múltiplos idiomas.',
                     ),
                   ),
                   const SizedBox(
@@ -63,7 +67,8 @@ class FeaturesSection extends StatelessWidget {
                     child: FeatureCard(
                       icon: Icons.spellcheck,
                       title: 'Correção Ortográfica',
-                      description: 'Evite erros gramaticais que podem custar uma oportunidade. Nós revisamos para você.',
+                      description:
+                          'Evite erros gramaticais que podem custar uma oportunidade. Nós revisamos para você.',
                     ),
                   ),
                   SizedBox(
@@ -72,7 +77,8 @@ class FeaturesSection extends StatelessWidget {
                       onTap: onSeeTemplates,
                       icon: Icons.palette,
                       title: 'Modelos Profissionais',
-                      description: 'Escolha entre dezenas de modelos gratuitos e premium, criados por especialistas.',
+                      description:
+                          'Escolha entre dezenas de modelos gratuitos e premium, criados por especialistas.',
                     ),
                   ),
                   const SizedBox(
@@ -80,7 +86,8 @@ class FeaturesSection extends StatelessWidget {
                     child: FeatureCard(
                       icon: Icons.edit,
                       title: 'Modo Estúdio (Pro)',
-                      description: 'Personalize cores, fontes e layouts para criar um currículo verdadeiramente único.',
+                      description:
+                          'Personalize cores, fontes e layouts para criar um currículo verdadeiramente único.',
                     ),
                   ),
                   const SizedBox(
@@ -88,7 +95,8 @@ class FeaturesSection extends StatelessWidget {
                     child: FeatureCard(
                       icon: Icons.picture_as_pdf,
                       title: 'Exportação Fácil',
-                      description: 'Exporte seu currículo em formato PDF com alta qualidade, pronto para ser enviado.',
+                      description:
+                          'Exporte seu currículo em formato PDF com alta qualidade, pronto para ser enviado.',
                     ),
                   ),
                 ],

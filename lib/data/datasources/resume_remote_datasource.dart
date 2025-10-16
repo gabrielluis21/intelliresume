@@ -11,7 +11,7 @@ class ResumeRemoteDataSourceImpl implements ResumeRemoteDataSource {
   final FirebaseFirestore _firestore;
 
   ResumeRemoteDataSourceImpl({required FirebaseFirestore firestore})
-      : _firestore = firestore;
+    : _firestore = firestore;
 
   @override
   Stream<List<CVModel>> getResumes(String userId) {
@@ -22,23 +22,24 @@ class ResumeRemoteDataSourceImpl implements ResumeRemoteDataSource {
         .orderBy('lastModified', descending: true)
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs.map((doc) {
-        final data = doc.data();
-        data['id'] = doc.id; // Adiciona o ID do documento ao mapa
-        return CVModel.fromJson(data);
-      }).toList();
-    });
+          return snapshot.docs.map((doc) {
+            final data = doc.data();
+            data['id'] = doc.id; // Adiciona o ID do documento ao mapa
+            return CVModel.fromJson(data);
+          }).toList();
+        });
   }
 
   @override
   Future<CVModel> getResumeById(String userId, String resumeId) async {
-    final docSnapshot = await _firestore
-        .collection('resumes')
-        .doc(userId)
-        .collection('user_resumes')
-        .doc(resumeId)
-        .get();
-    
+    final docSnapshot =
+        await _firestore
+            .collection('resumes')
+            .doc(userId)
+            .collection('user_resumes')
+            .doc(resumeId)
+            .get();
+
     if (!docSnapshot.exists) {
       throw Exception('Resume not found');
     }

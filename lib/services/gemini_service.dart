@@ -59,18 +59,22 @@ class GeminiService implements AIService, TemplateTranslationService {
     // Para a tradução de dados estruturados, a abordagem de JSON ainda é válida.
     final textsToTranslate = {
       "objective": data.objective,
-      "experiences": data.experiences
-          ?.map((e) => {"position": e.position, "description": e.description})
-          .toList(),
-      "educations": data.educations
-          ?.map((e) => {"degree": e.degree, "description": e.description})
-          .toList(),
-      "projects": data.projects
-          ?.map((p) => {"name": p.name, "description": p.description})
-          .toList(),
-      "certificates": data.certificates
-          ?.map((c) => {"courseName": c.courseName})
-          .toList(),
+      "experiences":
+          data.experiences
+              ?.map(
+                (e) => {"position": e.position, "description": e.description},
+              )
+              .toList(),
+      "educations":
+          data.educations
+              ?.map((e) => {"degree": e.degree, "description": e.description})
+              .toList(),
+      "projects":
+          data.projects
+              ?.map((p) => {"name": p.name, "description": p.description})
+              .toList(),
+      "certificates":
+          data.certificates?.map((c) => {"courseName": c.courseName}).toList(),
     };
 
     final prompt = """
@@ -85,52 +89,60 @@ class GeminiService implements AIService, TemplateTranslationService {
     try {
       final response = await gemini.text(prompt);
       final resultText = response?.output?.trim() ?? '{}';
-      
+
       final translatedJson = jsonDecode(resultText) as Map<String, dynamic>;
 
       return data.copyWith(
         objective: translatedJson['objective'] ?? data.objective,
-        experiences: data.experiences?.asMap().entries.map((entry) {
-          int index = entry.key;
-          Experience originalExp = entry.value;
-          return originalExp.copyWith(
-            position: translatedJson['experiences']?[index]?['position'] ??
-                originalExp.position,
-            description:
-                translatedJson['experiences']?[index]?['description'] ??
+        experiences:
+            data.experiences?.asMap().entries.map((entry) {
+              int index = entry.key;
+              Experience originalExp = entry.value;
+              return originalExp.copyWith(
+                position:
+                    translatedJson['experiences']?[index]?['position'] ??
+                    originalExp.position,
+                description:
+                    translatedJson['experiences']?[index]?['description'] ??
                     originalExp.description,
-          );
-        }).toList(),
-        educations: data.educations?.asMap().entries.map((entry) {
-          int index = entry.key;
-          Education originalEdu = entry.value;
-          return originalEdu.copyWith(
-            degree: translatedJson['educations']?[index]?['degree'] ??
-                originalEdu.degree,
-            description:
-                translatedJson['educations']?[index]?['description'] ??
+              );
+            }).toList(),
+        educations:
+            data.educations?.asMap().entries.map((entry) {
+              int index = entry.key;
+              Education originalEdu = entry.value;
+              return originalEdu.copyWith(
+                degree:
+                    translatedJson['educations']?[index]?['degree'] ??
+                    originalEdu.degree,
+                description:
+                    translatedJson['educations']?[index]?['description'] ??
                     originalEdu.description,
-          );
-        }).toList(),
-        projects: data.projects?.asMap().entries.map((entry) {
-          int index = entry.key;
-          Project originalProj = entry.value;
-          return originalProj.copyWith(
-            name: translatedJson['projects']?[index]?['name'] ??
-                originalProj.name,
-            description:
-                translatedJson['projects']?[index]?['description'] ??
+              );
+            }).toList(),
+        projects:
+            data.projects?.asMap().entries.map((entry) {
+              int index = entry.key;
+              Project originalProj = entry.value;
+              return originalProj.copyWith(
+                name:
+                    translatedJson['projects']?[index]?['name'] ??
+                    originalProj.name,
+                description:
+                    translatedJson['projects']?[index]?['description'] ??
                     originalProj.description,
-          );
-        }).toList(),
-        certificates: data.certificates?.asMap().entries.map((entry) {
-          int index = entry.key;
-          Certificate originalCert = entry.value;
-          return originalCert.copyWith(
-            courseName: translatedJson['certificates']?[index]?['courseName'] ??
-                originalCert.courseName,
-          );
-        }).toList(),
+              );
+            }).toList(),
+        certificates:
+            data.certificates?.asMap().entries.map((entry) {
+              int index = entry.key;
+              Certificate originalCert = entry.value;
+              return originalCert.copyWith(
+                courseName:
+                    translatedJson['certificates']?[index]?['courseName'] ??
+                    originalCert.courseName,
+              );
+            }).toList(),
       );
     } catch (e) {
       print("Error during Gemini translation: $e");

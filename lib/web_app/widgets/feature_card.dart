@@ -23,7 +23,8 @@ class _FeatureCardState extends State<FeatureCard> {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: 'Funcionalidade: ${widget.title}. Descrição: ${widget.description}',
+      label:
+          'Funcionalidade: ${widget.title}. Descrição: ${widget.description}',
       container: true,
       child: FocusableActionDetector(
         onFocusChange: (isFocused) => setState(() => _isHovered = isFocused),
@@ -36,21 +37,22 @@ class _FeatureCardState extends State<FeatureCard> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12.0),
-              boxShadow: _isHovered
-                  ? [
-                      BoxShadow(
-                        color: _brandBlue.withOpacity(0.15),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
-                      )
-                    ]
-                  : [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      )
-                    ],
+              boxShadow:
+                  _isHovered
+                      ? [
+                        BoxShadow(
+                          color: _brandBlue.withOpacity(0.15),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ]
+                      : [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
               border: Border.all(
                 color: _isHovered ? _brandBlue : Colors.grey.shade200,
                 width: 1.5,
@@ -59,7 +61,12 @@ class _FeatureCardState extends State<FeatureCard> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(widget.icon, color: _brandBlue, size: 48, semanticLabel: ''),
+                Icon(
+                  widget.icon,
+                  color: _brandBlue,
+                  size: 48,
+                  semanticLabel: '',
+                ),
                 const SizedBox(height: 16),
                 Text(
                   widget.title,

@@ -1,8 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intelliresume/data/models/cv_data.dart';
 import 'package:intelliresume/presentation/widgets/layout_template.dart';
-import 'package:pdf/widgets.dart';
 import '../../presentation/pages.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -66,19 +64,13 @@ final routerProvider = Provider<GoRouter>((ref) {
                 LayoutTemplate(selectedIndex: 2, child: const HistoryPage()),
       ),
       GoRoute(
+        name: 'settings',
         path: '/settings',
         builder:
             (context, state) => LayoutTemplate(
               selectedIndex: 4,
               child: const SettingsPage(), // Implemente esta página
             ),
-        routes: [
-          GoRoute(
-            name: 'accessibility-settings',
-            path: 'accessibility',
-            builder: (context, state) => const AccessibilitySettingsPage(),
-          ),
-        ],
       ),
     ],
     /* redirect: (ctx, state) {

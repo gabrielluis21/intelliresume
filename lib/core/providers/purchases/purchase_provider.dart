@@ -47,7 +47,9 @@ class PurchaseController extends StateNotifier<PurchaseState> {
     try {
       await _paymentService.purchasePremium();
     } catch (e) {
-      state = state.copyWith(error: 'Falha ao iniciar o processo de pagamento: $e');
+      state = state.copyWith(
+        error: 'Falha ao iniciar o processo de pagamento: $e',
+      );
     } finally {
       state = state.copyWith(isProcessing: false);
     }
@@ -56,16 +58,17 @@ class PurchaseController extends StateNotifier<PurchaseState> {
 
 // 4. Provider para acessar o controller e o estado
 final purchaseControllerProvider =
-    StateNotifierProvider<PurchaseController, PurchaseState>(
-  (ref) {
-    final paymentService = ref.watch(paymentServiceProvider);
-    final controller = PurchaseController(paymentService);
+    StateNotifierProvider<PurchaseController, PurchaseState>((ref) {
+      final paymentService = ref.watch(paymentServiceProvider);
+      final controller = PurchaseController(paymentService);
 
-    // Ouve as mudanças no perfil do usuário e atualiza o estado da compra
-    ref.listen<AsyncValue<UserProfile?>>(userProfileProvider, (previous, next) {
-      controller.updateUserProfile(next.value);
+      // Ouve as mudanças no perfil do usuário e atualiza o estado da compra
+      ref.listen<AsyncValue<UserProfile?>>(userProfileProvider, (
+        previous,
+        next,
+      ) {
+        controller.updateUserProfile(next.value);
+      });
+
+      return controller;
     });
-
-    return controller;
-  },
-);

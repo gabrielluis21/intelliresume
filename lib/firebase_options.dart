@@ -70,7 +70,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '260299601243',
     projectId: 'resume-flutte-pwa',
     storageBucket: 'resume-flutte-pwa.firebasestorage.app',
-    iosClientId: '260299601243-5mfp6ufgbumhee9bglcmjh6qrrlbmrdn.apps.googleusercontent.com',
+    iosClientId:
+        '260299601243-5mfp6ufgbumhee9bglcmjh6qrrlbmrdn.apps.googleusercontent.com',
     iosBundleId: 'com.example.intelliresume',
   );
 }

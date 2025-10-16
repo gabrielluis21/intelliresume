@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intelliresume/core/providers/purchases/purchase_provider.dart';
+import 'package:intelliresume/core/providers/user/user_provider.dart';
+import 'package:intelliresume/domain/entities/plan_type.dart';
+import 'package:intelliresume/presentation/widgets/layout_template.dart';
+import 'package:intelliresume/presentation/widgets/pricing/pricing_section_widget.dart';
 
 class BuyPage extends ConsumerWidget {
   const BuyPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final purchaseState = ref.watch(purchaseControllerProvider);
+    final userProfile = ref.watch(userProfileProvider);
 
     ref.listen<PurchaseState>(purchaseControllerProvider, (previous, next) {
       if (next.isPremium) {
@@ -21,56 +25,25 @@ class BuyPage extends ConsumerWidget {
       }
     });
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Seja Premium')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Desbloqueie recursos premium:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            const ListTile(
-              leading: Icon(Icons.check, color: Colors.green),
-              title: Text('Geração de currículos em lote com IA'),
-            ),
-            const ListTile(
-              leading: Icon(Icons.check, color: Colors.green),
-              title: Text('Modelos exclusivos de CV'),
-            ),
-            const ListTile(
-              leading: Icon(Icons.check, color: Colors.green),
-              title: Text('Traduções automáticas profissionais'),
-            ),
-            const ListTile(
-              leading: Icon(Icons.check, color: Colors.green),
-              title: Text('Mais armazenamento e histórico'),
-            ),
-            const Spacer(),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.lock_open),
-              label: Text(
-                purchaseState.isProcessing ? 'Processando...' : 'Assinar Agora',
-              ),
-              onPressed:
-                  purchaseState.isProcessing
-                      ? null
-                      : () => _initiatePurchase(context, ref),
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size.fromHeight(50),
-              ),
-            ),
-            const SizedBox(height: 16),
-          ],
-        ),
+    return LayoutTemplate(
+      selectedIndex: 4, // Index for BuyPage in the side menu
+      child: userProfile.when(
+        data: (user) {
+          return PricingSectionWidget(
+            currentUserPlan: user?.plan ?? PlanType.free,
+            onSelectPlan: (plan) {
+              // For now, we only support upgrading to premium
+              if (plan == PlanType.premium) {
+                ref
+                    .read(purchaseControllerProvider.notifier)
+                    .initiatePurchase();
+              }
+            },
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(child: Text('Erro: $error')),
       ),
     );
-  }
-
-  Future<void> _initiatePurchase(BuildContext context, WidgetRef ref) async {
-    await ref.read(purchaseControllerProvider.notifier).initiatePurchase();
   }
 }

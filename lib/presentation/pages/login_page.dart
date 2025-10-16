@@ -21,7 +21,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     _formKey.currentState!.save();
     if (email.isEmpty || !email.contains('@')) {
       setState(() {
-        _errorMessage = 'Por favor, insira um e-mail válido para redefinir a senha.';
+        _errorMessage =
+            'Por favor, insira um e-mail válido para redefinir a senha.';
       });
       return;
     }
@@ -60,10 +61,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     });
 
     try {
-      await ref.read(signInUseCaseProvider).call(
-            email: email,
-            password: password,
-          );
+      await ref
+          .read(signInUseCaseProvider)
+          .call(email: email, password: password);
 
       if (mounted) context.goNamed('home');
     } on Exception catch (e) {
@@ -105,9 +105,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       const SizedBox(height: 16),
                       Text(
                         t.login,
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineSmall
+                        style: Theme.of(context).textTheme.headlineSmall
                             ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
@@ -122,8 +120,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           prefixIcon: const Icon(Icons.email),
                         ),
                         keyboardType: TextInputType.emailAddress,
-                        validator: (v) =>
-                            (v?.contains('@') == true) ? null : t.invalidEmail,
+                        validator:
+                            (v) =>
+                                (v?.contains('@') == true)
+                                    ? null
+                                    : t.invalidEmail,
                         onSaved: (v) => email = v!.trim(),
                       ),
                       const SizedBox(height: 16),
@@ -138,9 +139,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                   ? Icons.visibility_off
                                   : Icons.visibility,
                             ),
-                            tooltip: _obscurePassword
-                                ? 'Mostrar senha'
-                                : 'Ocultar senha',
+                            tooltip:
+                                _obscurePassword
+                                    ? 'Mostrar senha'
+                                    : 'Ocultar senha',
                             onPressed: () {
                               setState(() {
                                 _obscurePassword = !_obscurePassword;
@@ -148,9 +150,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             },
                           ),
                         ),
-                        validator: (v) => (v != null && v.length >= 6)
-                            ? null
-                            : t.passwordTooShort,
+                        validator:
+                            (v) =>
+                                (v != null && v.length >= 6)
+                                    ? null
+                                    : t.passwordTooShort,
                         onSaved: (v) => password = v!,
                       ),
                       const SizedBox(height: 24),
@@ -181,14 +185,17 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         height: 50,
                         child: ElevatedButton(
                           onPressed: _loading ? null : _login,
-                          child: _loading
-                              ? const CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                )
-                              : Text(
-                                  t.login,
-                                  style: const TextStyle(fontSize: 16),
-                                ),
+                          child:
+                              _loading
+                                  ? const CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white,
+                                    ),
+                                  )
+                                  : Text(
+                                    t.login,
+                                    style: const TextStyle(fontSize: 16),
+                                  ),
                         ),
                       ),
                       const SizedBox(height: 16),

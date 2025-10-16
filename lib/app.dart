@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intelliresume/core/providers/accessibility/accessibility_provider.dart';
 import 'package:intelliresume/core/providers/languages/locale_provider.dart';
+import 'package:intelliresume/core/providers/theme/theme_provider.dart';
 import 'core/routes/app_routes.dart';
 import 'core/themes.dart';
 import 'core/utils/app_localizations.dart';
@@ -13,17 +14,19 @@ class App extends ConsumerWidget {
     final router = ref.watch(routerProvider);
     final locale = ref.watch(localeProvider);
     final accessibilitySettings = ref.watch(accessibilityProvider);
+    final themeMode = ref.watch(themeProvider);
 
-    // Define o tema com base na configuração de alto contraste
-    final activeTheme =
+    final activeLightTheme =
         accessibilitySettings.highContrast ? highContrastTheme : lightTheme;
+    final activeDarkTheme =
+        accessibilitySettings.highContrast ? highContrastTheme : darkTheme;
 
     return MaterialApp.router(
       title: 'IntelliResume',
       debugShowCheckedModeBanner: false,
-      theme: activeTheme,
-      darkTheme: darkTheme, // Pode manter se quiser alternância manual
-      themeMode: ThemeMode.light,
+      theme: activeLightTheme,
+      darkTheme: activeDarkTheme,
+      themeMode: themeMode,
       locale: locale,
       routerConfig: router,
       builder: (context, child) {

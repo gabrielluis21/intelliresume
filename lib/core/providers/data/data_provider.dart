@@ -55,10 +55,12 @@ final resumeRepositoryProvider = Provider<ResumeRepository>((ref) {
 
 // --- Auth Use Cases ---
 
-final getAuthStateChangesUseCaseProvider = Provider<GetAuthStateChangesUseCase>((ref) {
-  final repository = ref.watch(authRepositoryProvider);
-  return GetAuthStateChangesUseCase(repository);
-});
+final getAuthStateChangesUseCaseProvider = Provider<GetAuthStateChangesUseCase>(
+  (ref) {
+    final repository = ref.watch(authRepositoryProvider);
+    return GetAuthStateChangesUseCase(repository);
+  },
+);
 
 final getCurrentUserUseCaseProvider = Provider<GetCurrentUserUseCase>((ref) {
   final repository = ref.watch(authRepositoryProvider);
@@ -80,7 +82,9 @@ final signUpUseCaseProvider = Provider<SignUpUseCase>((ref) {
   return SignUpUseCase(repository);
 });
 
-final sendPasswordResetUseCaseProvider = Provider<SendPasswordResetUseCase>((ref) {
+final sendPasswordResetUseCaseProvider = Provider<SendPasswordResetUseCase>((
+  ref,
+) {
   final repository = ref.watch(authRepositoryProvider);
   return SendPasswordResetUseCase(repository);
 });

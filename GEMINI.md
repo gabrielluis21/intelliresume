@@ -1,6 +1,6 @@
 # Documentação do Projeto IntelliResume
 
-*Última atualização: 2025-10-02*
+*Última atualização: 2025-10-15*
 
 <!-- 
 Este documento serve como uma fonte central de verdade para o projeto IntelliResume.
@@ -18,8 +18,8 @@ O IntelliResume é uma aplicação multiplataforma (PWA e Mobile) construída co
 O projeto adota o padrão **Clean Architecture** para garantir um código desacoplado, testável e de fácil manutenção. A lógica é dividida em três camadas principais:
 
 *   **Presentation (Apresentação):** Responsável pela UI e interação com o usuário. Utiliza `flutter_riverpod` para gerenciamento de estado e `go_router` para navegação.
-*   **Domain (Domínio):** Contém a lógica de negócio pura e as regras da aplicação (casos de uso, entidades).
-*   **Data (Dados):** Lida com a obtenção e o armazenamento de dados através de Repositórios e Fontes de Dados (ex: Firebase Firestore).
+*   **Domain (Domínio):** Contém a lógica de negócio pura e as regras da aplicação (casos de uso, entidades, repositórios abstratos).
+*   **Data (Dados):** Lida com a obtenção e o armazenamento de dados através de Repositórios concretos e Fontes de Dados (ex: Firebase Firestore).
 
 ### 2.2. Estrutura de Mono-repositório
 Para facilitar o desenvolvimento, o projeto foi organizado em uma estrutura de mono-repositório, com o frontend e o backend localizados na mesma pasta raiz, mas mantidos em repositórios Git separados.
@@ -29,7 +29,7 @@ Para facilitar o desenvolvimento, o projeto foi organizado em uma estrutura de m
 
 ## 3. Funcionalidades e Serviços Chave
 
-### 3.1. Principais Funcionalidades
+### 3.1. Principais Funcionalidades Implementadas
 
 *   **Criação e Gerenciamento de Currículos:** Interface intuitiva para montar e editar múltiplos currículos.
 *   **Modelos Profissionais:** Oferece uma variedade de modelos de currículos, incluindo opções gratuitas e premium.
@@ -37,23 +37,28 @@ Para facilitar o desenvolvimento, o projeto foi organizado em uma estrutura de m
     *   **Avaliação:** Analisa o conteúdo do currículo e oferece sugestões de melhoria.
     *   **Tradução:** Traduz o currículo para diferentes idiomas.
     *   **Correção:** Corrige erros gramaticais e de estilo.
-*   **Monetização:** Sistema de assinatura com três níveis (Free, Premium, Pro).
-*   **Modo Estúdio (Plano Pro):** Editor avançado para personalizar o layout, fontes e cores. *(em desenvolvimento)*
+*   **Monetização:** Sistema de assinatura com três níveis (Free, Premium, Pro) via Stripe.
+*   **Autenticação:** Suporte para E-mail/Senha, Google Sign-In e Facebook Login.
 *   **Acessibilidade:**
-        - Suporte a leitores de tela (TalkBack, VoiceOver).
-        - Tradução para a Língua Brasileira de Sinais (Libras). *(integração com VLibras em desenvolvimento)*
+    *   Suporte a leitores de tela (TalkBack, VoiceOver).
+    *   Tema de alto contraste, escala de fonte e texto em negrito.
 
-### 3.2. Integração com IA (`AIService`)
+### 3.2. Funcionalidades em Desenvolvimento
+
+*   **Modo Estúdio (Plano Pro):** Editor avançado para personalizar o layout, fontes e cores.
+*   **Integração com VLibras:** Tradução para a Língua Brasileira de Sinais.
+
+### 3.3. Integração com IA (`AIService`)
 
 Os recursos de IA são centralizados através de uma abstração (`AIService`) para facilitar a troca de provedores. O projeto está preparado para usar diferentes implementações, como `OpenAIService` ou `GeminiService`, bastando atualizar o provedor de injeção de dependência no Riverpod.
 
-### 3.3. Monetização e Verificação de Pagamentos (Arquitetura Segura)
+### 3.4. Monetização e Verificação de Pagamentos (Arquitetura Segura)
 
 O fluxo de compra de assinaturas foi desenhado para ser seguro, evitando fraudes através da verificação server-side.
 
-*   **Problema Resolvido:** A verificação de pagamento nunca ocorre no dispositivo do cliente. A versão inicial, que simulava a verificação no front-end, foi descartada por ser insegura.
+*   **Problema Resolvido:** A verificação de pagamento nunca ocorre no dispositivo do cliente.
 *   **Arquitetura de Webhook:**
-    1.  O App Flutter (frontend) inicia a compra e redireciona o usuário para o gateway de pagamento (ex: Stripe).
+    1.  O App Flutter (frontend) inicia a compra (via `flutter_stripe` no mobile ou redirecionamento no web).
     2.  Após o pagamento, o Stripe envia uma notificação (webhook) para um endpoint seguro hospedado como uma **função serverless na Vercel** (código na pasta `/backend`).
     3.  A função na Vercel verifica a assinatura criptográfica do webhook para garantir sua autenticidade.
     4.  Com a confirmação, a função usa o **Firebase Admin SDK** para se conectar de forma segura ao Firestore e atualizar o status do usuário (ex: `isPremium: true`).
@@ -64,8 +69,10 @@ O fluxo de compra de assinaturas foi desenhado para ser seguro, evitando fraudes
 *   `flutter_riverpod`: Gerenciamento de estado.
 *   `go_router`: Navegação por rotas.
 *   `firebase_auth`, `cloud_firestore`: Backend e autenticação.
-*   `google_generative_ai`, `chat_gpt_sdk`: SDKs para integração com APIs de IA.
-*   `url_launcher`: Para abrir links externos.
+*   `flutter_gemini`, `chat_gpt_sdk`: SDKs para integração com APIs de IA.
+*   `flutter_stripe`: Processamento de pagamentos no mobile.
+*   `url_launcher`: Para abrir links externos (usado no fluxo de pagamento web).
+*   `hive`: Banco de dados local.
 
 ## 5. Configuração e Execução (Getting Started)
 

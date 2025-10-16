@@ -91,10 +91,7 @@ class IntelliResumePatternTemplate implements ResumeTemplate {
     return pdf;
   }
 
-  pw.Widget _buildProjectsSection(
-    List<Project> projects,
-    AppLocalizations t,
-  ) {
+  pw.Widget _buildProjectsSection(List<Project> projects, AppLocalizations t) {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
@@ -108,7 +105,10 @@ class IntelliResumePatternTemplate implements ResumeTemplate {
         ),
         pw.SizedBox(height: 8),
         projects.isEmpty
-            ? pw.Text('Nenhum projeto adicionado.', style: pw.TextStyle(font: fontsRegular))
+            ? pw.Text(
+              'Nenhum projeto adicionado.',
+              style: pw.TextStyle(font: fontsRegular),
+            )
             : _buildProjectList(projects),
         pw.SizedBox(height: 20),
       ],
@@ -161,7 +161,10 @@ class IntelliResumePatternTemplate implements ResumeTemplate {
         ),
         pw.SizedBox(height: 8),
         certificates.isEmpty
-            ? pw.Text('Nenhum certificado adicionado.', style: pw.TextStyle(font: fontsRegular))
+            ? pw.Text(
+              'Nenhum certificado adicionado.',
+              style: pw.TextStyle(font: fontsRegular),
+            )
             : _buildCertificateList(certificates),
         pw.SizedBox(height: 20),
       ],
@@ -625,19 +628,37 @@ class ClassicMinimalTemplate implements ResumeTemplate {
       children: [
         pw.Text(
           'Projetos',
-          style: pw.TextStyle(fontWeight: pw.FontWeight.bold, font: fontsBold, fontSize: 18),
-        ),
-        ...data.projects!.map((p) => pw.Padding(
-          padding: pw.EdgeInsets.symmetric(vertical: 8),
-          child: pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
-            children: [
-              pw.Text(p.name ?? '', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, font: fontsBold)),
-              pw.Text('${p.startYear} - ${p.endYear}', style: pw.TextStyle(font: fontsLight)),
-              pw.Text(p.description ?? '', style: pw.TextStyle(font: fontsRegular)),
-            ],
+          style: pw.TextStyle(
+            fontWeight: pw.FontWeight.bold,
+            font: fontsBold,
+            fontSize: 18,
           ),
-        )),
+        ),
+        ...data.projects!.map(
+          (p) => pw.Padding(
+            padding: pw.EdgeInsets.symmetric(vertical: 8),
+            child: pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Text(
+                  p.name ?? '',
+                  style: pw.TextStyle(
+                    fontWeight: pw.FontWeight.bold,
+                    font: fontsBold,
+                  ),
+                ),
+                pw.Text(
+                  '${p.startYear} - ${p.endYear}',
+                  style: pw.TextStyle(font: fontsLight),
+                ),
+                pw.Text(
+                  p.description ?? '',
+                  style: pw.TextStyle(font: fontsRegular),
+                ),
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -651,18 +672,33 @@ class ClassicMinimalTemplate implements ResumeTemplate {
       children: [
         pw.Text(
           'Certificados',
-          style: pw.TextStyle(fontWeight: pw.FontWeight.bold, font: fontsBold, fontSize: 18),
-        ),
-        ...data.certificates!.map((c) => pw.Padding(
-          padding: pw.EdgeInsets.symmetric(vertical: 8),
-          child: pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
-            children: [
-              pw.Text(c.courseName ?? '', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, font: fontsBold)),
-              pw.Text('${c.institution} | ${c.startDate} - ${c.endDate}', style: pw.TextStyle(font: fontsLight)),
-            ],
+          style: pw.TextStyle(
+            fontWeight: pw.FontWeight.bold,
+            font: fontsBold,
+            fontSize: 18,
           ),
-        )),
+        ),
+        ...data.certificates!.map(
+          (c) => pw.Padding(
+            padding: pw.EdgeInsets.symmetric(vertical: 8),
+            child: pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Text(
+                  c.courseName ?? '',
+                  style: pw.TextStyle(
+                    fontWeight: pw.FontWeight.bold,
+                    font: fontsBold,
+                  ),
+                ),
+                pw.Text(
+                  '${c.institution} | ${c.startDate} - ${c.endDate}',
+                  style: pw.TextStyle(font: fontsLight),
+                ),
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -1107,17 +1143,22 @@ class TimelineTemplate implements ResumeTemplate {
             font: fontsBold,
           ),
         ),
-        ...data.projects!.map((p) => pw.Padding(
-          padding: pw.EdgeInsets.symmetric(vertical: 8),
-          child: pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
-            children: [
-              pw.Text(p.name ?? '', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-              pw.Text('${p.startYear} - ${p.endYear}'),
-              pw.Text(p.description ?? ''),
-            ],
+        ...data.projects!.map(
+          (p) => pw.Padding(
+            padding: pw.EdgeInsets.symmetric(vertical: 8),
+            child: pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Text(
+                  p.name ?? '',
+                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                ),
+                pw.Text('${p.startYear} - ${p.endYear}'),
+                pw.Text(p.description ?? ''),
+              ],
+            ),
           ),
-        )),
+        ),
       ],
     );
   }
@@ -1138,16 +1179,21 @@ class TimelineTemplate implements ResumeTemplate {
             font: fontsBold,
           ),
         ),
-        ...data.certificates!.map((c) => pw.Padding(
-          padding: pw.EdgeInsets.symmetric(vertical: 8),
-          child: pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
-            children: [
-              pw.Text(c.courseName ?? '', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-              pw.Text('${c.institution} | ${c.startDate} - ${c.endDate}'),
-            ],
+        ...data.certificates!.map(
+          (c) => pw.Padding(
+            padding: pw.EdgeInsets.symmetric(vertical: 8),
+            child: pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Text(
+                  c.courseName ?? '',
+                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                ),
+                pw.Text('${c.institution} | ${c.startDate} - ${c.endDate}'),
+              ],
+            ),
           ),
-        )),
+        ),
       ],
     );
   }
@@ -1342,7 +1388,14 @@ class InfographicTemplate implements ResumeTemplate {
                           ),
                           pw.SizedBox(height: 8),
                           ...(data.projects ?? []).map(
-                            (p) => _buildExperienceBlock(Experience(company: p.name, startDate: p.startYear, endDate: p.endYear, description: p.description)),
+                            (p) => _buildExperienceBlock(
+                              Experience(
+                                company: p.name,
+                                startDate: p.startYear,
+                                endDate: p.endYear,
+                                description: p.description,
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -1592,7 +1645,13 @@ class CorporateTemplate implements ResumeTemplate {
           (p) => pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              pw.Text(p.name ?? '', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, font: fontsBold)),
+              pw.Text(
+                p.name ?? '',
+                style: pw.TextStyle(
+                  fontWeight: pw.FontWeight.bold,
+                  font: fontsBold,
+                ),
+              ),
               pw.Text('${p.startYear} - ${p.endYear}'),
               pw.Text(p.description ?? ''),
               pw.SizedBox(height: 8),
@@ -1619,7 +1678,13 @@ class CorporateTemplate implements ResumeTemplate {
           (c) => pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              pw.Text(c.courseName ?? '', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, font: fontsBold)),
+              pw.Text(
+                c.courseName ?? '',
+                style: pw.TextStyle(
+                  fontWeight: pw.FontWeight.bold,
+                  font: fontsBold,
+                ),
+              ),
               pw.Text('${c.institution} | ${c.startDate} - ${c.endDate}'),
               pw.SizedBox(height: 8),
             ],
@@ -1719,15 +1784,17 @@ class TechDeveloper implements ResumeTemplate {
               _buildSectionTitle('Formação Acadêmica'),
               if ((data.educations ?? []).isNotEmpty)
                 pw.Wrap(
-                  children: 
+                  children:
                       (data.educations ?? []).map(_buildEducationItem).toList(),
                 ),
               pw.SizedBox(height: 16),
               _buildSectionTitle('Certificados'),
               if ((data.certificates ?? []).isNotEmpty)
                 pw.Wrap(
-                  children: 
-                      (data.certificates ?? []).map(_buildCertificateItem).toList(),
+                  children:
+                      (data.certificates ?? [])
+                          .map(_buildCertificateItem)
+                          .toList(),
                 ),
               _buildDisabilitySection(data),
             ],
@@ -2027,12 +2094,18 @@ class StudantTemplate implements ResumeTemplate {
                         (cert) => pw.Column(
                           crossAxisAlignment: pw.CrossAxisAlignment.start,
                           children: [
-                            pw.Text(cert.courseName ?? '', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                            pw.Text(
+                              cert.courseName ?? '',
+                              style: pw.TextStyle(
+                                fontWeight: pw.FontWeight.bold,
+                              ),
+                            ),
                             pw.Text(cert.institution ?? ''),
                             pw.Text('${cert.startDate} - ${cert.endDate}'),
-                            if (cert.workload?.isNotEmpty ?? false) pw.Text('Carga horária: ${cert.workload}'),
+                            if (cert.workload?.isNotEmpty ?? false)
+                              pw.Text('Carga horária: ${cert.workload}'),
                             pw.SizedBox(height: 10),
-                          ]
+                          ],
                         ),
                       )
                       .toList(),

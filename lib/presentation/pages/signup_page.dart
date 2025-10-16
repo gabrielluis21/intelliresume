@@ -38,7 +38,9 @@ class _SignupPageState extends ConsumerState<SignupPage> {
     }
 
     try {
-      await ref.read(signUpUseCaseProvider).call(
+      await ref
+          .read(signUpUseCaseProvider)
+          .call(
             email: email,
             password: password,
             displayName: name,
@@ -83,9 +85,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                       const SizedBox(height: 16),
                       Text(
                         t.signup,
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineSmall
+                        style: Theme.of(context).textTheme.headlineSmall
                             ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
@@ -127,14 +127,19 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                           labelText: t.password,
                           prefixIcon: const Icon(Icons.lock),
                           suffixIcon: IconButton(
-                            icon: Icon(_obscurePassword
-                                ? Icons.visibility_off
-                                : Icons.visibility),
-                            tooltip: _obscurePassword
-                                ? 'Mostrar senha'
-                                : 'Ocultar senha',
-                            onPressed: () =>
-                                setState(() => _obscurePassword = !_obscurePassword),
+                            icon: Icon(
+                              _obscurePassword
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                            ),
+                            tooltip:
+                                _obscurePassword
+                                    ? 'Mostrar senha'
+                                    : 'Ocultar senha',
+                            onPressed:
+                                () => setState(
+                                  () => _obscurePassword = !_obscurePassword,
+                                ),
                           ),
                         ),
                         validator: (v) {
@@ -151,14 +156,19 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                           labelText: t.confirmPassword,
                           prefixIcon: const Icon(Icons.lock),
                           suffixIcon: IconButton(
-                            icon: Icon(_obscureConfirm
-                                ? Icons.visibility_off
-                                : Icons.visibility),
-                            tooltip: _obscureConfirm
-                                ? 'Mostrar senha'
-                                : 'Ocultar senha',
-                            onPressed: () =>
-                                setState(() => _obscureConfirm = !_obscureConfirm),
+                            icon: Icon(
+                              _obscureConfirm
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                            ),
+                            tooltip:
+                                _obscureConfirm
+                                    ? 'Mostrar senha'
+                                    : 'Ocultar senha',
+                            onPressed:
+                                () => setState(
+                                  () => _obscureConfirm = !_obscureConfirm,
+                                ),
                           ),
                         ),
                         validator: (v) {
@@ -214,8 +224,9 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                           child: Text(
                             _errorMessage!,
                             style: TextStyle(
-                                color: Theme.of(context).colorScheme.error,
-                                fontWeight: FontWeight.bold),
+                              color: Theme.of(context).colorScheme.error,
+                              fontWeight: FontWeight.bold,
+                            ),
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -224,12 +235,17 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                         height: 50,
                         child: ElevatedButton(
                           onPressed: _loading ? null : _signup,
-                          child: _loading
-                              ? const CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                )
-                              : Text(t.signup,
-                                  style: const TextStyle(fontSize: 16)),
+                          child:
+                              _loading
+                                  ? const CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white,
+                                    ),
+                                  )
+                                  : Text(
+                                    t.signup,
+                                    style: const TextStyle(fontSize: 16),
+                                  ),
                         ),
                       ),
                       const SizedBox(height: 16),

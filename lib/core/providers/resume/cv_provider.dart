@@ -8,9 +8,6 @@ import '../../../domain/entities/user_profile.dart';
 // --- PROVIDER DE ESTADO LOCAL ---
 
 import 'dart:async';
-import 'package:flutter/foundation.dart';
-import 'package:intelliresume/core/providers/domain_providers.dart';
-
 
 // --- PROVIDER DE ESTADO LOCAL ---
 
@@ -20,7 +17,10 @@ class LocalResumeNotifier extends StateNotifier<ResumeData> {
 
   LocalResumeNotifier(this._ref) : super(ResumeData.initial()) {
     // Listen to userProfileProvider changes
-    _ref.listen<AsyncValue<UserProfile?>>(userProfileProvider, (previous, next) {
+    _ref.listen<AsyncValue<UserProfile?>>(userProfileProvider, (
+      previous,
+      next,
+    ) {
       final newUserProfile = next.value;
       // Update personalInfo in ResumeData when userProfile changes
       state = state.copyWith(personalInfo: newUserProfile);
@@ -55,9 +55,7 @@ class LocalResumeNotifier extends StateNotifier<ResumeData> {
 
   // Projetos
   void addProject(Project? newProject) {
-    state = state.copyWith(
-      projects: [...state.projects!, newProject!],
-    );
+    state = state.copyWith(projects: [...state.projects!, newProject!]);
   }
 
   void updateProject(int index, Project project) {
@@ -158,11 +156,6 @@ class LocalResumeNotifier extends StateNotifier<ResumeData> {
 
   void removeObjective() {
     state = state.copyWith(objective: '');
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 }
 

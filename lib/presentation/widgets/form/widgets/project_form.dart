@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/providers/resume/cv_provider.dart';
@@ -8,11 +7,7 @@ class ProjectForm extends ConsumerStatefulWidget {
   final int index;
   final Project project;
 
-  const ProjectForm({
-    super.key,
-    required this.index,
-    required this.project,
-  });
+  const ProjectForm({super.key, required this.index, required this.project});
 
   @override
   ConsumerState<ProjectForm> createState() => _ProjectFormState();
@@ -29,9 +24,13 @@ class _ProjectFormState extends ConsumerState<ProjectForm> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.project.name);
-    _descriptionController = TextEditingController(text: widget.project.description);
+    _descriptionController = TextEditingController(
+      text: widget.project.description,
+    );
     _urlController = TextEditingController(text: widget.project.url);
-    _startYearController = TextEditingController(text: widget.project.startYear);
+    _startYearController = TextEditingController(
+      text: widget.project.startYear,
+    );
     _endYearController = TextEditingController(text: widget.project.endYear);
   }
 
@@ -65,7 +64,9 @@ class _ProjectFormState extends ConsumerState<ProjectForm> {
       startYear: _startYearController.text,
       endYear: _endYearController.text,
     );
-    ref.read(localResumeProvider.notifier).updateProject(widget.index, updatedProject);
+    ref
+        .read(localResumeProvider.notifier)
+        .updateProject(widget.index, updatedProject);
   }
 
   @override
@@ -85,7 +86,9 @@ class _ProjectFormState extends ConsumerState<ProjectForm> {
               children: [
                 Text(
                   'Projeto #${widget.index + 1}',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 Row(
                   children: [
@@ -96,8 +99,14 @@ class _ProjectFormState extends ConsumerState<ProjectForm> {
                     ),
                     IconButton(
                       tooltip: 'Remover este projeto',
-                      icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                      onPressed: () => ref.read(localResumeProvider.notifier).removeProject(widget.index),
+                      icon: const Icon(
+                        Icons.delete_outline,
+                        color: Colors.redAccent,
+                      ),
+                      onPressed:
+                          () => ref
+                              .read(localResumeProvider.notifier)
+                              .removeProject(widget.index),
                     ),
                   ],
                 ),

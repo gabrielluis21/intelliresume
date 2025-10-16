@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intelliresume/core/providers/user/user_provider.dart';
-import 'package:intelliresume/data/models/cv_model.dart';
 import 'package:intelliresume/di.dart';
 import 'package:intelliresume/presentation/pages/resume_preview_page.dart';
 import 'package:intelliresume/presentation/widgets/ai_assistant_panel.dart';
@@ -100,7 +98,10 @@ class ResumeFormPage extends ConsumerWidget {
                       Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: ElevatedButton.icon(
-                          icon: const Icon(Icons.visibility),
+                          icon: const Icon(
+                            Icons.visibility,
+                            semanticLabel: 'Ícone de olho',
+                          ),
                           label: const Text("Visualizar Currículo"),
                           onPressed:
                               () => showDialog(

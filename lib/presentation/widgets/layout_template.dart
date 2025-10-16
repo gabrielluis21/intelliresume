@@ -36,8 +36,9 @@ class _LayoutTemplateState extends ConsumerState<LayoutTemplate> {
     }
 
     // Evita reconstrução desnecessária se o mesmo item for selecionado
-    if (_selectedIndex == index && index != 5)
+    if (_selectedIndex == index && index != 5) {
       return; // index 5 é o logout, sempre executa
+    }
 
     setState(() => _selectedIndex = index);
 
@@ -76,6 +77,7 @@ class _LayoutTemplateState extends ConsumerState<LayoutTemplate> {
             isMobile
                 ? IconButton(
                   icon: const Icon(Icons.menu),
+                  tooltip: 'Abrir menu de navegação',
                   onPressed: () => _scaffoldKey.currentState!.openDrawer(),
                 )
                 : null,

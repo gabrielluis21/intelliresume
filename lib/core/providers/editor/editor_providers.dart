@@ -4,7 +4,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///* Seção de Tipos para o Editor Focado
 
 /// Enum que representa as diferentes seções do currículo que podem ser editadas.
-enum SectionType { about, objective, experience, education, skill, social, project, certificate }
+enum SectionType {
+  about,
+  objective,
+  experience,
+  education,
+  skill,
+  social,
+  project,
+  certificate,
+}
 
 /// Classe que encapsula uma solicitação de edição, contendo a seção e, opcionalmente,
 /// o índice de um item dentro de uma lista (ex: a segunda experiência).

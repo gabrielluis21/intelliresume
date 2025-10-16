@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/providers/resume/cv_provider.dart';
@@ -28,11 +27,21 @@ class _CertificateFormState extends ConsumerState<CertificateForm> {
   @override
   void initState() {
     super.initState();
-    _courseNameController = TextEditingController(text: widget.certificate.courseName);
-    _institutionController = TextEditingController(text: widget.certificate.institution);
-    _workloadController = TextEditingController(text: widget.certificate.workload);
-    _startDateController = TextEditingController(text: widget.certificate.startDate);
-    _endDateController = TextEditingController(text: widget.certificate.endDate);
+    _courseNameController = TextEditingController(
+      text: widget.certificate.courseName,
+    );
+    _institutionController = TextEditingController(
+      text: widget.certificate.institution,
+    );
+    _workloadController = TextEditingController(
+      text: widget.certificate.workload,
+    );
+    _startDateController = TextEditingController(
+      text: widget.certificate.startDate,
+    );
+    _endDateController = TextEditingController(
+      text: widget.certificate.endDate,
+    );
   }
 
   @override
@@ -65,7 +74,9 @@ class _CertificateFormState extends ConsumerState<CertificateForm> {
       startDate: _startDateController.text,
       endDate: _endDateController.text,
     );
-    ref.read(localResumeProvider.notifier).updateCertificate(widget.index, updatedCertificate);
+    ref
+        .read(localResumeProvider.notifier)
+        .updateCertificate(widget.index, updatedCertificate);
   }
 
   @override
@@ -85,7 +96,9 @@ class _CertificateFormState extends ConsumerState<CertificateForm> {
               children: [
                 Text(
                   'Certificado #${widget.index + 1}',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 Row(
                   children: [
@@ -96,8 +109,14 @@ class _CertificateFormState extends ConsumerState<CertificateForm> {
                     ),
                     IconButton(
                       tooltip: 'Remover este certificado',
-                      icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                      onPressed: () => ref.read(localResumeProvider.notifier).removeCertificate(widget.index),
+                      icon: const Icon(
+                        Icons.delete_outline,
+                        color: Colors.redAccent,
+                      ),
+                      onPressed:
+                          () => ref
+                              .read(localResumeProvider.notifier)
+                              .removeCertificate(widget.index),
                     ),
                   ],
                 ),

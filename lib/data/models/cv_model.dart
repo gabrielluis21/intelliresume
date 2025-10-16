@@ -46,16 +46,16 @@ class CVModel {
 
   /// Converte a instância para JSON
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
-        'data': data.toMap(),
-        'dateCreated': dateCreated.toIso8601String(),
-        'lastModified': lastModified.toIso8601String(),
-        'status': status.name,
-        'evaluation': evaluation,
-        'translation': translation,
-        'correctionsCount': correctionsCount,
-      };
+    'id': id,
+    'title': title,
+    'data': data.toMap(),
+    'dateCreated': dateCreated.toIso8601String(),
+    'lastModified': lastModified.toIso8601String(),
+    'status': status.name,
+    'evaluation': evaluation,
+    'translation': translation,
+    'correctionsCount': correctionsCount,
+  };
 
   @override
   String toString() =>

@@ -19,8 +19,7 @@ class CertificateList extends ConsumerWidget {
       itemBuilder: (c, i) {
         final item = items[i];
         return Semantics(
-          label:
-              'Certificado ${i + 1}: ${item.courseName}. Toque para editar.',
+          label: 'Certificado ${i + 1}: ${item.courseName}. Toque para editar.',
           child: ListTile(
             leading: const Icon(Icons.badge_outlined),
             title: Column(

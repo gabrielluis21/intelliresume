@@ -9,4 +9,3 @@ class SaveResumeUseCase {
     return repository.saveResume(userId, resume);
   }
 }
-

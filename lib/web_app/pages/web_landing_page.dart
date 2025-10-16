@@ -9,7 +9,7 @@ import 'package:intelliresume/web_app/pages/sections/contact_section.dart';
 import 'package:intelliresume/web_app/pages/sections/features_section.dart';
 import 'package:intelliresume/web_app/pages/sections/footer_section.dart';
 import 'package:intelliresume/web_app/pages/sections/hero_section.dart';
-import 'package:intelliresume/web_app/pages/sections/pricing_section.dart';
+import 'package:intelliresume/presentation/widgets/pricing/pricing_section_widget.dart';
 import 'package:intelliresume/web_app/pages/sections/template_gallery_section.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -144,7 +144,10 @@ class _WebLandingPageState extends ConsumerState<WebLandingPage> {
                       featuresKey: _featuresKey,
                       onSeeTemplates: () => _scrollToSection(_galleryKey),
                     ),
-                    PricingSection(pricingKey: _pricingKey),
+                    PricingSectionWidget(
+                      buttonText: 'Cadastrar e Comprar',
+                      onSelectPlan: (_) => context.go('/signup'),
+                    ),
                     TemplateGallerySection(galleryKey: _galleryKey),
                     ContactSection(contactKey: _contactKey),
                     const Divider(height: 1),

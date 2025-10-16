@@ -19,14 +19,11 @@ class ClickableFeatureCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
-      label: 'Botão para ver modelos. Funcionalidade: $title. Descrição: $description',
+      label:
+          'Botão para ver modelos. Funcionalidade: $title. Descrição: $description',
       child: GestureDetector(
         onTap: onTap,
-        child: FeatureCard(
-          icon: icon,
-          title: title,
-          description: description,
-        ),
+        child: FeatureCard(icon: icon, title: title, description: description),
       ),
     );
   }

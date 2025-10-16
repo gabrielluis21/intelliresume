@@ -34,9 +34,9 @@ class ProfilePage extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stackTrace) => Center(
-          child: Text('Erro ao carregar perfil: $error'),
-        ),
+        error:
+            (error, stackTrace) =>
+                Center(child: Text('Erro ao carregar perfil: $error')),
       ),
     );
   }
@@ -44,19 +44,25 @@ class ProfilePage extends ConsumerWidget {
   Widget _buildProfileHeader(BuildContext context, dynamic user) {
     return Row(
       children: [
-        CircleAvatar(
-          radius: 40,
-          backgroundImage:
+        Semantics(
+          label:
               user.profilePictureUrl != null
-                  ? NetworkImage(user.profilePictureUrl!)
-                  : null,
-          child:
-              user.profilePictureUrl == null
-                  ? Text(
-                    user.name?.substring(0, 1).toUpperCase() ?? 'U',
-                    style: const TextStyle(fontSize: 32),
-                  )
-                  : null,
+                  ? 'Foto de perfil de ${user.name}'
+                  : 'Avatar com a inicial do nome ${user.name}',
+          child: CircleAvatar(
+            radius: 40,
+            backgroundImage:
+                user.profilePictureUrl != null
+                    ? NetworkImage(user.profilePictureUrl!)
+                    : null,
+            child:
+                user.profilePictureUrl == null
+                    ? Text(
+                      user.name?.substring(0, 1).toUpperCase() ?? 'U',
+                      style: const TextStyle(fontSize: 32),
+                    )
+                    : null,
+          ),
         ),
         const SizedBox(width: 16),
         Expanded(
@@ -101,15 +107,26 @@ class ProfilePage extends ConsumerWidget {
               leading: Icon(
                 isPremium ? Icons.star : Icons.check_circle_outline,
                 color: isPremium ? Colors.amber : Colors.green,
+                semanticLabel:
+                    isPremium
+                        ? 'Ícone de estrela do plano Premium'
+                        : 'Ícone de check do plano gratuito',
               ),
-              title: Text(
-                isPremium ? 'Plano Premium' : 'Plano Gratuito',
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: Text(
-                isPremium
-                    ? 'Você tem acesso a todos os recursos.'
-                    : 'Acesse mais recursos fazendo o upgrade.',
+              title: MergeSemantics(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      isPremium ? 'Plano Premium' : 'Plano Gratuito',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      isPremium
+                          ? 'Você tem acesso a todos os recursos.'
+                          : 'Acesse mais recursos fazendo o upgrade.',
+                    ),
+                  ],
+                ),
               ),
             ),
             if (!isPremium)
@@ -135,17 +152,20 @@ class ProfilePage extends ConsumerWidget {
         Text('Ações Rápidas', style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 16),
         ListTile(
-          leading: const Icon(Icons.edit),
+          leading: const Icon(Icons.edit, semanticLabel: 'Ícone de lápis'),
           title: const Text('Editar Perfil'),
           onTap: () => context.goNamed('edit-profile'),
         ),
         ListTile(
-          leading: const Icon(Icons.history),
+          leading: const Icon(Icons.history, semanticLabel: 'Ícone de relógio'),
           title: const Text('Ver Histórico de Currículos'),
           onTap: () => context.goNamed('history'),
         ),
         ListTile(
-          leading: const Icon(Icons.settings),
+          leading: const Icon(
+            Icons.settings,
+            semanticLabel: 'Ícone de engrenagem',
+          ),
           title: const Text('Configurações'),
           onTap: () => context.goNamed('settings'),
         ),
