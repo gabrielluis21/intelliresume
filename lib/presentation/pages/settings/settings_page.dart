@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intelliresume/core/providers/accessibility/accessibility_provider.dart';
 import 'package:intelliresume/core/providers/data/data_provider.dart';
-import 'package:intelliresume/core/providers/languages/locale_provider.dart';
-import 'package:intelliresume/core/providers/theme/theme_provider.dart';
+import 'package:intelliresume/core/providers/user_preferences_provider.dart'; // New import
 import 'package:intelliresume/generated/app_localizations.dart';
 
 class SettingsPage extends ConsumerWidget {
@@ -110,7 +108,9 @@ class SettingsPage extends ConsumerWidget {
     WidgetRef ref,
     AppLocalizations l10n,
   ) {
-    final currentTheme = ref.watch(themeProvider);
+    final userPreferences = ref.watch(userPreferencesNotifierProvider);
+    final notifier = ref.read(userPreferencesNotifierProvider.notifier);
+
     showDialog(
       context: context,
       builder:
@@ -122,10 +122,10 @@ class SettingsPage extends ConsumerWidget {
                 RadioListTile<ThemeMode>(
                   title: Text(l10n.light),
                   value: ThemeMode.light,
-                  groupValue: currentTheme,
+                  groupValue: userPreferences.themeMode,
                   onChanged: (value) {
                     if (value != null) {
-                      ref.read(themeProvider.notifier).setThemeMode(value);
+                      notifier.setThemeMode(value);
                     }
                     Navigator.of(context).pop();
                   },
@@ -133,10 +133,10 @@ class SettingsPage extends ConsumerWidget {
                 RadioListTile<ThemeMode>(
                   title: Text(l10n.dark),
                   value: ThemeMode.dark,
-                  groupValue: currentTheme,
+                  groupValue: userPreferences.themeMode,
                   onChanged: (value) {
                     if (value != null) {
-                      ref.read(themeProvider.notifier).setThemeMode(value);
+                      notifier.setThemeMode(value);
                     }
                     Navigator.of(context).pop();
                   },
@@ -144,10 +144,10 @@ class SettingsPage extends ConsumerWidget {
                 RadioListTile<ThemeMode>(
                   title: Text(l10n.systemDefault),
                   value: ThemeMode.system,
-                  groupValue: currentTheme,
+                  groupValue: userPreferences.themeMode,
                   onChanged: (value) {
                     if (value != null) {
-                      ref.read(themeProvider.notifier).setThemeMode(value);
+                      notifier.setThemeMode(value);
                     }
                     Navigator.of(context).pop();
                   },
@@ -163,7 +163,9 @@ class SettingsPage extends ConsumerWidget {
     WidgetRef ref,
     AppLocalizations l10n,
   ) {
-    final currentLocale = ref.watch(localeProvider);
+    final userPreferences = ref.watch(userPreferencesNotifierProvider);
+    final notifier = ref.read(userPreferencesNotifierProvider.notifier);
+
     showDialog(
       context: context,
       builder:
@@ -172,28 +174,34 @@ class SettingsPage extends ConsumerWidget {
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                RadioListTile<Locale>(
+                RadioListTile<String?>(
+                  title: Text(l10n.systemDefault),
+                  value: null,
+                  groupValue: userPreferences.languageCode,
+                  onChanged: (value) {
+                    notifier.setLanguage(value);
+                    Navigator.of(context).pop();
+                  },
+                ),
+                RadioListTile<String?>(
                   title: Text(l10n.portuguese),
-                  value: const Locale('pt'),
-                  groupValue: currentLocale,
+                  value: 'pt',
+                  groupValue: userPreferences.languageCode,
                   onChanged: (value) {
-                    if (value != null) {
-                      ref.read(localeProvider.notifier).state = value;
-                    }
+                    notifier.setLanguage(value);
                     Navigator.of(context).pop();
                   },
                 ),
-                RadioListTile<Locale>(
+                RadioListTile<String?>(
                   title: Text(l10n.english),
-                  value: const Locale('en'),
-                  groupValue: currentLocale,
+                  value: 'en',
+                  groupValue: userPreferences.languageCode,
                   onChanged: (value) {
-                    if (value != null) {
-                      ref.read(localeProvider.notifier).state = value;
-                    }
+                    notifier.setLanguage(value);
                     Navigator.of(context).pop();
                   },
                 ),
+                // Add other supported languages here
               ],
             ),
           ),
@@ -205,37 +213,37 @@ class SettingsPage extends ConsumerWidget {
     WidgetRef ref,
     AppLocalizations l10n,
   ) {
-    final settings = ref.watch(accessibilityProvider);
-    final notifier = ref.read(accessibilityProvider.notifier);
+    final userPreferences = ref.watch(userPreferencesNotifierProvider);
+    final notifier = ref.read(userPreferencesNotifierProvider.notifier);
 
     return Column(
       children: [
         SwitchListTile(
           secondary: const Icon(Icons.contrast),
           title: Text(l10n.highContrast),
-          value: settings.highContrast,
-          onChanged: (bool value) => notifier.toggleHighContrast(value),
+          value: userPreferences.highContrast,
+          onChanged: (bool value) => notifier.setHighContrast(value),
         ),
         SwitchListTile(
           secondary: const Icon(Icons.format_bold),
           title: Text(l10n.boldText),
-          value: settings.boldText,
-          onChanged: (bool value) => notifier.toggleBoldText(value),
+          value: userPreferences.boldText,
+          onChanged: (bool value) => notifier.setBoldText(value),
         ),
         ListTile(
           leading: const Icon(Icons.format_size),
           title: Text(l10n.fontSize),
           subtitle: Text(
-            '${l10n.scale} ${settings.fontScale.toStringAsFixed(1)}x',
+            '${l10n.scale} ${userPreferences.fontSizeScale.toStringAsFixed(1)}x',
           ),
         ),
         Slider(
-          value: settings.fontScale,
+          value: userPreferences.fontSizeScale,
           min: 0.8,
           max: 2.0,
           divisions: 12,
-          label: settings.fontScale.toStringAsFixed(1),
-          onChanged: (double value) => notifier.setFontScale(value),
+          label: userPreferences.fontSizeScale.toStringAsFixed(1),
+          onChanged: (double value) => notifier.setFontSizeScale(value),
         ),
       ],
     );

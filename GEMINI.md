@@ -33,6 +33,8 @@ Para facilitar o desenvolvimento, o projeto foi organizado em uma estrutura de m
 
 *   **Criação e Gerenciamento de Currículos:** Interface intuitiva para montar e editar múltiplos currículos.
 *   **Internacionalização (i18n):** Suporte completo a múltiplos idiomas, com sistema de tradução padrão do Flutter e fácil expansão.
+*   **Internacionalização Abrangente da UI:** Todos os textos da interface do usuário, incluindo seções de funcionalidades, cabeçalhos e pré-visualização de currículos, foram internacionalizados para garantir uma experiência global.
+*   **Seção de Demonstração Interativa:** Implementação de um player de vídeo incorporado para demonstrar as funcionalidades da plataforma de forma dinâmica.
 *   **Modelos Profissionais:** Oferece uma variedade de modelos de currículos, incluindo opções gratuitas e premium.
 *   **Assistência de IA:**
     *   **Avaliação:** Analisa o conteúdo do currículo e oferece sugestões de melhoria.
@@ -48,6 +50,7 @@ Para facilitar o desenvolvimento, o projeto foi organizado em uma estrutura de m
 
 *   **Modo Estúdio (Plano Pro):** Editor avançado para personalizar o layout, fontes e cores.
 *   **Integração com VLibras:** Tradução para a Língua Brasileira de Sinais.
+*   **Depoimentos Dinâmicos:** Implementação de um sistema para que usuários logados possam deixar seus depoimentos sobre a plataforma.
 
 ### 3.3. Integração com IA (`AIService`)
 

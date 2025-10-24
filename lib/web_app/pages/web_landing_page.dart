@@ -60,9 +60,7 @@ class _WebLandingPageState extends ConsumerState<WebLandingPage> {
       autofocus: true,
       child: Scaffold(
         key: _scaffoldKey,
-        backgroundColor: Colors.white,
         appBar: AppBar(
-          backgroundColor: Colors.white,
           elevation: 0,
           title: Semantics(
             label: l10n.webLandingPage_logoSemanticLabel,
@@ -73,7 +71,7 @@ class _WebLandingPageState extends ConsumerState<WebLandingPage> {
                     text: 'Intelli',
                     style: Theme.of(
                       context,
-                    ).textTheme.titleMedium?.copyWith(color: Colors.black),
+                    ).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.onBackground),
                   ),
                   TextSpan(
                     text: 'Resume',
@@ -163,10 +161,10 @@ class _WebLandingPageState extends ConsumerState<WebLandingPage> {
                       buttonText: l10n.webLandingPage_signUpAndBuyButton,
                       onSelectPlan: (_) => context.go('/signup'),
                     ),
-                    TemplateGallerySection(galleryKey: _galleryKey),
-                    const TestimonialsSection(),
+                    //TemplateGallerySection(galleryKey: _galleryKey),
+                    //const TestimonialsSection(),
                     ContactSection(contactKey: _contactKey),
-                    //const CtaSection(),
+                    const CtaSection(),
                     const Divider(height: 1),
                     const FooterSection(),
                     const AdBanner(),

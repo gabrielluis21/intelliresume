@@ -27,7 +27,7 @@ class HeroSection extends StatelessWidget {
                 SectionTitle(
                   title: l10n.heroTitle,
                   subtitle: l10n.heroSubtitle,
-                  textColor: Colors.black87,
+                  textColor: Theme.of(context).textTheme.headlineLarge?.color,
                 ),
                 const SizedBox(height: 24),
                 Semantics(

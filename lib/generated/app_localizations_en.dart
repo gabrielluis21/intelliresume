@@ -1522,4 +1522,39 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get feature_easyExport_description =>
       'Export your resume in high-quality PDF format, ready to be sent.';
+
+  @override
+  String get headerSection_nameNotAvailable => 'Name not available';
+
+  @override
+  String get headerSection_contactNotAvailable =>
+      'Email not available | Phone not available';
+
+  @override
+  String headerSection_profilePictureSemanticLabel(Object userName) {
+    return 'Profile picture of $userName';
+  }
+
+  @override
+  String resumePreview_defaultResumeTitle(Object userName) {
+    return 'Resume of $userName';
+  }
+
+  @override
+  String resumePreview_sectionEditSemanticLabel(Object sectionTitle) {
+    return 'Section of $sectionTitle, tap to edit the content of this section';
+  }
+
+  @override
+  String resumePreview_skillEditSemanticLabel(
+    Object skillLevel,
+    Object skillName,
+  ) {
+    return 'Skill: $skillName, level $skillLevel. Tap to edit.';
+  }
+
+  @override
+  String resumePreview_socialLinkEditSemanticLabel(Object platform) {
+    return 'Social link: $platform. Tap to edit.';
+  }
 }

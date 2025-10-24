@@ -90,7 +90,8 @@ class ResumePreview extends ConsumerWidget {
 
       final resumeToSave = CVModel(
         id: resumeId,
-        title: 'Currículo de ${user?.name ?? "Usuário"}', // Provisional title
+        title: l10n.resumePreview_defaultResumeTitle(
+            user?.name ?? l10n.profilePage_defaultUserName), // Internationalized
         data: data,
         dateCreated: originalCvModel?.dateCreated ?? DateTime.now(),
         lastModified: DateTime.now(),
@@ -148,8 +149,8 @@ class ResumePreview extends ConsumerWidget {
       required SectionType sectionType,
     }) {
       return Semantics(
-        label:
-            'Seção de ${title.toLowerCase()}, toque para editar o conteúdo desta seção',
+        label: l10n.resumePreview_sectionEditSemanticLabel(
+            title.toLowerCase()), // Internationalized
         button: true,
         child: InkWell(
           onTap: () => onSectionEdit(sectionType, null),
@@ -243,8 +244,9 @@ class ResumePreview extends ConsumerWidget {
             children:
                 data.skills.asMap().entries.map((entry) {
                   return Semantics(
-                    label:
-                        'Habilidade: ${entry.value.name}, nível ${entry.value.level}. Toque para editar.',
+                    label: l10n.resumePreview_skillEditSemanticLabel(
+                        entry.value.name ?? '',
+                        entry.value.level.toString()), // Internationalized
                     button: true,
                     child: InkWell(
                       onTap: () => onSectionEdit(SectionType.skill, entry.key),
@@ -267,8 +269,8 @@ class ResumePreview extends ConsumerWidget {
             children:
                 data.socials.asMap().entries.map((entry) {
                   return Semantics(
-                    label:
-                        'Link social: ${entry.value.platform}. Toque para editar.',
+                    label: l10n.resumePreview_socialLinkEditSemanticLabel(
+                        entry.value.platform ?? ''), // Internationalized
                     button: true,
                     child: InkWell(
                       onTap: () => onSectionEdit(SectionType.social, entry.key),

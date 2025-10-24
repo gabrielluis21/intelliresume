@@ -2869,6 +2869,51 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Export your resume in high-quality PDF format, ready to be sent.'**
   String get feature_easyExport_description;
+
+  /// No description provided for @headerSection_nameNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Name not available'**
+  String get headerSection_nameNotAvailable;
+
+  /// No description provided for @headerSection_contactNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Email not available | Phone not available'**
+  String get headerSection_contactNotAvailable;
+
+  /// No description provided for @headerSection_profilePictureSemanticLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile picture of {userName}'**
+  String headerSection_profilePictureSemanticLabel(Object userName);
+
+  /// No description provided for @resumePreview_defaultResumeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume of {userName}'**
+  String resumePreview_defaultResumeTitle(Object userName);
+
+  /// No description provided for @resumePreview_sectionEditSemanticLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Section of {sectionTitle}, tap to edit the content of this section'**
+  String resumePreview_sectionEditSemanticLabel(Object sectionTitle);
+
+  /// No description provided for @resumePreview_skillEditSemanticLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Skill: {skillName}, level {skillLevel}. Tap to edit.'**
+  String resumePreview_skillEditSemanticLabel(
+    Object skillLevel,
+    Object skillName,
+  );
+
+  /// No description provided for @resumePreview_socialLinkEditSemanticLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Social link: {platform}. Tap to edit.'**
+  String resumePreview_socialLinkEditSemanticLabel(Object platform);
 }
 
 class _AppLocalizationsDelegate

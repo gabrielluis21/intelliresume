@@ -7,6 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+
+import 'package:intelliresume/core/models/user_preferences.dart'; // New import
 import 'firebase_options.dart';
 import 'app.dart';
 
@@ -24,6 +26,11 @@ Future<void> main() async {
   }
 
   await Hive.initFlutter();
+  // Register adapter if not already registered by repository
+  if (!Hive.isAdapterRegistered(UserPreferencesAdapter().typeId)) {
+    Hive.registerAdapter(UserPreferencesAdapter());
+  }
 
   runApp(const ProviderScope(child: App()));
 }
+

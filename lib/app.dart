@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intelliresume/core/providers/accessibility/accessibility_provider.dart';
-import 'package:intelliresume/core/providers/languages/locale_provider.dart';
-import 'package:intelliresume/core/providers/theme/theme_provider.dart';
+import 'package:intelliresume/core/providers/user_preferences_provider.dart'; // New import
 import 'core/routes/app_routes.dart';
 import 'core/themes.dart';
 import 'package:intelliresume/generated/app_localizations.dart';
@@ -12,19 +10,17 @@ class App extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
-    final locale = ref.watch(localeProvider);
-    final accessibilitySettings = ref.watch(accessibilityProvider);
-    final themeMode = ref.watch(themeProvider);
+    final userPreferences = ref.watch(userPreferencesNotifierProvider); // Use new provider
 
-    final textScaler = TextScaler.linear(accessibilitySettings.fontScale);
+    final textScaler = TextScaler.linear(userPreferences.fontSizeScale);
 
     final activeLightTheme =
-        accessibilitySettings.highContrast
+        userPreferences.highContrast
             ? AppTheme.highContrastTheme(textScaler)
             : AppTheme.lightTheme(textScaler);
 
     final activeDarkTheme =
-        accessibilitySettings.highContrast
+        userPreferences.highContrast
             ? AppTheme.highContrastTheme(textScaler)
             : AppTheme.darkTheme(textScaler);
 
@@ -33,14 +29,16 @@ class App extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       theme: activeLightTheme,
       darkTheme: activeDarkTheme,
-      themeMode: themeMode,
-      locale: locale,
+      themeMode: userPreferences.themeMode, // Use themeMode from userPreferences
+      locale: userPreferences.languageCode != null
+          ? Locale(userPreferences.languageCode!)
+          : null, // Use locale from userPreferences
       routerConfig: router,
       builder: (context, child) {
         return MediaQuery(
           data: MediaQuery.of(context).copyWith(
-            textScaler: TextScaler.linear(accessibilitySettings.fontScale),
-            boldText: accessibilitySettings.boldText,
+            textScaler: TextScaler.linear(userPreferences.fontSizeScale),
+            boldText: userPreferences.boldText,
           ),
           child: child!,
         );

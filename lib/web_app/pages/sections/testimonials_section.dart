@@ -11,7 +11,6 @@ class TestimonialsSection extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 60),
-      color: Colors.white,
       child: Column(
         children: [
           SectionTitle(

@@ -1536,4 +1536,39 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get feature_easyExport_description =>
       'Exporte seu currículo em formato PDF com alta qualidade, pronto para ser enviado.';
+
+  @override
+  String get headerSection_nameNotAvailable => 'Nome não disponível';
+
+  @override
+  String get headerSection_contactNotAvailable =>
+      'Email não disponível | Telefone não disponível';
+
+  @override
+  String headerSection_profilePictureSemanticLabel(Object userName) {
+    return 'Foto de perfil de $userName';
+  }
+
+  @override
+  String resumePreview_defaultResumeTitle(Object userName) {
+    return 'Currículo de $userName';
+  }
+
+  @override
+  String resumePreview_sectionEditSemanticLabel(Object sectionTitle) {
+    return 'Seção de $sectionTitle, toque para editar o conteúdo desta seção';
+  }
+
+  @override
+  String resumePreview_skillEditSemanticLabel(
+    Object skillLevel,
+    Object skillName,
+  ) {
+    return 'Habilidade: $skillName, nível $skillLevel. Toque para editar.';
+  }
+
+  @override
+  String resumePreview_socialLinkEditSemanticLabel(Object platform) {
+    return 'Link social: $platform. Toque para editar.';
+  }
 }

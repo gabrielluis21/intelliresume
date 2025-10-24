@@ -35,7 +35,7 @@ class _FeatureCardState extends State<FeatureCard> {
             duration: const Duration(milliseconds: 200),
             padding: const EdgeInsets.all(24.0),
             decoration: BoxDecoration(
-              color: Colors.white,
+              //color: Colors.white,
               borderRadius: BorderRadius.circular(12.0),
               boxShadow:
                   _isHovered

@@ -17,7 +17,7 @@ class AppTheme {
         textScaler,
         Colors.black,
         Colors.black87,
-        Colors.white,
+        Colors.black87, // Changed from Colors.white70 to Colors.black87
       ),
     );
   }

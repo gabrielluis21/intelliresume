@@ -77,9 +77,25 @@ final routerProvider = Provider<GoRouter>((ref) {
     ],
     redirect: (ctx, state) {
       final logged = AuthService.instance.currentUser != null;
-      final loggingIn = state.path == '/login' || state.path == '/signup';
-      if (!logged && !loggingIn) return '/';
-      if (logged && loggingIn) return '/home';
+
+      // Define public paths that can be accessed without authentication.
+      final publicPaths = ['/login', '/signup', '/'];
+      print(state.matchedLocation);
+      final isPublicPath = publicPaths.contains(state.matchedLocation);
+
+      // If the user is not logged in and is trying to access a non-public page,
+      // redirect them to the landing page ('/').
+      if (!logged && !isPublicPath) {
+        return '/';
+      }
+
+      // If the user is logged in and tries to access a public page (like login),
+      // redirect them to the home page.
+      if (logged && isPublicPath) {
+        return '/home';
+      }
+
+      // No redirect needed.
       return null;
     },
     refreshListenable: RouterNotifier(AuthService.instance),

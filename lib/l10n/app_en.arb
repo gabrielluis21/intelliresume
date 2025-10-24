@@ -458,5 +458,12 @@
   "feature_studioMode_title": "Studio Mode (Pro)",
   "feature_studioMode_description": "Customize colors, fonts, and layouts to create a truly unique resume.",
   "feature_easyExport_title": "Easy Export",
-  "feature_easyExport_description": "Export your resume in high-quality PDF format, ready to be sent."
+  "feature_easyExport_description": "Export your resume in high-quality PDF format, ready to be sent.",
+  "headerSection_nameNotAvailable": "Name not available",
+  "headerSection_contactNotAvailable": "Email not available | Phone not available",
+  "headerSection_profilePictureSemanticLabel": "Profile picture of {userName}",
+  "resumePreview_defaultResumeTitle": "Resume of {userName}",
+  "resumePreview_sectionEditSemanticLabel": "Section of {sectionTitle}, tap to edit the content of this section",
+  "resumePreview_skillEditSemanticLabel": "Skill: {skillName}, level {skillLevel}. Tap to edit.",
+  "resumePreview_socialLinkEditSemanticLabel": "Social link: {platform}. Tap to edit."
 }

@@ -19,7 +19,7 @@ class FeaturesSection extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     return Container(
       key: featuresKey,
-      color: Colors.grey[50], // Um fundo suave para diferenciar a seção
+      //color: Colors.grey[50], // Um fundo suave para diferenciar a seção
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 60),
       child: Column(
         children: [

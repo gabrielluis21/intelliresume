@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intelliresume/domain/entities/user_profile.dart';
+import 'package:intelliresume/generated/app_localizations.dart'; // New import
 
 class HeaderSection extends StatelessWidget {
   final UserProfile? user;
@@ -9,6 +10,7 @@ class HeaderSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext c) {
+    final l10n = AppLocalizations.of(c)!; // Initialize l10n
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child:
@@ -19,14 +21,14 @@ class HeaderSection extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Nome não disponível",
+                        l10n.headerSection_nameNotAvailable, // Internationalized
                         style: theme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        "Email não disponível | Telefone não disponível",
+                        l10n.headerSection_contactNotAvailable, // Internationalized
                         style: theme.headlineSmall?.copyWith(
                           color: Colors.grey.shade600,
                         ),
@@ -38,14 +40,15 @@ class HeaderSection extends StatelessWidget {
               : ListTile(
                 contentPadding: const EdgeInsets.all(16),
                 leading: Semantics(
-                  label: 'Foto de perfil de ${user?.name ?? "usuário"}',
+                  label: l10n.headerSection_profilePictureSemanticLabel(
+                      user?.name ?? l10n.profilePage_defaultUserName), // Internationalized
                   image: true,
                   child: CircleAvatar(
                     radius: 40,
                     backgroundImage:
                         user?.profilePictureUrl == null
                             ? Image.asset(
-                              'images/default_avatar.png',
+                              'assets/images/default_avatar.png', // Updated path
                               fit: BoxFit.contain,
                             ).image
                             : Image.network(

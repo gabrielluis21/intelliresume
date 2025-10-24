@@ -19,7 +19,10 @@ Acompanhe o progresso do desenvolvimento do IntelliResume.
   - [x] Integração com API de IA para avaliação, tradução e correção.
   - [x] Implementação de múltiplos modelos de currículo.
   - [x] Suporte base a leitores de tela (Semântica).
+  - [x] Internacionalização abrangente da UI (textos de seções, cabeçalhos, pré-visualização).
+  - [x] Implementação da Seção de Demonstração com Player de Vídeo.
   - [ ] Integração e validação da abordagem para VLibras.
+  - [ ] Implementação de Depoimentos Dinâmicos.
 - [x] **Fase 3: Monetização**
   - [x] Implementação do fluxo de pagamento no cliente com Stripe (Web e Mobile).
   - [x] Implementação do endpoint de backend `/create-payment-intent` e `/create-checkout-session`.
@@ -46,6 +49,7 @@ Para a comunidade de desenvolvedores, este repositório serve como um exemplo pr
 
 - **Internacionalização (i18n):** Suporte completo a múltiplos idiomas, com sistema de tradução padrão do Flutter e fácil expansão.
 - **Criação e Gerenciamento de Currículos:** Interface intuitiva para montar e editar múltiplos currículos.
+- **Seção de Demonstração Interativa:** Uma seção dedicada com um player de vídeo para apresentar as funcionalidades da plataforma em ação.
 - **Modelos Profissionais:** Uma variedade de modelos, incluindo opções gratuitas e premium.
 - **Assistência de IA:**
   - **Avaliação:** Analisa o conteúdo do currículo e oferece sugestões de melhoria.
@@ -56,6 +60,7 @@ Para a comunidade de desenvolvedores, este repositório serve como um exemplo pr
 - **Acessibilidade:**
   - Suporte a leitores de tela (TalkBack, VoiceOver).
   - Tradução para a Língua Brasileira de Sinais (Libras). *(integração com VLibras em desenvolvimento)*
+  - Depoimentos Dinâmicos: Sistema para que usuários logados possam deixar seus depoimentos sobre a plataforma.
 
 ## 🤖 Desenvolvimento Assistido por IA
 

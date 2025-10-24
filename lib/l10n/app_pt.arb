@@ -465,5 +465,12 @@
   "feature_studioMode_title": "Modo Estúdio (Pro)",
   "feature_studioMode_description": "Personalize cores, fontes e layouts para criar um currículo verdadeiramente único.",
   "feature_easyExport_title": "Exportação Fácil",
-  "feature_easyExport_description": "Exporte seu currículo em formato PDF com alta qualidade, pronto para ser enviado."
+  "feature_easyExport_description": "Exporte seu currículo em formato PDF com alta qualidade, pronto para ser enviado.",
+  "headerSection_nameNotAvailable": "Nome não disponível",
+  "headerSection_contactNotAvailable": "Email não disponível | Telefone não disponível",
+  "headerSection_profilePictureSemanticLabel": "Foto de perfil de {userName}",
+  "resumePreview_defaultResumeTitle": "Currículo de {userName}",
+  "resumePreview_sectionEditSemanticLabel": "Seção de {sectionTitle}, toque para editar o conteúdo desta seção",
+  "resumePreview_skillEditSemanticLabel": "Habilidade: {skillName}, nível {skillLevel}. Toque para editar.",
+  "resumePreview_socialLinkEditSemanticLabel": "Link social: {platform}. Toque para editar."
 }
