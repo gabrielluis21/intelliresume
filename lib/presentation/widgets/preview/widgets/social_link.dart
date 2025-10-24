@@ -1,5 +1,6 @@
 // social_link.dart
 import 'package:flutter/material.dart';
+import 'package:intelliresume/generated/app_localizations.dart';
 import '../../../../data/models/cv_data.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -11,9 +12,13 @@ class SocialLink extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Semantics(
       link: true,
-      label: 'Abrir perfil em ${social.platform}. Link para ${social.url}',
+      label: l10n.preview_socialLinkSemanticLabel(
+        social.platform ?? '',
+        social.url ?? '',
+      ),
       child: InkWell(
         onTap: () {
           if (social.url != null && social.url!.isNotEmpty) {
@@ -24,7 +29,9 @@ class SocialLink extends StatelessWidget {
             ).catchError((error) {
               // Handle error if the URL cannot be opened
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Could not open URL: ${social.url}')),
+                SnackBar(
+                  content: Text(l10n.preview_couldNotOpenURL(social.url ?? '')),
+                ),
               );
               return false;
             });

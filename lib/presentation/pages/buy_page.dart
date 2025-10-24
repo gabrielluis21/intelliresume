@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intelliresume/core/providers/purchases/purchase_provider.dart';
 import 'package:intelliresume/core/providers/user/user_provider.dart';
 import 'package:intelliresume/domain/entities/plan_type.dart';
+import 'package:intelliresume/generated/app_localizations.dart';
 import 'package:intelliresume/presentation/widgets/layout_template.dart';
 import 'package:intelliresume/presentation/widgets/pricing/pricing_section_widget.dart';
 
@@ -12,16 +13,17 @@ class BuyPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userProfile = ref.watch(userProfileProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     ref.listen<PurchaseState>(purchaseControllerProvider, (previous, next) {
       if (next.isPremium) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Plano Premium ativado com sucesso!')),
-        );
-      } else if (next.error != null) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text(next.error!)));
+        ).showSnackBar(SnackBar(content: Text(l10n.buyPage_premiumSuccess)));
+      } else if (next.error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.buyPage_genericError(next.error!))),
+        );
       }
     });
 
@@ -42,7 +44,10 @@ class BuyPage extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text('Erro: $error')),
+        error:
+            (error, stack) => Center(
+              child: Text(l10n.buyPage_genericError(error.toString())),
+            ),
       ),
     );
   }

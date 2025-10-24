@@ -1,6 +1,4 @@
-# Histórico de Desenvolvimento e Contexto Atual
-
-*Última atualização: 2025-10-15*
+*Última atualização: 2025-10-23*
 
 Este documento serve como um registro do estado atual do desenvolvimento e das decisões de arquitetura para que qualquer pessoa (ou IA) possa rapidamente entender o contexto e dar continuidade à tarefa.
 
@@ -27,45 +25,57 @@ Uma análise completa do projeto foi realizada para determinar o estado atual de
 *   **Backend:** O backend é baseado em **Firebase** (Authentication e Firestore) para persistência de dados e autenticação de usuários.
 *   **Pagamentos:** A monetização é implementada com **Stripe**, com suporte para pagamentos mobile (usando `flutter_stripe`) e web (redirecionamento para o Stripe Checkout).
 *   **IA:** A integração com serviços de IA (Gemini) está presente, com um `AIAssistantPanel` integrado na tela de edição de currículo.
-*   **Banco de Dados Local:** Utiliza **Hive** para armazenamento de dados locais.
-
-### 3.2. Funcionalidades Implementadas
-
-*   **Autenticação:**
-    *   Fluxo completo de autenticação com E-mail/Senha, Google Sign-In e Facebook Login.
-    *   Refatoração da camada de autenticação para seguir a Clean Architecture, com `AuthRepository` e casos de uso.
-*   **Gerenciamento de Currículos:**
-    *   Criação, edição e visualização de múltiplos currículos.
-    *   Formulário de edição de currículo com múltiplos campos (informações pessoais, experiência, educação, etc.).
-    *   Preview do currículo em tempo real (em telas largas) ou através de um diálogo (em telas estreitas).
-*   **Dashboard (Página Inicial):**
-    *   Exibe uma saudação ao usuário.
-    *   Apresenta uma lista de currículos recentes.
-    *   Oferece ações rápidas para navegar para outras partes do aplicativo.
-*   **Perfil do Usuário:**
-    *   Exibe as informações do perfil do usuário (nome, e-mail, foto).
-    *   Mostra o status da assinatura (Free/Premium).
-    *   Permite o upgrade para o plano Premium.
-*   **Monetização:**
-    *   Página de compra para upgrade de plano.
-    *   Fluxo de pagamento implementado para web e mobile.
-*   **Assistente de IA:**
-    *   Painel de assistência de IA integrado na página de edição de currículo.
 *   **Acessibilidade:**
     *   Suporte para temas de alto contraste.
     *   Escala de fonte e texto em negrito ajustáveis.
 
-### 3.3. Tarefas Concluídas Recentemente
+### 3.2. Tarefas Concluídas Recentemente
 
+*   **Refatoração do Sistema de Internacionalização (i18n):** Migração completa do sistema manual de i18n para o padrão oficial do Flutter, utilizando arquivos `.arb` e a geração automática de código. A maioria das telas e widgets foram internacionalizadas.
+*   **Correção de Erros de Localização:** Corrigidos erros de `undefined_named_parameter`, `not_enough_positional_arguments` e `undefined_getter`, garantindo que as chamadas de internacionalização estejam corretas.
 *   **Refatoração da Camada de Autenticação:** Alinhamento com a Clean Architecture.
 *   **Implementação do Fluxo de Pagamento Multiplataforma:** Suporte para Stripe na web e no mobile.
 *   **Correção da Exibição de Dados no Painel da IA:** Garantia de consistência entre os dados exibidos e os enviados para a IA.
+*   **Correção de Bug Crítico na Edição de Currículos:** Resolvido um erro de "Unexpected null value" que ocorria ao criar ou editar um currículo, tornando o modelo de dados mais robusto.
 
 ## 4. Status e Próximos Passos
 
-O projeto possui uma base sólida e funcional, com as principais funcionalidades implementadas. Os próximos passos podem incluir:
+O projeto possui uma base sólida e funcional. A internacionalização (i18n) foi concluída.
 
-*   Finalizar a integração com VLibras.
-*   Desenvolver o "Modo Estúdio" para edição avançada de currículos.
-*   Realizar testes de ponta a ponta.
-*   Preparar para o lançamento nas lojas de aplicativos e como PWA.
+### 4.1. Internacionalização (i18n)
+
+**Telas/Widgets com internacionalização concluída:**
+*   `settings_page.dart`
+*   `side_menu.dart`
+*   `home_page.dart`
+*   `login_page.dart`
+*   `signup_page.dart`
+*   `resume_preview.dart`
+*   `resume_form_page.dart`
+*   `export_buttons.dart`
+*   `about_section.dart`
+*   `buy_page.dart`
+*   `edit_profile.dart`
+*   `export_page.dart`
+*   `export_pdf_page.dart`
+*   `history_page.dart`
+*   `profile_page.dart`
+*   `ai_assistant_panel.dart`
+*   `cv_card.dart`
+*   `resume_form.dart`
+*   `about_me_form.dart`
+*   `objective_form.dart`
+*   `language_selector.dart`
+*   `lib/core/templates/resume_template.dart`
+*   `lib/presentation/widgets/layout_template.dart`
+*   `lib/presentation/widgets/preview/widgets/certificate_list.dart`
+*   `lib/presentation/widgets/preview/widgets/education_list.dart`
+*   `lib/presentation/widgets/preview/widgets/experience_list.dart`
+*   `lib/presentation/widgets/preview/widgets/project_list.dart`
+*   `lib/presentation/widgets/preview/widgets/social_link.dart`
+*   `lib/presentation/widgets/pricing/pricing_card.dart`
+*   `lib/presentation/widgets/recent_resume_card.dart`
+*   `lib/presentation/widgets/template_selector.dart`
+*   `lib/web_app/pages/sections/contact_section.dart`
+*   `lib/web_app/pages/sections/hero_section.dart`
+*   `lib/web_app/pages/web_landing_page.dart`

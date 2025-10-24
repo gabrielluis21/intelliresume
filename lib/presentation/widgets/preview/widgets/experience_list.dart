@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intelliresume/core/providers/editor/editor_providers.dart';
 import 'package:intelliresume/data/models/cv_data.dart';
+import 'package:intelliresume/generated/app_localizations.dart';
 
 class ExperienceList extends ConsumerWidget {
   // Changed to ConsumerWidget
@@ -11,8 +12,9 @@ class ExperienceList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     // Added WidgetRef
-    if (items.isEmpty) return const Text('Nenhuma experiência');
+    if (items.isEmpty) return Text(l10n.preview_noExperience);
 
     return ListView.builder(
       shrinkWrap: true,
@@ -21,8 +23,11 @@ class ExperienceList extends ConsumerWidget {
       itemBuilder: (c, i) {
         final item = items[i];
         return Semantics(
-          label:
-              'Experiência ${i + 1}: ${item.company} em ${item.position}. Toque para editar.',
+          label: l10n.preview_experienceSemanticLabel(
+            i + 1,
+            item.company ?? '',
+            item.position ?? '',
+          ),
           child: ListTile(
             leading: const Icon(Icons.work_outline),
             title: Column(
@@ -34,7 +39,7 @@ class ExperienceList extends ConsumerWidget {
                   style: theme?.bodyMedium?.copyWith(height: 1.5),
                 ),
                 Text(
-                  "${item.startDate} - ${item.endDate ?? 'Atual'}",
+                  "${item.startDate} - ${item.endDate ?? l10n.preview_current}",
                   style: theme!.bodySmall?.copyWith(height: 1.2),
                 ),
               ],

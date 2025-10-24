@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intelliresume/core/providers/resume/resume_template_provider.dart';
 import 'package:intelliresume/core/templates/resume_template.dart';
+import 'package:intelliresume/generated/app_localizations.dart';
 
 class TemplateSelector extends ConsumerWidget {
   const TemplateSelector({super.key});
@@ -10,6 +11,7 @@ class TemplateSelector extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // 1. Observa o FutureProvider que prepara a lista de templates
     final availableTemplatesAsync = ref.watch(availableTemplatesProvider);
+    final translated = AppLocalizations.of(context)!;
 
     // 2. Usa o .when para lidar com os estados de carregamento, erro e sucesso
     return availableTemplatesAsync.when(
@@ -19,8 +21,10 @@ class TemplateSelector extends ConsumerWidget {
             child: Center(child: CircularProgressIndicator()),
           ),
       error:
-          (err, stack) =>
-              SizedBox(width: 220, child: Text('Erro ao carregar templates')),
+          (err, stack) => SizedBox(
+            width: 220,
+            child: Text(translated.templateSelector_errorLoadingTemplates),
+          ),
       data: (filteredTemplates) {
         // Uma vez que os dados carregam, garantimos que um template inicial seja selecionado.
         final selected = ref.watch(selectedTemplateProvider);
@@ -40,7 +44,7 @@ class TemplateSelector extends ConsumerWidget {
                     .map(
                       (element) => DropdownMenuItem(
                         value: element,
-                        child: Text(element.displayName),
+                        child: Text(element.displayName(translated)),
                       ),
                     )
                     .toList(),
@@ -49,7 +53,7 @@ class TemplateSelector extends ConsumerWidget {
                 ref.read(selectedTemplateProvider.notifier).state = template;
               }
             },
-            hint: const Text('Selecione um template'),
+            hint: Text(translated.templateSelector_selectTemplate),
             isExpanded: true,
           ),
         );

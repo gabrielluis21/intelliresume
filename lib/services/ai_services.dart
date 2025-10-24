@@ -51,13 +51,13 @@ class OpenAIService implements AIService, TemplateTranslationService {
       "objective": data.objective,
       "experiences":
           data.experiences
-              ?.map(
+              .map(
                 (e) => {"position": e.position, "description": e.description},
               )
               .toList(),
       "educations":
           data.educations
-              ?.map((e) => {"degree": e.degree, "description": e.description})
+              .map((e) => {"degree": e.degree, "description": e.description})
               .toList(),
       // Adicione outros campos de texto livre aqui
     };
@@ -91,7 +91,7 @@ class OpenAIService implements AIService, TemplateTranslationService {
       return data.copyWith(
         objective: translatedJson['objective'] ?? data.objective,
         experiences:
-            data.experiences?.asMap().entries.map((entry) {
+            data.experiences.asMap().entries.map((entry) {
               int index = entry.key;
               Experience originalExp = entry.value;
               return originalExp.copyWith(
@@ -104,7 +104,7 @@ class OpenAIService implements AIService, TemplateTranslationService {
               );
             }).toList(),
         educations:
-            data.educations?.asMap().entries.map((entry) {
+            data.educations.asMap().entries.map((entry) {
               int index = entry.key;
               Education originalEdu = entry.value;
               return originalEdu.copyWith(

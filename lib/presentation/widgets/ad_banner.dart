@@ -10,10 +10,12 @@ class AdBanner extends StatelessWidget {
     return Container(
       height: 60,
       color: Colors.grey.shade200,
-      child: const Center(
+      child: Center(
         child: Text(
           'Espaço para Anúncio',
-          style: TextStyle(color: Colors.black54),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: Colors.black54),
           semanticsLabel: 'Banner de anúncio',
         ),
       ),

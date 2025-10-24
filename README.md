@@ -44,6 +44,7 @@ Para a comunidade de desenvolvedores, este repositório serve como um exemplo pr
 
 ## ✨ Principais Funcionalidades
 
+- **Internacionalização (i18n):** Suporte completo a múltiplos idiomas, com sistema de tradução padrão do Flutter e fácil expansão.
 - **Criação e Gerenciamento de Currículos:** Interface intuitiva para montar e editar múltiplos currículos.
 - **Modelos Profissionais:** Uma variedade de modelos, incluindo opções gratuitas e premium.
 - **Assistência de IA:**

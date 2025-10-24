@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intelliresume/core/providers/user/user_provider.dart';
+import 'package:intelliresume/generated/app_localizations.dart';
 import 'package:intelliresume/presentation/pages/history_page.dart';
 import 'package:intelliresume/presentation/widgets/recent_resume_card.dart';
 import '../widgets/layout_template.dart';
@@ -11,12 +12,12 @@ class HomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final resumesAsync = ref.watch(
       resumesStreamProvider,
     ); // Usando o provider correto
     final userAsync = ref.watch(userProfileProvider);
     final theme = Theme.of(context);
-
     return LayoutTemplate(
       selectedIndex: 0,
       child: SingleChildScrollView(
@@ -27,25 +28,25 @@ class HomePage extends ConsumerWidget {
             userAsync.when(
               data:
                   (user) => Text(
-                    'Olá, ${user?.name ?? 'Usuário'}!',
+                    l10n.home_greeting(user?.name ?? l10n.userNotFound),
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
               loading: () => const SizedBox(),
-              error: (e, s) => const Text('Olá!'),
+              error: (e, s) => Text(l10n.home_greetingFallback),
             ),
             const SizedBox(height: 8),
             Text(
-              'Bem-vindo de volta. Pronto para conquistar sua próxima vaga?',
+              l10n.home_welcomeBackPrompt,
               style: theme.textTheme.titleMedium?.copyWith(
                 color: Colors.grey.shade700,
               ),
             ),
             const SizedBox(height: 32),
-            _buildRecentResumesSection(context, resumesAsync),
+            _buildRecentResumesSection(context, resumesAsync, l10n),
             const SizedBox(height: 32),
-            _buildQuickActionsSection(context),
+            _buildQuickActionsSection(context, l10n),
           ],
         ),
       ),
@@ -55,21 +56,21 @@ class HomePage extends ConsumerWidget {
   Widget _buildRecentResumesSection(
     BuildContext context,
     AsyncValue<List<dynamic>> resumesAsync,
+    AppLocalizations l10n,
   ) {
     final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Seus Currículos', style: theme.textTheme.titleLarge),
+        Text(l10n.home_yourResumes, style: theme.textTheme.titleLarge),
         const SizedBox(height: 16),
         SizedBox(
           height: 180,
           child: resumesAsync.when(
             loading: () => const Center(child: CircularProgressIndicator()),
             error:
-                (error, stack) => const Center(
-                  child: Text('Não foi possível carregar os currículos.'),
-                ),
+                (error, stack) =>
+                    Center(child: Text(l10n.home_couldNotLoadResumes)),
             data: (resumes) {
               if (resumes.isEmpty) {
                 return AddNewResumeCard(onTap: () => context.go('/editor/new'));
@@ -100,12 +101,15 @@ class HomePage extends ConsumerWidget {
     );
   }
 
-  Widget _buildQuickActionsSection(BuildContext context) {
+  Widget _buildQuickActionsSection(
+    BuildContext context,
+    AppLocalizations l10n,
+  ) {
     final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Ações Rápidas', style: theme.textTheme.titleLarge),
+        Text(l10n.home_quickActions, style: theme.textTheme.titleLarge),
         const SizedBox(height: 16),
         GridView.count(
           crossAxisCount: 2,
@@ -118,32 +122,32 @@ class HomePage extends ConsumerWidget {
             _buildActionCard(
               context,
               icon: Icons.history,
-              label: 'Ver Histórico Completo',
+              label: l10n.home_viewFullHistory,
               onTap: () => context.go('/history'),
-              iconSemanticLabel: 'Ícone de histórico',
+              iconSemanticLabel: l10n.home_historyIconSemanticLabel,
             ),
             _buildActionCard(
               context,
               icon: Icons.palette_outlined,
-              label: 'Explorar Modelos',
+              label: l10n.home_exploreTemplates,
               onTap: () {
                 /* Navegar para a galeria de modelos */
               },
-              iconSemanticLabel: 'Ícone de paleta de cores',
+              iconSemanticLabel: l10n.home_paletteIconSemanticLabel,
             ),
             _buildActionCard(
               context,
               icon: Icons.workspace_premium_outlined,
-              label: 'Minha Assinatura',
+              label: l10n.home_mySubscription,
               onTap: () => context.go('/buy'),
-              iconSemanticLabel: 'Ícone de assinatura premium',
+              iconSemanticLabel: l10n.home_premiumIconSemanticLabel,
             ),
             _buildActionCard(
               context,
               icon: Icons.settings_outlined,
-              label: 'Ajustes',
+              label: l10n.home_settings,
               onTap: () => context.go('/settings'),
-              iconSemanticLabel: 'Ícone de configurações',
+              iconSemanticLabel: l10n.home_settingsIconSemanticLabel,
             ),
           ],
         ),

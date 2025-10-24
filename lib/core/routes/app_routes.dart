@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intelliresume/core/notifiers/router_notify.dart';
+import 'package:intelliresume/data/datasources/remote/auth_resume_ds.dart';
 import 'package:intelliresume/presentation/widgets/layout_template.dart';
 import '../../presentation/pages.dart';
 
@@ -73,13 +75,13 @@ final routerProvider = Provider<GoRouter>((ref) {
             ),
       ),
     ],
-    /* redirect: (ctx, state) {
+    redirect: (ctx, state) {
       final logged = AuthService.instance.currentUser != null;
       final loggingIn = state.path == '/login' || state.path == '/signup';
       if (!logged && !loggingIn) return '/';
       if (logged && loggingIn) return '/home';
       return null;
     },
-    refreshListenable: RouterNotifier(AuthService.instance), */
+    refreshListenable: RouterNotifier(AuthService.instance),
   );
 });

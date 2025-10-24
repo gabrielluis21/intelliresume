@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intelliresume/core/providers/editor/editor_providers.dart';
 import 'package:intelliresume/data/models/cv_data.dart';
+import 'package:intelliresume/generated/app_localizations.dart';
 
 class CertificateList extends ConsumerWidget {
   final List<Certificate> items;
@@ -10,7 +11,8 @@ class CertificateList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (items.isEmpty) return const Text('Nenhum certificado');
+    final l10n = AppLocalizations.of(context)!;
+    if (items.isEmpty) return Text(l10n.preview_noCertificates);
 
     return ListView.builder(
       shrinkWrap: true,
@@ -19,7 +21,10 @@ class CertificateList extends ConsumerWidget {
       itemBuilder: (c, i) {
         final item = items[i];
         return Semantics(
-          label: 'Certificado ${i + 1}: ${item.courseName}. Toque para editar.',
+          label: l10n.preview_certificateSemanticLabel(
+            i + 1,
+            item.courseName ?? '',
+          ),
           child: ListTile(
             leading: const Icon(Icons.badge_outlined),
             title: Column(
@@ -37,7 +42,7 @@ class CertificateList extends ConsumerWidget {
               ],
             ),
             subtitle: Text(
-              "${item.startDate} - ${item.endDate ?? 'Atual'}",
+              "${item.startDate} - ${item.endDate ?? l10n.preview_current}",
               style: theme!.bodySmall?.copyWith(height: 1.2),
             ),
             onTap: () {

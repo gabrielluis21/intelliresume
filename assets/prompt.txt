@@ -1,0 +1,103 @@
+# Objetivo:
+Gerar o código completo de uma landing page moderna e responsiva em Flutter Web
+para o aplicativo IntelliResume, com base no design e conceito visual da imagem de referência (logo e layout).
+
+# Contexto:
+O IntelliResume é um aplicativo que usa Inteligência Artificial para criar e otimizar currículos profissionais.
+O público-alvo são candidatos e freelancers que buscam se destacar e conquistar oportunidades internacionais.
+
+# Tecnologias e padrões:
+- Flutter 3.24+ (suporte Web)
+- Linguagem: Dart
+- Gerenciamento de estado: Riverpod (Provider pode ser usado apenas se necessário)
+- Responsividade com LayoutBuilder e MediaQuery
+- Uso de widgets customizados e componentes reutilizáveis
+- Animações leves (AnimatedOpacity, AnimatedContainer, Hero, etc.)
+- Estrutura limpa: `/components`, `/sections`, `/utils`, `/theme`
+
+# Estrutura da página:
+1. **AppBar fixo**
+   - Logo à esquerda (arquivo PNG)
+   - Menu à direita: “Sobre”, “Recursos”, “Planos”, “Contato”
+   - Botão destacado: “Entrar” (borda azul, hover animado)
+
+2. **Hero Section**
+   - Fundo branco com gradiente suave
+   - Título grande e chamativo:  
+     “Crie seu currículo perfeito em minutos”
+   - Subtítulo:  
+     “Use IA para gerar, traduzir e otimizar seu currículo para o mercado internacional.”
+   - Botões:
+     - “Começar agora” (azul sólido)
+     - “Ver exemplos” (cinza claro)
+   - Imagem ou mockup flutuante à direita
+   - Animação suave ao rolar
+
+3. **Seção de Recursos**
+   - Grid com 4 cards:
+     - “Geração inteligente”
+     - “Modelos profissionais”
+     - “Tradução automática”
+     - “Acesso 100% online”
+   - Ícones vetoriais ou ilustrativos (use `Icons` padrão ou pacote `flutter_vector_icons`)
+
+4. **Demonstração / Preview**
+   - Fundo cinza claro (#f9f9f9)
+   - Mockups ou container simulando o app
+   - Texto explicativo à esquerda com botão “Ver em ação”
+
+5. **Planos**
+   - 3 cards lado a lado: Free, Pro, Empresas
+   - Destaque visual no plano “Pro” com sombra e borda azul
+   - Botões “Selecionar plano”
+   - Layout adaptável para telas pequenas
+
+6. **Depoimentos**
+   - 3 cards com foto circular (ou avatar padrão)
+   - Nome, estrelas (usando `Icons.star`), e comentário curto
+   - Fundo branco, espaçamento e tipografia leve
+
+7. **Seção de Chamada Final (CTA)**
+   - Fundo azul (#0a47a9)
+   - Texto centralizado em branco:
+     “Destaque-se no mercado com um currículo de verdade.”
+   - Botão branco: “Criar meu currículo agora”
+   - Efeito de hover ou animação de pulso
+
+8. **Rodapé**
+   - Fundo azul escuro (#0a2472)
+   - Links: “Sobre | Termos | Política de Privacidade | Contato”
+   - Ícones sociais: LinkedIn, GitHub, Instagram
+   - Texto pequeno de direitos autorais no rodapé inferior
+
+# Requisitos de design e boas práticas:
+- Layout responsivo (mobile, tablet, desktop)
+- Padding consistente, uso de `EdgeInsets.symmetric`
+- Tipografia: Poppins ou Inter (via `google_fonts`)
+- Transições suaves de cor e movimento
+- Código limpo, comentado e organizado
+- Acessibilidade: `Semantics`, `alt` para imagens e contraste adequado
+
+# Use apenas os seguintes arquivos:
+ - lib/
+ |-----app.dart 
+ ├── core/
+ │    └── themes.dart
+ ├── web_app/
+ │     └──pages/
+ |	    └─── sections 
+ |     │       |── hero_section.dart
+ │     │       ├── features_section.dart
+ │     │       └── section_title.dart
+ |	    |       └── footer_section.dart
+ |  	 |       └── template_galery_section.dart
+ │     └── web_landing_page.dart
+ │
+ └── utils/
+      └── constants.dart
+
+# Saída esperada:
+Gere todo o código Flutter necessário para rodar a landing page completa, incluindo:
+- Temas e tipografia
+- Comentários explicando cada parte principal
+- Layout adaptável a web, tablet e mobile

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/services.dart';
+import 'package:intelliresume/web_app/pages/sections/section_title.dart';
 
 // Modelo de dados simples para cada template
 class TemplateInfo {
@@ -61,18 +62,11 @@ class _TemplateGallerySectionState extends State<TemplateGallerySection> {
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 60),
       child: Column(
         children: [
-          Text(
-            'Nossos Modelos',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: brandBlue,
-            ),
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'Designs criados para impressionar. Do clássico ao moderno, encontre o ideal para você.',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 18, color: Colors.black54),
+          SectionTitle(
+            title: 'Nossos Modelos',
+            subtitle:
+                'Designs criados para impressionar. Do clássico ao moderno, encontre o ideal para você.',
+            textColor: brandBlue,
           ),
           const SizedBox(height: 40),
           FocusableActionDetector(
@@ -154,7 +148,9 @@ class _TemplateGallerySectionState extends State<TemplateGallerySection> {
           // Nome do template atual
           Text(
             templates[_current].name,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 10),
           // Indicadores de "pontinhos"

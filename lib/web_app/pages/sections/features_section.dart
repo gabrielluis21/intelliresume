@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intelliresume/generated/app_localizations.dart';
 import 'package:intelliresume/web_app/widgets/clickable_feature_card.dart';
 import 'package:intelliresume/web_app/widgets/feature_card.dart';
+import 'package:intelliresume/web_app/pages/sections/section_title.dart';
 
 class FeaturesSection extends StatelessWidget {
   final GlobalKey featuresKey;
@@ -14,24 +16,17 @@ class FeaturesSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       key: featuresKey,
       color: Colors.grey[50], // Um fundo suave para diferenciar a seção
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 60),
       child: Column(
         children: [
-          Text(
-            'Funcionalidades Inteligentes',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: const Color(0xFF0D47A1),
-            ),
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'Tudo o que você precisa para criar um currículo de destaque em minutos.',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 18, color: Colors.black54),
+          SectionTitle(
+            title: l10n.featuresSection_title,
+            subtitle: l10n.featuresSection_subtitle,
+            textColor: const Color(0xFF0D47A1),
           ),
           const SizedBox(height: 40),
           Center(
@@ -44,31 +39,28 @@ class FeaturesSection extends StatelessWidget {
                 runSpacing: 24,
                 alignment: WrapAlignment.center,
                 children: [
-                  const SizedBox(
+                  SizedBox(
                     width: 280,
                     child: FeatureCard(
                       icon: Icons.auto_awesome,
-                      title: 'Avaliação com IA',
-                      description:
-                          'Receba sugestões para tornar seu currículo mais impactante e profissional.',
+                      title: l10n.feature_aiEvaluation_title,
+                      description: l10n.feature_aiEvaluation_description,
                     ),
                   ),
-                  const SizedBox(
+                  SizedBox(
                     width: 280,
                     child: FeatureCard(
                       icon: Icons.translate,
-                      title: 'Tradução Automática',
-                      description:
-                          'Adapte seu currículo para vagas internacionais com tradução para múltiplos idiomas.',
+                      title: l10n.feature_autoTranslation_title,
+                      description: l10n.feature_autoTranslation_description,
                     ),
                   ),
-                  const SizedBox(
+                  SizedBox(
                     width: 280,
                     child: FeatureCard(
                       icon: Icons.spellcheck,
-                      title: 'Correção Ortográfica',
-                      description:
-                          'Evite erros gramaticais que podem custar uma oportunidade. Nós revisamos para você.',
+                      title: l10n.feature_spellCheck_title,
+                      description: l10n.feature_spellCheck_description,
                     ),
                   ),
                   SizedBox(
@@ -76,27 +68,25 @@ class FeaturesSection extends StatelessWidget {
                     child: ClickableFeatureCard(
                       onTap: onSeeTemplates,
                       icon: Icons.palette,
-                      title: 'Modelos Profissionais',
+                      title: l10n.feature_professionalTemplates_title,
                       description:
-                          'Escolha entre dezenas de modelos gratuitos e premium, criados por especialistas.',
+                          l10n.feature_professionalTemplates_description,
                     ),
                   ),
-                  const SizedBox(
+                  SizedBox(
                     width: 280,
                     child: FeatureCard(
                       icon: Icons.edit,
-                      title: 'Modo Estúdio (Pro)',
-                      description:
-                          'Personalize cores, fontes e layouts para criar um currículo verdadeiramente único.',
+                      title: l10n.feature_studioMode_title,
+                      description: l10n.feature_studioMode_description,
                     ),
                   ),
-                  const SizedBox(
+                  SizedBox(
                     width: 280,
                     child: FeatureCard(
                       icon: Icons.picture_as_pdf,
-                      title: 'Exportação Fácil',
-                      description:
-                          'Exporte seu currículo em formato PDF com alta qualidade, pronto para ser enviado.',
+                      title: l10n.feature_easyExport_title,
+                      description: l10n.feature_easyExport_description,
                     ),
                   ),
                 ],

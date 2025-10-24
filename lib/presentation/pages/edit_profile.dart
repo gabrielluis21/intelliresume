@@ -8,6 +8,7 @@ import 'package:intelliresume/services/image_upload_service.dart';
 import 'package:intelliresume/core/providers/domain_providers.dart';
 import '../../core/providers/user/user_provider.dart';
 import '../widgets/layout_template.dart';
+import 'package:intelliresume/generated/app_localizations.dart';
 
 class EditProfilePage extends ConsumerStatefulWidget {
   const EditProfilePage({super.key});
@@ -26,6 +27,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   File? _imageFile;
   bool _loading = false;
   bool _isPCD = false;
+  late AppLocalizations l10n;
   final List<String> _availableDisabilities = [
     'Física',
     'Auditiva',
@@ -40,6 +42,12 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   void initState() {
     super.initState();
     _loadUserData();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    l10n = AppLocalizations.of(context)!;
   }
 
   void _loadUserData() {
@@ -70,16 +78,14 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
       final currentProfile = ref.read(userProfileProvider).value;
 
       if (currentProfile == null) {
-        throw Exception('Perfil do usuário não encontrado.');
+        throw Exception(l10n.editProfile_userProfileNotFound);
       }
 
       String? finalProfilePictureUrl = currentProfile.profilePictureUrl;
 
       if (_imageFile != null) {
         if (currentProfile.uid == null) {
-          throw Exception(
-            'UID do usuário não encontrado para upload de imagem.',
-          );
+          throw Exception(l10n.editProfile_uidNotFoundForImageUpload);
         }
         finalProfilePictureUrl = await ImageUploadService()
             .uploadProfilePicture(_imageFile!, currentProfile.uid!);
@@ -102,15 +108,17 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Perfil atualizado com sucesso!')),
+          SnackBar(content: Text(l10n.editProfile_profileUpdatedSuccessfully)),
         );
         context.pop();
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Erro ao atualizar perfil: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.editProfile_errorUpdatingProfile(e.toString())),
+          ),
+        );
       }
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -135,17 +143,21 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Editar Perfil',
+                          l10n.editProfile_editProfile,
                           style: Theme.of(context).textTheme.headlineSmall,
                         ),
                         const SizedBox(height: 24),
                         _buildProfilePictureSection(user.profilePictureUrl),
                         const SizedBox(height: 24),
-                        _buildTextField(_nameController, 'Nome', Icons.person),
+                        _buildTextField(
+                          _nameController,
+                          l10n.editProfile_name,
+                          Icons.person,
+                        ),
                         const SizedBox(height: 16),
                         _buildTextField(
                           _phoneController,
-                          'Telefone',
+                          l10n.editProfile_phone,
                           Icons.phone,
                           keyboardType: TextInputType.phone,
                         ),
@@ -185,7 +197,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
               icon: const Icon(Icons.camera_alt, color: Colors.white),
               style: IconButton.styleFrom(backgroundColor: Colors.blue),
               onPressed: _pickImage,
-              tooltip: 'Selecionar foto de perfil',
+              tooltip: l10n.editProfile_selectProfilePicture,
             ),
           ),
         ],
@@ -206,7 +218,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
       validator:
           (value) =>
               (value == null || value.isEmpty)
-                  ? 'Este campo é obrigatório'
+                  ? l10n.editProfile_fieldRequired
                   : null,
     );
   }
@@ -219,15 +231,13 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Acessibilidade e Inclusão',
+              l10n.editProfile_accessibilityAndInclusion,
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 8),
             CheckboxListTile(
-              title: const Text('Desejo informar que sou PCD'),
-              subtitle: const Text(
-                'Esta informação é opcional e será usada para vagas afirmativas.',
-              ),
+              title: Text(l10n.editProfile_informPCD),
+              subtitle: Text(l10n.editProfile_pcdInfoOptional),
               value: _isPCD,
               onChanged:
                   (bool? value) => setState(() => _isPCD = value ?? false),
@@ -243,7 +253,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Tipos de Deficiência (selecione uma ou mais)',
+                      l10n.editProfile_disabilityTypes,
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 8),
@@ -251,8 +261,37 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                       spacing: 8.0,
                       children:
                           _availableDisabilities.map((disability) {
+                            String localizedDisability;
+                            switch (disability) {
+                              case 'Física':
+                                localizedDisability =
+                                    l10n.editProfile_physicalDisability;
+                                break;
+                              case 'Auditiva':
+                                localizedDisability =
+                                    l10n.editProfile_auditoryDisability;
+                                break;
+                              case 'Visual':
+                                localizedDisability =
+                                    l10n.editProfile_visualDisability;
+                                break;
+                              case 'Mental':
+                                localizedDisability =
+                                    l10n.editProfile_mentalDisability;
+                                break;
+                              case 'Intelectual':
+                                localizedDisability =
+                                    l10n.editProfile_intellectualDisability;
+                                break;
+                              case 'Múltipla':
+                                localizedDisability =
+                                    l10n.editProfile_multipleDisabilities;
+                                break;
+                              default:
+                                localizedDisability = disability;
+                            }
                             return FilterChip(
-                              label: Text(disability),
+                              label: Text(localizedDisability),
                               selected: _selectedDisabilities.contains(
                                 disability,
                               ),
@@ -271,8 +310,8 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _disabilityDescriptionController,
-                      decoration: const InputDecoration(
-                        labelText: 'Descrição ou CID (opcional)',
+                      decoration: InputDecoration(
+                        labelText: l10n.editProfile_descriptionOrCIDOptional,
                       ),
                     ),
                   ],
@@ -291,7 +330,10 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
         children: [
           Icon(
             _loading ? null : Icons.save,
-            semanticLabel: _loading ? 'Salvando...' : 'Salvar Alterações',
+            semanticLabel:
+                _loading
+                    ? l10n.editProfile_saving
+                    : l10n.editProfile_saveChanges,
           ),
           ElevatedButton(
             onPressed: _loading ? null : _saveProfile,
@@ -304,7 +346,11 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                     ? const CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                     )
-                    : Text(_loading ? 'Salvando...' : 'Salvar Alterações'),
+                    : Text(
+                      _loading
+                          ? l10n.editProfile_saving
+                          : l10n.editProfile_saveChanges,
+                    ),
           ),
         ],
       ),

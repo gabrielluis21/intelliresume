@@ -61,20 +61,20 @@ class GeminiService implements AIService, TemplateTranslationService {
       "objective": data.objective,
       "experiences":
           data.experiences
-              ?.map(
+              .map(
                 (e) => {"position": e.position, "description": e.description},
               )
               .toList(),
       "educations":
           data.educations
-              ?.map((e) => {"degree": e.degree, "description": e.description})
+              .map((e) => {"degree": e.degree, "description": e.description})
               .toList(),
       "projects":
           data.projects
-              ?.map((p) => {"name": p.name, "description": p.description})
+              .map((p) => {"name": p.name, "description": p.description})
               .toList(),
       "certificates":
-          data.certificates?.map((c) => {"courseName": c.courseName}).toList(),
+          data.certificates.map((c) => {"courseName": c.courseName}).toList(),
     };
 
     final prompt = """
@@ -95,7 +95,7 @@ class GeminiService implements AIService, TemplateTranslationService {
       return data.copyWith(
         objective: translatedJson['objective'] ?? data.objective,
         experiences:
-            data.experiences?.asMap().entries.map((entry) {
+            data.experiences.asMap().entries.map((entry) {
               int index = entry.key;
               Experience originalExp = entry.value;
               return originalExp.copyWith(
@@ -108,7 +108,7 @@ class GeminiService implements AIService, TemplateTranslationService {
               );
             }).toList(),
         educations:
-            data.educations?.asMap().entries.map((entry) {
+            data.educations.asMap().entries.map((entry) {
               int index = entry.key;
               Education originalEdu = entry.value;
               return originalEdu.copyWith(
@@ -121,7 +121,7 @@ class GeminiService implements AIService, TemplateTranslationService {
               );
             }).toList(),
         projects:
-            data.projects?.asMap().entries.map((entry) {
+            data.projects.asMap().entries.map((entry) {
               int index = entry.key;
               Project originalProj = entry.value;
               return originalProj.copyWith(
@@ -134,7 +134,7 @@ class GeminiService implements AIService, TemplateTranslationService {
               );
             }).toList(),
         certificates:
-            data.certificates?.asMap().entries.map((entry) {
+            data.certificates.asMap().entries.map((entry) {
               int index = entry.key;
               Certificate originalCert = entry.value;
               return originalCert.copyWith(

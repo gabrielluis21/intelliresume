@@ -71,8 +71,7 @@ class _FeatureCardState extends State<FeatureCard> {
                 Text(
                   widget.title,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 18,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -80,7 +79,10 @@ class _FeatureCardState extends State<FeatureCard> {
                 Text(
                   widget.description,
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey.shade600, height: 1.5),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.grey.shade600,
+                    height: 1.5,
+                  ),
                 ),
               ],
             ),

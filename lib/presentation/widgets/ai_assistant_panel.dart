@@ -5,6 +5,7 @@ import 'package:intelliresume/core/providers/AI/usage_provider.dart';
 import 'package:intelliresume/core/providers/domain_providers.dart';
 import 'package:intelliresume/core/providers/resume/cv_provider.dart';
 import 'package:intelliresume/core/providers/user/user_provider.dart';
+import 'package:intelliresume/generated/app_localizations.dart';
 
 class AIAssistantPanel extends ConsumerStatefulWidget {
   const AIAssistantPanel({super.key});
@@ -17,6 +18,13 @@ class _AIAssistantPanelState extends ConsumerState<AIAssistantPanel> {
   bool _isLoading = false;
   String? _resultText;
   String? _errorText;
+  late AppLocalizations l10n;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    l10n = AppLocalizations.of(context)!;
+  }
 
   Future<void> _runAi(Future<String> Function(String) getResult) async {
     // --- NOVA LÓGICA DESACOPLADA ---
@@ -38,10 +46,8 @@ class _AIAssistantPanelState extends ConsumerState<AIAssistantPanel> {
     if (!podeUsar) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Limite de interações com IA atingido no plano gratuito.',
-            ),
+          SnackBar(
+            content: Text(l10n.aiAssistant_freePlanLimitReached),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -63,8 +69,7 @@ class _AIAssistantPanelState extends ConsumerState<AIAssistantPanel> {
 
     if (resumeContent.trim().isEmpty) {
       setState(() {
-        _errorText =
-            "Seu currículo está vazio. Adicione conteúdo para usar a IA.";
+        _errorText = l10n.aiAssistant_emptyResumeWarning;
         _resultText = null;
       });
       return;
@@ -77,8 +82,7 @@ class _AIAssistantPanelState extends ConsumerState<AIAssistantPanel> {
     });
 
     try {
-      final prompt =
-          'Você é um especialista em recrutamento. Analise o seguinte currículo:\\n\\n$resumeContent';
+      final prompt = l10n.aiAssistant_recruitmentExpertPrompt(resumeContent);
       final result = await getResult(prompt);
 
       // Registra o uso da IA (lógica de UI)
@@ -89,7 +93,7 @@ class _AIAssistantPanelState extends ConsumerState<AIAssistantPanel> {
       });
     } catch (e) {
       setState(() {
-        _errorText = "Ocorreu um erro ao contatar a IA: $e";
+        _errorText = l10n.aiAssistant_errorContactingAI(e.toString());
       });
     } finally {
       if (mounted) {
@@ -121,7 +125,7 @@ class _AIAssistantPanelState extends ConsumerState<AIAssistantPanel> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _buildActionButton(
-                    text: 'Traduzir',
+                    text: l10n.aiAssistant_translate,
                     onPressed:
                         _isLoading
                             ? null
@@ -131,14 +135,14 @@ class _AIAssistantPanelState extends ConsumerState<AIAssistantPanel> {
                     foregroundColor: Colors.black,
                   ),
                   _buildActionButton(
-                    text: 'Pontos fortes e fracos',
+                    text: l10n.aiAssistant_strengthsAndWeaknesses,
                     onPressed:
                         _isLoading ? null : () => _runAi(aiService.evaluate),
                     backgroundColor: const Color(0xFFD6EAF8), // Light blue
                     foregroundColor: Colors.black,
                   ),
                   _buildActionButton(
-                    text: 'Correção ortográfica',
+                    text: l10n.aiAssistant_spellCheck,
                     onPressed:
                         _isLoading ? null : () => _runAi(aiService.correct),
                     backgroundColor: Colors.white,
@@ -177,7 +181,7 @@ class _AIAssistantPanelState extends ConsumerState<AIAssistantPanel> {
                         vertical: 12,
                       ),
                     ),
-                    child: const Text('Gerar currículo'),
+                    child: Text(l10n.aiAssistant_generateResume),
                   ),
                   const SizedBox(width: 12),
                   OutlinedButton(
@@ -195,7 +199,7 @@ class _AIAssistantPanelState extends ConsumerState<AIAssistantPanel> {
                         vertical: 12,
                       ),
                     ),
-                    child: const Text('Expandir'),
+                    child: Text(l10n.aiAssistant_expand),
                   ),
                 ],
               ),
@@ -265,11 +269,11 @@ class _AIAssistantPanelState extends ConsumerState<AIAssistantPanel> {
     }
     // Otherwise, show the original resume content.
     if (resumeContent.trim().isEmpty) {
-      return const Center(
+      return Center(
         child: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: Text(
-            'Seu currículo está vazio. Adicione seções e conteúdo para vê-lo aqui.',
+            l10n.aiAssistant_emptyResumePlaceholder,
             textAlign: TextAlign.center,
           ),
         ),

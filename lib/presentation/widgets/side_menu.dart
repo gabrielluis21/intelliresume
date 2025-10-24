@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intelliresume/core/providers/user/user_provider.dart';
+import 'package:intelliresume/generated/app_localizations.dart';
 
 class SideMenu extends ConsumerWidget {
   final int selectedIndex;
@@ -31,8 +32,12 @@ class SideMenu extends ConsumerWidget {
               if (user == null) {
                 // Cabeçalho para usuário deslogado ou estado inicial
                 return UserAccountsDrawerHeader(
-                  accountName: const Text('Bem-vindo!'),
-                  accountEmail: const Text('Faça login ou cadastre-se'),
+                  accountName: Text(AppLocalizations.of(context)!.welcome),
+                  accountEmail: Text(
+                    AppLocalizations.of(
+                      context,
+                    )!.sideBarMenu_loginOrCreateAccount,
+                  ),
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.primary,
                   ),
@@ -74,9 +79,15 @@ class SideMenu extends ConsumerWidget {
                   child: Center(child: CircularProgressIndicator()),
                 ),
             error:
-                (err, stack) => const SizedBox(
+                (err, stack) => SizedBox(
                   height: 180,
-                  child: Center(child: Text('Erro ao carregar perfil')),
+                  child: Center(
+                    child: Text(
+                      AppLocalizations.of(
+                        context,
+                      )!.sideBarMenu_errorLoadingProfile,
+                    ),
+                  ),
                 ),
           ),
           Expanded(
@@ -86,32 +97,32 @@ class SideMenu extends ConsumerWidget {
                 _buildListTile(
                   context,
                   icon: Icons.home,
-                  label: 'Inicio',
+                  label: AppLocalizations.of(context)!.sideBarMenu_home,
                   index: 0,
                 ),
                 _buildListTile(
                   context,
                   icon: Icons.person,
-                  label: 'Perfil',
+                  label: AppLocalizations.of(context)!.sideBarMenu_profile,
                   index: 1,
                 ),
                 _buildListTile(
                   context,
                   icon: Icons.history,
-                  label: 'Histórico',
+                  label: AppLocalizations.of(context)!.sideBarMenu_history,
                   index: 2,
                 ),
                 _buildListTile(
                   context,
                   icon: Icons.add,
-                  label: 'Novo CV',
+                  label: AppLocalizations.of(context)!.sideBarMenu_newCV,
                   index: 3,
                 ),
                 const Divider(),
                 _buildListTile(
                   context,
                   icon: Icons.settings,
-                  label: 'Configurações',
+                  label: AppLocalizations.of(context)!.sideBarMenu_settings,
                   index: 4,
                 ),
                 // Oculta o botão de sair se o usuário não estiver logado
@@ -119,7 +130,7 @@ class SideMenu extends ConsumerWidget {
                   _buildListTile(
                     context,
                     icon: Icons.logout,
-                    label: 'Sair',
+                    label: AppLocalizations.of(context)!.sideBarMenu_logout,
                     index: 5,
                   ),
               ],

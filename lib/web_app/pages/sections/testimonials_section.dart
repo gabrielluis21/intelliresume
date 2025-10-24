@@ -2,26 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:intelliresume/generated/app_localizations.dart';
 import 'package:intelliresume/web_app/pages/sections/section_title.dart';
 
-class AboutSection extends StatelessWidget {
-  final GlobalKey aboutKey;
-  static const Color _brandBlue = Color(0xFF0D47A1);
-
-  const AboutSection({super.key, required this.aboutKey});
+class TestimonialsSection extends StatelessWidget {
+  const TestimonialsSection({super.key});
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+
     return Container(
-      color: _brandBlue.withOpacity(0.05),
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 60),
+      color: Colors.white,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SectionTitle(
-            title: l10n.aboutIntelliTitle,
-            subtitle: l10n.aboutIntelliDescription,
-            textColor: Theme.of(context).textTheme.headlineSmall?.color,
+            title: l10n.testimonialsSection_title,
+            subtitle: l10n.testimonialsSection_subtitle,
           ),
+          // Testimonials will be loaded dynamically here
         ],
       ),
     );

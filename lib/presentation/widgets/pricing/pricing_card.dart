@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intelliresume/domain/entities/plan_type.dart';
+import 'package:intelliresume/generated/app_localizations.dart';
 
 class PricingCard extends StatelessWidget {
   final String title;
@@ -28,6 +29,7 @@ class PricingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final bool isCurrentUserPlan = currentUserPlan == planType;
     final bool canUpgrade =
@@ -61,17 +63,17 @@ class PricingCard extends StatelessWidget {
             const SizedBox(height: 24),
             const Divider(),
             const SizedBox(height: 16),
-            ...features.map((feature) => _buildFeature(feature, theme)),
+            ...features.map((feature) => _buildFeature(feature, theme, l10n)),
             const Spacer(),
             const SizedBox(height: 24),
-            _buildButton(context, isCurrentUserPlan, canUpgrade),
+            _buildButton(context, isCurrentUserPlan, canUpgrade, l10n, theme),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildFeature(String text, ThemeData theme) {
+  Widget _buildFeature(String text, ThemeData theme, AppLocalizations l10n) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
@@ -80,10 +82,10 @@ class PricingCard extends StatelessWidget {
             Icons.check,
             color: theme.colorScheme.primary,
             size: 20,
-            semanticLabel: 'Recurso incluso',
+            semanticLabel: l10n.pricing_featureIncluded,
           ),
           const SizedBox(width: 8),
-          Expanded(child: Text(text)),
+          Expanded(child: Text(text, style: theme.textTheme.bodyMedium)),
         ],
       ),
     );
@@ -93,11 +95,16 @@ class PricingCard extends StatelessWidget {
     BuildContext context,
     bool isCurrentUserPlan,
     bool canUpgrade,
+    AppLocalizations l10n,
+    ThemeData theme,
   ) {
     if (isCurrentUserPlan) {
-      return const Center(
+      return Center(
         child: Chip(
-          label: Text('Seu Plano Atual'),
+          label: Text(
+            l10n.pricing_yourCurrentPlan,
+            style: theme.textTheme.bodyMedium,
+          ),
           backgroundColor: Colors.grey,
         ),
       );
@@ -117,7 +124,8 @@ class PricingCard extends StatelessWidget {
             isRecommended ? Theme.of(context).colorScheme.onPrimary : null,
       ),
       child: Text(
-        buttonText ?? (canUpgrade ? 'Fazer Upgrade' : 'Não disponível'),
+        buttonText ??
+            (canUpgrade ? l10n.pricing_upgrade : l10n.pricing_notAvailable),
       ),
     );
   }

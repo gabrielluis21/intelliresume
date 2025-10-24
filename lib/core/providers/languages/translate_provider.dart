@@ -93,7 +93,7 @@ class DeepLResumeTranslator implements ResumeTranslationService {
       socials: resume.socials,
       objective: await translateText(resume.objective!),
       educations: await Future.wait(
-        resume.educations!.map(
+        resume.educations.map(
           (e) async => e.copyWith(
             degree: await translateText(e.degree!),
             school: await translateText(e.school!),
@@ -101,7 +101,7 @@ class DeepLResumeTranslator implements ResumeTranslationService {
         ),
       ),
       experiences: await Future.wait(
-        resume.experiences!.map(
+        resume.experiences.map(
           (e) async => e.copyWith(
             position: await translateText(e.position!),
             company: await translateText(e.company!),
@@ -110,7 +110,7 @@ class DeepLResumeTranslator implements ResumeTranslationService {
         ),
       ),
       skills: await Future.wait(
-        resume.skills!.map(
+        resume.skills.map(
           (e) async => e.copyWith(
             name: await translateText(e.name!),
             level: await translateText(e.level!),
@@ -118,7 +118,7 @@ class DeepLResumeTranslator implements ResumeTranslationService {
         ),
       ),
       projects: await Future.wait(
-        resume.projects!.map(
+        resume.projects.map(
           (p) async => p.copyWith(
             name: await translateText(p.name!),
             description: await translateText(p.description ?? ''),
@@ -126,7 +126,7 @@ class DeepLResumeTranslator implements ResumeTranslationService {
         ),
       ),
       certificates: await Future.wait(
-        resume.certificates!.map(
+        resume.certificates.map(
           (c) async => c.copyWith(
             courseName: await translateText(c.courseName!),
             institution: await translateText(c.institution!),

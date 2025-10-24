@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intelliresume/core/providers/data/data_provider.dart';
-import '../../core/utils/app_localizations.dart';
+import 'package:intelliresume/generated/app_localizations.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -81,7 +81,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context);
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -104,7 +103,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        t.login,
+                        AppLocalizations.of(context)!.login,
                         style: Theme.of(context).textTheme.headlineSmall
                             ?.copyWith(fontWeight: FontWeight.bold),
                       ),
@@ -116,7 +115,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       const SizedBox(height: 32),
                       TextFormField(
                         decoration: InputDecoration(
-                          labelText: t.email,
+                          labelText: AppLocalizations.of(context)!.email,
                           prefixIcon: const Icon(Icons.email),
                         ),
                         keyboardType: TextInputType.emailAddress,
@@ -124,14 +123,16 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             (v) =>
                                 (v?.contains('@') == true)
                                     ? null
-                                    : t.invalidEmail,
+                                    : AppLocalizations.of(
+                                      context,
+                                    )!.invalidEmail,
                         onSaved: (v) => email = v!.trim(),
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
                         obscureText: _obscurePassword,
                         decoration: InputDecoration(
-                          labelText: t.password,
+                          labelText: AppLocalizations.of(context)!.password,
                           prefixIcon: const Icon(Icons.lock),
                           suffixIcon: IconButton(
                             icon: Icon(
@@ -154,7 +155,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             (v) =>
                                 (v != null && v.length >= 6)
                                     ? null
-                                    : t.passwordTooShort,
+                                    : AppLocalizations.of(
+                                      context,
+                                    )!.passwordTooShort,
                         onSaved: (v) => password = v!,
                       ),
                       const SizedBox(height: 24),
@@ -176,7 +179,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           alignment: Alignment.centerRight,
                           child: TextButton(
                             onPressed: _loading ? null : _forgetPassword,
-                            child: Text(t.forgotPassword),
+                            child: Text(
+                              AppLocalizations.of(context)!.forgetPassword,
+                            ),
                           ),
                         ),
                       ),
@@ -193,7 +198,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                     ),
                                   )
                                   : Text(
-                                    t.login,
+                                    AppLocalizations.of(context)!.login,
                                     style: const TextStyle(fontSize: 16),
                                   ),
                         ),
@@ -201,7 +206,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       const SizedBox(height: 16),
                       TextButton(
                         onPressed: () => context.goNamed('signup'),
-                        child: Text('Não tem uma conta? ${t.signup}'),
+                        child: Text(
+                          'Não tem uma conta? ${AppLocalizations.of(context)!.signup}',
+                        ),
                       ),
                     ],
                   ),

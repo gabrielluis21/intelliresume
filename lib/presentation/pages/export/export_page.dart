@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intelliresume/core/providers/domain_providers.dart';
 import 'package:intelliresume/core/templates/resume_template.dart';
 import 'package:intelliresume/data/models/cv_data.dart';
+import 'package:intelliresume/generated/app_localizations.dart';
 import 'package:intelliresume/presentation/pages/export/export_pdf_page.dart';
 
 // O provider agora armazena a instância completa do template
@@ -19,27 +20,29 @@ class ExportPage extends ConsumerWidget {
   const ExportPage({super.key, required this.resumeData});
 
   String _getTemplateDescription(String templateId, BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     switch (templateId) {
       case 'intelliresume_pattern':
-        return 'Nosso modelo padrão, balanceado e profissional.';
+        return l10n.exportPage_defaultTemplateDescription;
       case 'classic':
-        return 'Um design limpo e clássico, focado no conteúdo.';
+        return l10n.exportPage_classicTemplateDescription;
       case 'studant_first_job':
-        return 'Ideal para estudantes e primeiro emprego.';
+        return l10n.exportPage_studentFirstJobTemplateDescription;
       case 'modern_side':
-        return 'Um layout moderno com uma barra lateral elegante.';
+        return l10n.exportPage_modernSideTemplateDescription;
       case 'internacional':
-        return 'Formato universal, pronto para tradução.';
+        return l10n.exportPage_internationalTemplateDescription;
       case 'dev_tec':
-        return 'Feito para desenvolvedores, destacando skills e projetos.';
+        return l10n.exportPage_devTecTemplateDescription;
       default:
-        return 'Um modelo profissional para o seu currículo.';
+        return l10n.exportPage_professionalTemplateDescription;
     }
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedTemplate = ref.watch(selectedTemplateProvider);
+    final l10n = AppLocalizations.of(context)!;
     // A LÓGICA DE NEGÓCIO FOI REMOVIDA DAQUI
     final allTemplates = ResumeTemplate.allTemplates;
     final textTheme = Theme.of(context).textTheme;
@@ -51,7 +54,7 @@ class ExportPage extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '1. Escolha o Modelo',
+              l10n.exportPage_chooseTemplate,
               style: textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -73,7 +76,7 @@ class ExportPage extends ConsumerWidget {
             }),
             const SizedBox(height: 24),
             Text(
-              '2. Personalize (Opcional)',
+              l10n.exportPage_customizeOptional,
               style: textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -85,9 +88,9 @@ class ExportPage extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _generatePdf(context, ref, selectedTemplate),
-        label: const Text('Gerar e Visualizar PDF'),
+        label: Text(l10n.exportPage_generateAndPreviewPDF),
         icon: const Icon(Icons.picture_as_pdf_outlined),
-        tooltip: 'Gerar e visualizar o currículo em formato PDF',
+        tooltip: l10n.exportPage_generateAndPreviewPDFTooltip,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
@@ -98,6 +101,7 @@ class ExportPage extends ConsumerWidget {
     WidgetRef ref,
     ResumeTemplate template,
   ) async {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -117,32 +121,35 @@ class ExportPage extends ConsumerWidget {
       );
     } catch (e) {
       Navigator.of(context).pop();
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Erro ao gerar PDF: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            l10n.exportPage_errorGeneratingPDF(e.toString() as Object),
+          ),
+        ),
+      );
     }
   }
 
   void _showUpgradeDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('Template Premium'),
-            content: const Text(
-              'Este template está disponível apenas nos planos Premium ou Pro. Faça o upgrade para usareste e muitos outros recursos!',
-            ),
+            title: Text(l10n.exportPage_premiumTemplate),
+            content: Text(l10n.exportPage_premiumTemplateMessage),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Fechar'),
+                child: Text(l10n.exportPage_close),
               ),
               FilledButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                   context.push('/buy');
                 },
-                child: const Text('Ver Planos'),
+                child: Text(l10n.exportPage_viewPlans),
               ),
             ],
           ),
@@ -173,11 +180,15 @@ class _TemplateSelectionCard extends ConsumerWidget {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
     final mockImagePath = 'images/cv/cv_${template.id}_mock.png';
+    final l10n = AppLocalizations.of(context)!;
 
     return canUseAsync.when(
       loading:
           () => const Card(child: Center(child: CircularProgressIndicator())),
-      error: (e, s) => Card(child: Center(child: Text('Erro: $e'))),
+      error:
+          (e, s) => Card(
+            child: Center(child: Text(l10n.exportPage_error(e.toString()))),
+          ),
       data: (canUse) {
         return Card(
           elevation: isSelected ? 4.0 : 1.0,
@@ -210,14 +221,18 @@ class _TemplateSelectionCard extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          template.displayName,
+                          template.displayName(l10n),
                           style: textTheme.titleMedium,
                         ),
                         const SizedBox(height: 4),
                         Text(description, style: textTheme.bodySmall),
                         const SizedBox(height: 8),
                         Chip(
-                          label: Text(canUse ? 'Grátis' : 'Premium'),
+                          label: Text(
+                            canUse
+                                ? l10n.exportPage_free
+                                : l10n.exportPage_premium,
+                          ),
                           avatar:
                               canUse
                                   ? null
@@ -274,10 +289,11 @@ class _ExportOptionsCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isInternational = selectedTemplate.id == 'international';
     final selectedLanguage = ref.watch(targetLanguageProvider);
+    final l10n = AppLocalizations.of(context)!;
     final supportedLanguages = {
-      'en': 'Inglês (English)',
-      'es': 'Espanhol (Español)',
-      'fr': 'Francês (Français)',
+      'en': l10n.exportPage_english,
+      'es': l10n.exportPage_spanish,
+      'fr': l10n.exportPage_french,
     };
     return Card(
       elevation: 0,
@@ -288,7 +304,7 @@ class _ExportOptionsCard extends ConsumerWidget {
           children: [
             DropdownButtonFormField<String>(
               value: selectedLanguage,
-              hint: const Text('Selecione um idioma...'),
+              hint: Text(l10n.exportPage_selectLanguage),
               onChanged:
                   isInternational
                       ? (String? newValue) {
@@ -304,11 +320,11 @@ class _ExportOptionsCard extends ConsumerWidget {
                     );
                   }).toList(),
               decoration: InputDecoration(
-                labelText: 'Traduzir currículo',
+                labelText: l10n.exportPage_translateResume,
                 helperText:
                     isInternational
-                        ? 'O conteúdo será traduzido.'
-                        : 'Disponível apenas para o modelo Internacional.',
+                        ? l10n.exportPage_contentWillBeTranslated
+                        : l10n.exportPage_availableOnlyInternational,
                 border: const OutlineInputBorder(),
                 filled: !isInternational,
                 fillColor: Theme.of(

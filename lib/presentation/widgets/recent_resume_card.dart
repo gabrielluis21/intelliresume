@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intelliresume/generated/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:intelliresume/data/models/cv_model.dart';
 
@@ -16,13 +17,14 @@ class RecentResumeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final formattedDate = DateFormat('dd/MM/yy').format(resume.lastModified);
-
+    final l10n = AppLocalizations.of(context)!;
     final bool isDraft = resume.status == ResumeStatus.draft;
 
     return SizedBox(
       child: Semantics(
-        label:
-            'Currículo: ${resume.title.isNotEmpty ? resume.title : 'Currículo sem título'}, toque para editar',
+        label: l10n.recentResume_semanticLabel(
+          resume.title.isNotEmpty ? resume.title : l10n.recentResume_untitled,
+        ),
         button: true,
         child: Card(
           clipBehavior: Clip.antiAlias,
@@ -37,13 +39,13 @@ class RecentResumeCard extends StatelessWidget {
                     Icons.article_outlined,
                     size: 36,
                     color: theme.colorScheme.primary,
-                    semanticLabel: 'Ícone de currículo',
+                    semanticLabel: l10n.recentResume_iconSemanticLabel,
                   ),
                   const Spacer(),
                   Text(
                     resume.title.isNotEmpty
                         ? resume.title
-                        : 'Currículo sem título',
+                        : l10n.recentResume_untitled,
                     style: theme.textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -63,7 +65,9 @@ class RecentResumeCard extends StatelessWidget {
                               : Colors.green.shade800,
                     ),
                     label: Text(
-                      isDraft ? 'Rascunho' : 'Finalizado',
+                      isDraft
+                          ? l10n.recentResume_draft
+                          : l10n.recentResume_finalized,
                       style: theme.textTheme.labelSmall,
                     ),
                     backgroundColor:
@@ -75,7 +79,7 @@ class RecentResumeCard extends StatelessWidget {
                   ),
                   const Spacer(),
                   Text(
-                    'Editado em: $formattedDate',
+                    l10n.recentResume_editedOn(formattedDate),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: Colors.grey.shade600,
                     ),
@@ -98,11 +102,12 @@ class AddNewResumeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     return SizedBox(
       width: 160,
       height: 190,
       child: Semantics(
-        label: 'Criar Novo Currículo, toque para iniciar',
+        label: l10n.addNewResume_semanticLabel,
         button: true,
         child: Card(
           child: InkWell(
@@ -114,10 +119,13 @@ class AddNewResumeCard extends StatelessWidget {
                   Icons.add_circle_outline_rounded,
                   size: 48,
                   color: theme.colorScheme.primary,
-                  semanticLabel: 'Ícone de adicionar novo currículo',
+                  semanticLabel: l10n.addNewResume_iconSemanticLabel,
                 ),
                 const SizedBox(height: 12),
-                Text('Criar Novo', style: theme.textTheme.titleSmall),
+                Text(
+                  l10n.addNewResume_create,
+                  style: theme.textTheme.titleSmall,
+                ),
               ],
             ),
           ),

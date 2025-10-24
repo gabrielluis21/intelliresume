@@ -5,7 +5,7 @@ import 'package:intelliresume/core/providers/languages/locale_provider.dart';
 import 'package:intelliresume/core/providers/theme/theme_provider.dart';
 import 'core/routes/app_routes.dart';
 import 'core/themes.dart';
-import 'core/utils/app_localizations.dart';
+import 'package:intelliresume/generated/app_localizations.dart';
 
 class App extends ConsumerWidget {
   const App({super.key});
@@ -16,10 +16,17 @@ class App extends ConsumerWidget {
     final accessibilitySettings = ref.watch(accessibilityProvider);
     final themeMode = ref.watch(themeProvider);
 
+    final textScaler = TextScaler.linear(accessibilitySettings.fontScale);
+
     final activeLightTheme =
-        accessibilitySettings.highContrast ? highContrastTheme : lightTheme;
+        accessibilitySettings.highContrast
+            ? AppTheme.highContrastTheme(textScaler)
+            : AppTheme.lightTheme(textScaler);
+
     final activeDarkTheme =
-        accessibilitySettings.highContrast ? highContrastTheme : darkTheme;
+        accessibilitySettings.highContrast
+            ? AppTheme.highContrastTheme(textScaler)
+            : AppTheme.darkTheme(textScaler);
 
     return MaterialApp.router(
       title: 'IntelliResume',
@@ -40,7 +47,7 @@ class App extends ConsumerWidget {
       },
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      onGenerateTitle: (context) => 'IntelliResume',
+      onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
     );
   }
 }

@@ -32,6 +32,7 @@ Para facilitar o desenvolvimento, o projeto foi organizado em uma estrutura de m
 ### 3.1. Principais Funcionalidades Implementadas
 
 *   **Criação e Gerenciamento de Currículos:** Interface intuitiva para montar e editar múltiplos currículos.
+*   **Internacionalização (i18n):** Suporte completo a múltiplos idiomas, com sistema de tradução padrão do Flutter e fácil expansão.
 *   **Modelos Profissionais:** Oferece uma variedade de modelos de currículos, incluindo opções gratuitas e premium.
 *   **Assistência de IA:**
     *   **Avaliação:** Analisa o conteúdo do currículo e oferece sugestões de melhoria.

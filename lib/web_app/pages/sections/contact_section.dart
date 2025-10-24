@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intelliresume/generated/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:intelliresume/web_app/pages/sections/section_title.dart';
 
 class ContactSection extends StatelessWidget {
   final GlobalKey contactKey;
@@ -9,6 +11,7 @@ class ContactSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       key: contactKey,
       width: 350,
@@ -16,27 +19,22 @@ class ContactSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Contato',
-            semanticsLabel: 'Seção de contato',
-            style: Theme.of(
-              context,
-            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            'Tem alguma dúvida, sugestão ou precisa de suporte? Entre em contato conosco!',
-            semanticsLabel:
-                'Tem alguma dúvida, sugestão ou precisa de suporte? Entre em contato conosco!',
-            style: Theme.of(context).textTheme.bodyLarge,
+          SectionTitle(
+            title: l10n.contactSection_title,
+            subtitle: l10n.contactSection_description,
+            textColor: Theme.of(context).textTheme.headlineSmall?.color,
           ),
           const SizedBox(height: 24),
           ListTile(
             leading: const Icon(Icons.email_outlined, color: _brandBlue),
-            title: const Text('E-mail', semanticsLabel: 'E-mail de contato'),
-            subtitle: const Text(
+            title: Text(
+              l10n.contactSection_emailLabel,
+              semanticsLabel: l10n.contactSection_emailSemanticLabel,
+            ),
+            subtitle: Text(
               'suporte@intelliresume.com',
               semanticsLabel: 'E-mail de contato: suport@intelliresume.com',
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
             onTap:
                 () => launchUrl(Uri.parse('mailto:suporte@intelliresume.com')),
@@ -46,13 +44,13 @@ class ContactSection extends StatelessWidget {
               Icons.support_agent_outlined,
               color: _brandBlue,
             ),
-            title: const Text(
-              'Suporte via Chat',
-              semanticsLabel: 'Suporte via Chat',
+            title: Text(
+              l10n.contactSection_chatSupportLabel,
+              semanticsLabel: l10n.contactSection_chatSupportLabel,
             ),
-            subtitle: const Text(
-              'Disponível de Seg. a Sex. das 9h às 18h',
-              semanticsLabel: 'Disponível de Seg. a Sex. das 9h às 18h',
+            subtitle: Text(
+              l10n.contactSection_chatSupportAvailability,
+              semanticsLabel: l10n.contactSection_chatSupportAvailability,
             ),
             onTap: () {
               // Lógica para abrir um chat, ex: Tawk.to, Crisp, etc.

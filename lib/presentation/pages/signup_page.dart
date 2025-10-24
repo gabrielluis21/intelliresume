@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intelliresume/core/providers/data/data_provider.dart';
-import '../../core/utils/app_localizations.dart';
+import 'package:intelliresume/generated/app_localizations.dart';
 
 class SignupPage extends ConsumerStatefulWidget {
   const SignupPage({super.key});
@@ -19,8 +19,8 @@ class _SignupPageState extends ConsumerState<SignupPage> {
   bool _obscureConfirm = true;
   bool _showDisabilityField = false;
   String? _errorMessage;
-
   Future<void> _signup() async {
+    final l10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
     _formKey.currentState!.save();
 
@@ -28,10 +28,9 @@ class _SignupPageState extends ConsumerState<SignupPage> {
       _loading = true;
       _errorMessage = null;
     });
-
     if (password != confirm) {
       setState(() {
-        _errorMessage = AppLocalizations.of(context).passwordsDontMatch;
+        _errorMessage = l10n.passwordsDontMatch;
         _loading = false;
       });
       return;
@@ -62,15 +61,16 @@ class _SignupPageState extends ConsumerState<SignupPage> {
 
   @override
   Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context);
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 400),
+              constraints: const BoxConstraints(maxWidth: 0),
               child: Padding(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(10),
                 child: Form(
                   key: _formKey,
                   child: Column(
@@ -80,28 +80,30 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                         'assets/images/logo.png',
                         height: 80,
                         width: 80,
-                        semanticLabel: 'Logo do IntelliResume',
+                        semanticLabel: l10n.login_logoSemanticLabel,
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        t.signup,
+                        l10n.signup,
                         style: Theme.of(context).textTheme.headlineSmall
                             ?.copyWith(fontWeight: FontWeight.bold),
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8),
                       Text(
-                        'Crie sua conta para começar a usar.',
+                        l10n.signup_createAccountPrompt,
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
-                      const SizedBox(height: 32),
+                      SizedBox(height: 16),
                       TextFormField(
-                        decoration: const InputDecoration(
-                          labelText: 'Nome Completo',
-                          prefixIcon: Icon(Icons.person),
+                        decoration: InputDecoration(
+                          labelText: l10n.signup_fullNameLabel,
+                          prefixIcon: const Icon(Icons.person),
                         ),
                         keyboardType: TextInputType.name,
                         validator: (v) {
-                          if (v == null || v.isEmpty) return t.fieldRequired;
+                          if (v == null || v.isEmpty) {
+                            return l10n.fieldRequired;
+                          }
                           return null;
                         },
                         onSaved: (v) => name = v!.trim(),
@@ -109,22 +111,26 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                       const SizedBox(height: 16),
                       TextFormField(
                         decoration: InputDecoration(
-                          labelText: t.email,
+                          labelText: l10n.email,
                           prefixIcon: const Icon(Icons.email),
                         ),
                         keyboardType: TextInputType.emailAddress,
                         validator: (v) {
-                          if (v == null || v.isEmpty) return t.fieldRequired;
-                          if (!v.contains('@')) return t.invalidEmail;
+                          if (v == null || v.isEmpty) {
+                            return l10n.invalidEmail;
+                          }
+                          if (!v.contains('@')) {
+                            return l10n.invalidEmail;
+                          }
                           return null;
                         },
                         onSaved: (v) => email = v!.trim(),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
                       TextFormField(
                         obscureText: _obscurePassword,
                         decoration: InputDecoration(
-                          labelText: t.password,
+                          labelText: l10n.password,
                           prefixIcon: const Icon(Icons.lock),
                           suffixIcon: IconButton(
                             icon: Icon(
@@ -134,8 +140,8 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                             ),
                             tooltip:
                                 _obscurePassword
-                                    ? 'Mostrar senha'
-                                    : 'Ocultar senha',
+                                    ? l10n.login_showPasswordTooltip
+                                    : l10n.login_hidePasswordTooltip,
                             onPressed:
                                 () => setState(
                                   () => _obscurePassword = !_obscurePassword,
@@ -143,8 +149,12 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                           ),
                         ),
                         validator: (v) {
-                          if (v == null || v.isEmpty) return t.fieldRequired;
-                          if (v.length < 6) return t.passwordTooShort;
+                          if (v == null || v.isEmpty) {
+                            return l10n.fieldRequired;
+                          }
+                          if (v.length < 8) {
+                            return l10n.passwordTooShort;
+                          }
                           return null;
                         },
                         onSaved: (v) => password = v!,
@@ -153,7 +163,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                       TextFormField(
                         obscureText: _obscureConfirm,
                         decoration: InputDecoration(
-                          labelText: t.confirmPassword,
+                          labelText: l10n.confirmPass,
                           prefixIcon: const Icon(Icons.lock),
                           suffixIcon: IconButton(
                             icon: Icon(
@@ -163,8 +173,8 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                             ),
                             tooltip:
                                 _obscureConfirm
-                                    ? 'Mostrar senha'
-                                    : 'Ocultar senha',
+                                    ? l10n.login_showPasswordTooltip
+                                    : l10n.login_hidePasswordTooltip,
                             onPressed:
                                 () => setState(
                                   () => _obscureConfirm = !_obscureConfirm,
@@ -172,22 +182,23 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                           ),
                         ),
                         validator: (v) {
-                          if (v == null || v.isEmpty) return t.fieldRequired;
+                          if (v == null || v.isEmpty) {
+                            return l10n.fieldRequired;
+                          }
                           return null;
                         },
                         onSaved: (v) => confirm = v!,
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 16),
                       // --- CAMPO DE ACESSIBILIDADE ---
                       Semantics(
-                        label:
-                            'Opção para informar dados de acessibilidade ou deficiência.',
+                        label: l10n.signup_disabilityInfoSemanticLabel,
                         child: Column(
                           children: [
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text('Informar dados de acessibilidade?'),
+                                Text(l10n.signup_informDisabilityQuestion),
                                 Switch(
                                   value: _showDisabilityField,
                                   onChanged: (value) {
@@ -205,11 +216,14 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                             if (_showDisabilityField) ...[
                               const SizedBox(height: 8),
                               TextFormField(
-                                decoration: const InputDecoration(
-                                  labelText: 'Descrição (opcional)',
-                                  prefixIcon: Icon(Icons.accessibility_new),
+                                decoration: InputDecoration(
+                                  labelText:
+                                      l10n.signup_disabilityDescriptionLabel,
+                                  prefixIcon: const Icon(
+                                    Icons.accessibility_new,
+                                  ),
                                   helperText:
-                                      'Ex: Necessito de intérprete de Libras.',
+                                      l10n.signup_disabilityDescriptionHelper,
                                 ),
                                 onSaved: (v) => disabilityInfo = v?.trim(),
                               ),
@@ -220,7 +234,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                       const SizedBox(height: 24),
                       if (_errorMessage != null)
                         Padding(
-                          padding: const EdgeInsets.only(bottom: 16.0),
+                          padding: const EdgeInsets.only(bottom: 10),
                           child: Text(
                             _errorMessage!,
                             style: TextStyle(
@@ -243,15 +257,15 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                                     ),
                                   )
                                   : Text(
-                                    t.signup,
+                                    l10n.signup,
                                     style: const TextStyle(fontSize: 16),
                                   ),
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
                       TextButton(
                         onPressed: () => context.goNamed('login'),
-                        child: Text('Já tem uma conta? ${t.login}'),
+                        child: Text('${l10n.login_noAccount} ${l10n.login}'),
                       ),
                     ],
                   ),

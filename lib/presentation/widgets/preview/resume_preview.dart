@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-//import 'package:intelliresume/core/providers/resume/cv_provider.dart';
 import 'package:intelliresume/core/providers/resume/resume_session_provider.dart';
 import 'package:intelliresume/core/providers/user/user_provider.dart';
 import 'package:intelliresume/data/models/cv_model.dart';
 import 'package:intelliresume/di.dart';
+import 'package:intelliresume/generated/app_localizations.dart';
+import 'package:intelliresume/presentation/widgets/preview/widgets/certificate_list.dart';
+import 'package:intelliresume/presentation/widgets/preview/widgets/education_list.dart';
+import 'package:intelliresume/presentation/widgets/preview/widgets/experience_list.dart';
+import 'package:intelliresume/presentation/widgets/preview/widgets/project_list.dart';
 import 'package:uuid/uuid.dart';
 import '../../../data/models/cv_data.dart';
 import '../../../domain/entities/user_profile.dart';
 import 'widgets/header_section.dart';
-import 'widgets/experience_list.dart';
-import 'widgets/education_list.dart';
 import 'widgets/skill_chip.dart';
 import 'widgets/social_link.dart';
-import 'package:intelliresume/presentation/widgets/preview/widgets/project_list.dart';
-import 'package:intelliresume/presentation/widgets/preview/widgets/certificate_list.dart';
-import '../../../core/utils/app_localizations.dart';
 import 'package:intelliresume/core/providers/editor/editor_providers.dart';
 
 class ResumePreview extends ConsumerWidget {
@@ -33,15 +32,16 @@ class ResumePreview extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
     if (userData == null) {
-      return const Center(child: Text('Usuário não encontrado'));
+      return Center(child: Text(l10n.userNotFound));
     }
 
     return Container(
-      color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
+      color: colorScheme.surface.withOpacity(0.5),
       child: ListView(
         padding: const EdgeInsets.only(bottom: 80), // Space for export button
         children: [
@@ -52,6 +52,7 @@ class ResumePreview extends ConsumerWidget {
             userData,
             resumeData,
             ref,
+            l10n,
           ),
         ],
       ),
@@ -65,36 +66,31 @@ class ResumePreview extends ConsumerWidget {
     UserProfile? user,
     ResumeData? data,
     WidgetRef ref,
+    AppLocalizations l10n,
   ) {
-    final t = AppLocalizations.of(context);
-
     void saveResume(ResumeStatus status) async {
       final userId = ref.read(userProfileProvider).value?.uid;
       if (userId == null || data == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Erro: Não foi possível salvar. Tente novamente.'),
-          ),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.saveError)));
         return;
       }
 
-      // Extrai o ID da rota atual
       final location = GoRouterState.of(context).uri.toString();
       var resumeId = location.split('/').last;
 
       final isNewResume = resumeId == 'new';
       if (isNewResume) {
-        resumeId = const Uuid().v4(); // Gera um novo ID único
+        resumeId = const Uuid().v4();
       }
 
-      // Busca o CVModel original para preservar a data de criação
       final originalCvModel =
           ref.read(cvModelProvider(isNewResume ? 'new' : resumeId)).value;
 
       final resumeToSave = CVModel(
         id: resumeId,
-        title: 'Currículo de ${user?.name ?? "Usuário"}', // Título provisório
+        title: 'Currículo de ${user?.name ?? "Usuário"}', // Provisional title
         data: data,
         dateCreated: originalCvModel?.dateCreated ?? DateTime.now(),
         lastModified: DateTime.now(),
@@ -107,16 +103,15 @@ class ResumePreview extends ConsumerWidget {
 
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Currículo salvo com sucesso!')));
+        ).showSnackBar(SnackBar(content: Text(l10n.saveSuccess)));
 
-        // Se for um novo currículo, atualiza a URL para o novo ID
         if (isNewResume) {
           context.go('/editor/$resumeId');
         }
       } catch (e) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Erro ao salvar: $e')));
+        ).showSnackBar(SnackBar(content: Text('${l10n.saveErrorPrefix} $e')));
       }
     }
 
@@ -195,8 +190,8 @@ class ResumePreview extends ConsumerWidget {
         const SizedBox(height: 8),
 
         buildSectionCard(
-          title: 'Sobre Mim',
-          emptyStateText: 'Faça um breve resumo sobre você.',
+          title: l10n.aboutMe,
+          emptyStateText: l10n.aboutMeEmptyPlaceholder,
           emptyStateIcon: Icons.person_outline,
           isEmpty: data?.about?.isEmpty ?? true,
           sectionType: SectionType.about,
@@ -207,8 +202,8 @@ class ResumePreview extends ConsumerWidget {
         ),
 
         buildSectionCard(
-          title: t.objective,
-          emptyStateText: t.noObjectives,
+          title: l10n.objective,
+          emptyStateText: l10n.objectivesEmptyPlaceholder,
           emptyStateIcon: Icons.track_changes_outlined,
           isEmpty: data?.objective?.isEmpty ?? true,
           sectionType: SectionType.objective,
@@ -219,34 +214,34 @@ class ResumePreview extends ConsumerWidget {
         ),
 
         buildSectionCard(
-          title: t.experiences,
-          emptyStateText: 'Suas experiências profissionais aparecerão aqui.',
+          title: l10n.experiences,
+          emptyStateText: l10n.experiencesEmptyPlaceholder,
           emptyStateIcon: Icons.work_outline,
-          isEmpty: data?.experiences?.isEmpty ?? true,
+          isEmpty: data!.experiences.isEmpty,
           sectionType: SectionType.experience,
-          child: ExperienceList(items: data!.experiences!, theme: textTheme),
+          child: ExperienceList(items: data.experiences, theme: textTheme),
         ),
 
         buildSectionCard(
-          title: t.educations,
-          emptyStateText: 'Suas formações acadêmicas aparecerão aqui.',
+          title: l10n.educations,
+          emptyStateText: l10n.educationsEmptyPlaceholder,
           emptyStateIcon: Icons.school_outlined,
-          isEmpty: data.educations?.isEmpty ?? true,
+          isEmpty: data.educations.isEmpty,
           sectionType: SectionType.education,
-          child: EducationList(items: data.educations!, theme: textTheme),
+          child: EducationList(items: data.educations, theme: textTheme),
         ),
 
         buildSectionCard(
-          title: t.skills,
-          emptyStateText: 'Suas habilidades e competências aparecerão aqui.',
+          title: l10n.skills,
+          emptyStateText: l10n.skillsEmptyPlaceholder,
           emptyStateIcon: Icons.lightbulb_outline,
-          isEmpty: data.skills?.isEmpty ?? true,
+          isEmpty: data.skills.isEmpty,
           sectionType: SectionType.skill,
           child: Wrap(
             spacing: 8,
             runSpacing: 8,
             children:
-                data.skills!.asMap().entries.map((entry) {
+                data.skills.asMap().entries.map((entry) {
                   return Semantics(
                     label:
                         'Habilidade: ${entry.value.name}, nível ${entry.value.level}. Toque para editar.',
@@ -261,16 +256,16 @@ class ResumePreview extends ConsumerWidget {
         ),
 
         buildSectionCard(
-          title: t.socialLinks,
-          emptyStateText: 'Seus links (LinkedIn, GitHub, etc) aparecerão aqui.',
+          title: l10n.socialLinks,
+          emptyStateText: l10n.socialLinksEmptyPlaceholder,
           emptyStateIcon: Icons.link_outlined,
-          isEmpty: data.socials?.isEmpty ?? true,
+          isEmpty: data.socials.isEmpty,
           sectionType: SectionType.social,
           child: Wrap(
             spacing: 8,
             runSpacing: 8,
             children:
-                data.socials!.asMap().entries.map((entry) {
+                data.socials.asMap().entries.map((entry) {
                   return Semantics(
                     label:
                         'Link social: ${entry.value.platform}. Toque para editar.',
@@ -285,23 +280,23 @@ class ResumePreview extends ConsumerWidget {
         ),
 
         buildSectionCard(
-          title: t.projects,
-          emptyStateText: 'Seus projetos aparecerão aqui.',
+          title: l10n.projects,
+          emptyStateText: l10n.projectsEmptyPlaceholder,
           emptyStateIcon: Icons.link_outlined,
-          isEmpty: data.projects?.isEmpty ?? true,
+          isEmpty: data.projects.isEmpty,
           sectionType: SectionType.project,
-          child: ProjectList(items: data.projects!, theme: textTheme),
+          child: ProjectList(items: data.projects, theme: textTheme),
         ),
 
         buildSectionCard(
-          title: t.certificates,
-          emptyStateText: 'Seus certificados aparecerão aqui.',
+          title: l10n.certificates,
+          emptyStateText: l10n.certificatesEmptyPlaceholder,
           emptyStateIcon: Icons.link_outlined,
-          isEmpty: data.certificates?.isEmpty ?? true,
+          isEmpty: data.certificates.isEmpty,
           sectionType: SectionType.certificate,
-          child: CertificateList(items: data.certificates!, theme: textTheme),
+          child: CertificateList(items: data.certificates, theme: textTheme),
         ),
-        // Botões de Ação
+        // Action Buttons
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: Row(
@@ -309,12 +304,12 @@ class ResumePreview extends ConsumerWidget {
             children: [
               TextButton(
                 onPressed: () => saveResume(ResumeStatus.draft),
-                child: const Text('Salvar Rascunho'),
+                child: Text(l10n.saveDraft),
               ),
               const SizedBox(width: 16),
               ElevatedButton(
                 onPressed: () => saveResume(ResumeStatus.finalized),
-                child: const Text('Salvar e Finalizar'),
+                child: Text(l10n.saveAndFinalize),
               ),
             ],
           ),

@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:intelliresume/core/providers/user/user_provider.dart';
 import 'package:intelliresume/data/models/cv_model.dart';
 import 'package:intelliresume/di.dart';
+import 'package:intelliresume/generated/app_localizations.dart';
 
 // Provider para o stream de currículos
 final resumesStreamProvider = StreamProvider.autoDispose<List<CVModel>>((ref) {
@@ -23,12 +24,16 @@ class HistoryPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final resumesAsync = ref.watch(resumesStreamProvider);
     final textTheme = Theme.of(context).textTheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Meus Currículos')),
+      appBar: AppBar(title: Text(l10n.historyPage_myResumes)),
       body: resumesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text('Ocorreu um erro: $err')),
+        error:
+            (err, stack) => Center(
+              child: Text(l10n.historyPage_anErrorOccurred(err.toString())),
+            ),
         data: (resumes) {
           if (resumes.isEmpty) {
             return Center(
@@ -41,11 +46,14 @@ class HistoryPage extends ConsumerWidget {
                     color: Colors.grey,
                   ),
                   const SizedBox(height: 16),
-                  Text('Nenhum currículo salvo.', style: textTheme.titleMedium),
+                  Text(
+                    l10n.historyPage_noSavedResumes,
+                    style: textTheme.titleMedium,
+                  ),
                   const SizedBox(height: 8),
-                  const Text(
-                    'Crie um novo currículo para começar.',
-                    style: TextStyle(color: Colors.grey),
+                  Text(
+                    l10n.historyPage_createNewResumeToStart,
+                    style: const TextStyle(color: Colors.grey),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -78,10 +86,10 @@ class HistoryPage extends ConsumerWidget {
                   title: Text(
                     resume.title.isNotEmpty
                         ? resume.title
-                        : 'Currículo sem título',
+                        : l10n.historyPage_untitledResume,
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  subtitle: Text('Atualizado em: $formattedDate'),
+                  subtitle: Text(l10n.historyPage_updatedOn(formattedDate)),
                   trailing: const Icon(Icons.arrow_forward_ios_rounded),
                   onTap: () {
                     context.go('/editor/${resume.id}');
@@ -94,7 +102,7 @@ class HistoryPage extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         icon: const Icon(Icons.add),
-        label: const Text('Novo Currículo'),
+        label: Text(l10n.historyPage_newResume),
         onPressed: () {
           // O 'new' será o identificador para criar um currículo em branco
           context.go('/editor/new');

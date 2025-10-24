@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intelliresume/generated/app_localizations.dart';
 import '../../../../core/providers/resume/cv_provider.dart';
 
 class AboutMeForm extends ConsumerStatefulWidget {
@@ -13,11 +14,19 @@ class AboutMeForm extends ConsumerStatefulWidget {
 
 class _AboutMeFormState extends ConsumerState<AboutMeForm> {
   late TextEditingController _aboutController;
+  late AppLocalizations l10n;
 
   @override
   void initState() {
     super.initState();
     _aboutController = TextEditingController(text: widget.about);
+    l10n = AppLocalizations.of(context)!;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    l10n = AppLocalizations.of(context)!;
   }
 
   @override
@@ -55,10 +64,10 @@ class _AboutMeFormState extends ConsumerState<AboutMeForm> {
               onChanged: (value) {
                 ref.read(localResumeProvider.notifier).updateAbout(value);
               },
-              decoration: const InputDecoration(
-                labelText: 'Sobre Mim *',
-                hintText: 'Faça um breve resumo sobre você...',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.aboutMe,
+                hintText: l10n.aboutMeEmptyPlaceholder,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 16),
@@ -68,17 +77,15 @@ class _AboutMeFormState extends ConsumerState<AboutMeForm> {
                 children: [
                   ElevatedButton(
                     onPressed: () => _updatebout(),
-                    child: const Text('Salvar'),
+                    child: Text(l10n.save),
                   ),
                   Semantics(
-                    label: 'Remover objetivo',
+                    label: l10n.resumeForm_aboutMeTab,
                     child: IconButton(
-                      tooltip: 'Remover objetivo',
+                      tooltip: l10n.aboutMeForm_removeAboutMe,
                       icon: const Icon(Icons.delete, color: Colors.red),
                       onPressed: () {
-                        ref
-                            .read(localResumeProvider.notifier)
-                            .removeObjective();
+                        ref.read(localResumeProvider.notifier).updateAbout('');
                         _aboutController.clear();
                       },
                     ),

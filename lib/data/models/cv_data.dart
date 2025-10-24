@@ -4,76 +4,96 @@ class ResumeData {
   UserProfile? personalInfo;
   String? about;
   String? objective;
-  List<Experience>? experiences;
-  List<Education>? educations;
-  List<Skill>? skills;
-  List<Social>? socials;
-  List<Project>? projects;
-  List<Certificate>? certificates;
-  List<Language>? languages;
+  List<Experience> experiences;
+  List<Education> educations;
+  List<Skill> skills;
+  List<Social> socials;
+  List<Project> projects;
+  List<Certificate> certificates;
+  List<Language> languages;
   bool includePCDInfo; // Novo campo
+  String? pcdInfo;
 
   ResumeData({
     this.personalInfo,
     this.about,
     this.objective,
-    this.experiences,
-    this.educations,
-    this.skills,
-    this.socials,
-    this.projects,
-    this.certificates,
-    this.languages,
-    this.includePCDInfo = false, // Valor padrão
-  });
+    List<Experience>? experiences,
+    List<Education>? educations,
+    List<Skill>? skills,
+    List<Social>? socials,
+    List<Project>? projects,
+    List<Certificate>? certificates,
+    List<Language>? languages,
+    this.pcdInfo,
+    this.includePCDInfo = false,
+  }) : experiences = experiences ?? [],
+       educations = educations ?? [],
+       skills = skills ?? [],
+       socials = socials ?? [],
+       projects = projects ?? [],
+       certificates = certificates ?? [],
+       languages = languages ?? [];
 
   ResumeData.initial()
     : personalInfo = null,
       about = '',
       objective = '',
-      experiences = List<Experience>.empty(growable: true),
-      educations = List<Education>.empty(growable: true),
-      skills = List<Skill>.empty(growable: true),
-      socials = List<Social>.empty(growable: true),
-      projects = List<Project>.empty(growable: true),
-      certificates = List<Certificate>.empty(growable: true),
-      languages = List<Language>.empty(growable: true),
+      experiences = [],
+      educations = [],
+      skills = [],
+      socials = [],
+      projects = [],
+      certificates = [],
+      languages = [],
+      pcdInfo = '',
       includePCDInfo = false;
 
   factory ResumeData.fromJson(Map<String, dynamic> json) {
     return ResumeData(
-      personalInfo: UserProfile.fromJson(json['personalInfo']),
+      personalInfo:
+          json['personalInfo'] != null
+              ? UserProfile.fromJson(json['personalInfo'])
+              : null,
       about: json['about'] as String?,
       objective: json['objective'] as String?,
       experiences:
           (json['experiences'] as List<dynamic>?)
               ?.map((x) => Experience.fromJson(x))
-              .toList(),
+              .toList() ??
+          [],
       educations:
           (json['education'] as List<dynamic>?)
               ?.map((x) => Education.fromJson(x))
-              .toList(),
+              .toList() ??
+          [],
       socials:
           (json["socials"] as List<dynamic>?)
               ?.map((x) => Social.fromJson(x))
-              .toList(),
+              .toList() ??
+          [],
       skills:
           (json['skills'] as List<dynamic>?)
               ?.map((x) => Skill.fromJson(x))
-              .toList(),
+              .toList() ??
+          [],
       projects:
           (json['projects'] as List<dynamic>?)
               ?.map((x) => Project.fromJson(x))
-              .toList(),
+              .toList() ??
+          [],
       certificates:
           (json['certificates'] as List<dynamic>?)
               ?.map((x) => Certificate.fromJson(x))
-              .toList(),
+              .toList() ??
+          [],
       languages:
           (json['languages'] as List<dynamic>?)
               ?.map((x) => Language.fromJson(x))
-              .toList(),
+              .toList() ??
+          [],
       includePCDInfo: json['includePCDInfo'] ?? false,
+      pcdInfo: json['includePCDInfo'] != false ? json['pcdInfo'] : null,
     );
   }
 
@@ -82,27 +102,29 @@ class ResumeData {
       'personalInfo': personalInfo?.toJson(),
       'about': about,
       'objective': objective,
-      'experiences': experiences?.map((e) => e.toJson()).toList(),
-      'education': educations?.map((e) => e.toJson()).toList(),
-      'skills': skills?.map((s) => s.toJson()).toList(),
-      'socials': socials?.map((s) => s.toJson()).toList(),
-      'projects': projects?.map((p) => p.toJson()).toList(),
-      'certificates': certificates?.map((c) => c.toJson()).toList(),
-      'languages': languages?.map((l) => l.toJson()).toList(),
+      'experiences': experiences.map((e) => e.toJson()).toList(),
+      'education': educations.map((e) => e.toJson()).toList(),
+      'skills': skills.map((s) => s.toJson()).toList(),
+      'socials': socials.map((s) => s.toJson()).toList(),
+      'projects': projects.map((p) => p.toJson()).toList(),
+      'certificates': certificates.map((c) => c.toJson()).toList(),
+      'languages': languages.map((l) => l.toJson()).toList(),
       'includePCDInfo': includePCDInfo,
+      'pcdInfo': pcdInfo,
     };
   }
 
   bool get isEmpty =>
       (about == null || about!.isEmpty) &&
-      (experiences == null || experiences!.isEmpty) &&
-      (educations == null || educations!.isEmpty) &&
-      (skills == null || skills!.isEmpty) &&
-      (socials == null || socials!.isEmpty) &&
+      experiences.isEmpty &&
+      educations.isEmpty &&
+      skills.isEmpty &&
+      socials.isEmpty &&
       (objective == null || objective!.isEmpty) &&
-      (projects == null || projects!.isEmpty) &&
-      (languages == null || languages!.isEmpty) &&
-      (certificates == null || certificates!.isEmpty);
+      projects.isEmpty &&
+      languages.isEmpty &&
+      (pcdInfo == null || pcdInfo!.isEmpty) &&
+      certificates.isEmpty;
 
   bool get isNotEmpty => !isEmpty;
 
@@ -118,6 +140,7 @@ class ResumeData {
     List<Certificate>? certificates,
     List<Language>? languages,
     bool? includePCDInfo,
+    String? pcdInfo,
   }) {
     return ResumeData(
       personalInfo: personalInfo ?? this.personalInfo,
@@ -131,6 +154,7 @@ class ResumeData {
       certificates: certificates ?? this.certificates,
       languages: languages ?? this.languages,
       includePCDInfo: includePCDInfo ?? this.includePCDInfo,
+      pcdInfo: pcdInfo ?? this.pcdInfo,
     );
   }
 
@@ -156,9 +180,9 @@ class ResumeData {
       buffer.writeln();
     }
 
-    if (experiences != null && experiences!.isNotEmpty) {
+    if (experiences.isNotEmpty) {
       buffer.writeln('# EXPERIÊNCIA PROFISSIONAL');
-      for (final exp in experiences!) {
+      for (final exp in experiences) {
         buffer.writeln('## ${exp.position ?? ''} em ${exp.company ?? ''}');
         buffer.writeln('### De ${exp.startDate ?? ''} - ${exp.endDate ?? ''}');
         if (exp.description != null && exp.description!.isNotEmpty) {
@@ -168,9 +192,9 @@ class ResumeData {
       }
     }
 
-    if (educations != null && educations!.isNotEmpty) {
+    if (educations.isNotEmpty) {
       buffer.writeln('# EDUCAÇÃO');
-      for (final edu in educations!) {
+      for (final edu in educations) {
         buffer.writeln('## ${edu.degree ?? ''} em ${edu.school ?? ''}');
         buffer.writeln('### De ${edu.startDate ?? ''} - ${edu.endDate ?? ''}');
         if (edu.description != null && edu.description!.isNotEmpty) {
@@ -180,27 +204,33 @@ class ResumeData {
       }
     }
 
-    if (skills != null && skills!.isNotEmpty) {
+    if (skills.isNotEmpty) {
       buffer.writeln('# HABILIDADES');
-      buffer.writeln(skills!.map((s) => s.name).join(', '));
+      buffer.writeln(skills.map((s) => s.name).join(', '));
       buffer.writeln();
     }
 
-    if (socials != null && socials!.isNotEmpty) {
+    if (socials.isNotEmpty) {
       buffer.writeln('# REDES SOCIAIS');
-      buffer.writeln({socials!.map((s) => s.platform).join(', ')});
+      buffer.writeln({socials.map((s) => s.platform).join(', ')});
       buffer.writeln();
     }
 
-    if (projects != null && projects!.isNotEmpty) {
+    if (projects.isNotEmpty) {
       buffer.writeln('# PROJETOS');
-      buffer.writeln(projects!.map((p) => p.name).join(', '));
+      buffer.writeln(projects.map((p) => p.name).join(', '));
       buffer.writeln();
     }
 
-    if (certificates != null && certificates!.isNotEmpty) {
+    if (certificates.isNotEmpty) {
       buffer.writeln('# REDES SOCIAIS');
-      buffer.writeln(certificates!.map((c) => c.courseName).join(', '));
+      buffer.writeln(certificates.map((c) => c.courseName).join(', '));
+      buffer.writeln();
+    }
+
+    if (includePCDInfo != false) {
+      buffer.writeln('# INFORMAÇÕES ADICIONAIS');
+      buffer.writeln(pcdInfo);
       buffer.writeln();
     }
 

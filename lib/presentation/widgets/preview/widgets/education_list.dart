@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intelliresume/core/providers/editor/editor_providers.dart';
+import 'package:intelliresume/generated/app_localizations.dart';
 
 import '../../../../data/models/cv_data.dart';
 
@@ -13,8 +14,9 @@ class EducationList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     // Added WidgetRef
-    if (items.isEmpty) return const Text('Nenhuma formação');
+    if (items.isEmpty) return Text(l10n.preview_noEducation);
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -22,8 +24,11 @@ class EducationList extends ConsumerWidget {
       itemBuilder: (c, i) {
         final item = items[i];
         return Semantics(
-          label:
-              'Formação ${i + 1}: ${item.degree} em ${item.school}. Toque para editar.',
+          label: l10n.preview_educationSemanticLabel(
+            i + 1,
+            item.degree ?? '',
+            item.school ?? '',
+          ),
           child: ListTile(
             leading: const Icon(Icons.school_outlined),
             title: Column(
@@ -35,7 +40,7 @@ class EducationList extends ConsumerWidget {
                   style: theme?.bodyMedium?.copyWith(height: 1.5),
                 ),
                 Text(
-                  "${item.startDate} - ${item.endDate ?? 'Atual'}",
+                  "${item.startDate} - ${item.endDate ?? l10n.preview_current}",
                   style: theme!.bodySmall?.copyWith(height: 1.2),
                 ),
               ],

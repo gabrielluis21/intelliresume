@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intelliresume/core/providers/editor/editor_providers.dart';
 import 'package:intelliresume/data/models/cv_data.dart';
+import 'package:intelliresume/generated/app_localizations.dart';
 
 class ProjectList extends ConsumerWidget {
   final List<Project> items;
@@ -10,7 +11,8 @@ class ProjectList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (items.isEmpty) return const Text('Nenhum projeto');
+    final l10n = AppLocalizations.of(context)!;
+    if (items.isEmpty) return Text(l10n.preview_noProjects);
 
     return ListView.builder(
       shrinkWrap: true,
@@ -19,7 +21,7 @@ class ProjectList extends ConsumerWidget {
       itemBuilder: (c, i) {
         final item = items[i];
         return Semantics(
-          label: 'Projeto ${i + 1}: ${item.name}. Toque para editar.',
+          label: l10n.preview_projectSemanticLabel(i + 1, item.name ?? ''),
           child: ListTile(
             leading: const Icon(Icons.folder_outlined),
             title: Column(
@@ -31,7 +33,7 @@ class ProjectList extends ConsumerWidget {
                   style: theme?.bodyMedium?.copyWith(height: 1.5),
                 ),
                 Text(
-                  "${item.startYear} - ${item.endYear ?? 'Atual'}",
+                  "${item.startYear} - ${item.endYear ?? l10n.preview_current}",
                   style: theme!.bodySmall?.copyWith(height: 1.2),
                 ),
               ],

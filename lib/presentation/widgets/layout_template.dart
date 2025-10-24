@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intelliresume/core/providers/data/data_provider.dart';
+import 'package:intelliresume/generated/app_localizations.dart';
 
 import 'side_menu.dart';
 
@@ -22,11 +23,18 @@ class LayoutTemplate extends ConsumerStatefulWidget {
 class _LayoutTemplateState extends ConsumerState<LayoutTemplate> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _selectedIndex = 0;
+  late AppLocalizations l10n;
 
   @override
   void initState() {
     super.initState();
     _selectedIndex = widget.selectedIndex;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    l10n = AppLocalizations.of(context)!;
   }
 
   void _onDestinationSelected(int index) {
@@ -72,12 +80,12 @@ class _LayoutTemplateState extends ConsumerState<LayoutTemplate> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: const Text('IntelliResume'),
+        title: Text(l10n.layoutTemplate_appTitle),
         leading:
             isMobile
                 ? IconButton(
                   icon: const Icon(Icons.menu),
-                  tooltip: 'Abrir menu de navegação',
+                  tooltip: l10n.layoutTemplate_openNavigationMenu,
                   onPressed: () => _scaffoldKey.currentState!.openDrawer(),
                 )
                 : null,

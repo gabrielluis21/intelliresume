@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intelliresume/core/providers/user/user_provider.dart';
 import 'package:intelliresume/domain/entities/plan_type.dart';
+import 'package:intelliresume/generated/app_localizations.dart';
 import '../widgets/layout_template.dart';
 
 class ProfilePage extends ConsumerWidget {
@@ -11,44 +12,54 @@ class ProfilePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userProfile = ref.watch(userProfileProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     return LayoutTemplate(
       selectedIndex: 1,
       child: userProfile.when(
         data: (user) {
           if (user == null) {
-            return const Center(child: Text('Usuário não encontrado.'));
+            return Center(child: Text(l10n.profilePage_userNotFound));
           }
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildProfileHeader(context, user),
+                _buildProfileHeader(context, user, l10n),
                 const SizedBox(height: 24),
-                _buildSubscriptionCard(context, user),
+                _buildSubscriptionCard(context, user, l10n),
                 const SizedBox(height: 24),
-                _buildQuickActions(context),
+                _buildQuickActions(context, l10n),
               ],
             ),
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
         error:
-            (error, stackTrace) =>
-                Center(child: Text('Erro ao carregar perfil: $error')),
+            (error, stackTrace) => Center(
+              child: Text(
+                l10n.profilePage_errorLoadingProfile(error.toString()),
+              ),
+            ),
       ),
     );
   }
 
-  Widget _buildProfileHeader(BuildContext context, dynamic user) {
+  Widget _buildProfileHeader(
+    BuildContext context,
+    dynamic user,
+    AppLocalizations l10n,
+  ) {
     return Row(
       children: [
         Semantics(
           label:
               user.profilePictureUrl != null
-                  ? 'Foto de perfil de ${user.name}'
-                  : 'Avatar com a inicial do nome ${user.name}',
+                  ? l10n.profilePage_profilePictureSemanticLabel(
+                    user.name ?? '',
+                  )
+                  : l10n.profilePage_avatarSemanticLabel(user.name ?? ''),
           child: CircleAvatar(
             radius: 40,
             backgroundImage:
@@ -70,14 +81,14 @@ class ProfilePage extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                user.name ?? 'Usuário',
+                user.name ?? l10n.profilePage_defaultUserName,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
-                user.email ?? 'email@exemplo.com',
+                user.email ?? l10n.profilePage_defaultEmail,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
             ],
@@ -87,7 +98,11 @@ class ProfilePage extends ConsumerWidget {
     );
   }
 
-  Widget _buildSubscriptionCard(BuildContext context, dynamic user) {
+  Widget _buildSubscriptionCard(
+    BuildContext context,
+    dynamic user,
+    AppLocalizations l10n,
+  ) {
     final plan = user.plan ?? PlanType.free;
     final isPremium = plan != PlanType.free;
 
@@ -99,7 +114,7 @@ class ProfilePage extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Minha Assinatura',
+              l10n.profilePage_mySubscription,
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 16),
@@ -109,21 +124,23 @@ class ProfilePage extends ConsumerWidget {
                 color: isPremium ? Colors.amber : Colors.green,
                 semanticLabel:
                     isPremium
-                        ? 'Ícone de estrela do plano Premium'
-                        : 'Ícone de check do plano gratuito',
+                        ? l10n.profilePage_premiumPlanStarIconSemanticLabel
+                        : l10n.profilePage_freePlanCheckIconSemanticLabel,
               ),
               title: MergeSemantics(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      isPremium ? 'Plano Premium' : 'Plano Gratuito',
+                      isPremium
+                          ? l10n.profilePage_premiumPlan
+                          : l10n.profilePage_freePlan,
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     Text(
                       isPremium
-                          ? 'Você tem acesso a todos os recursos.'
-                          : 'Acesse mais recursos fazendo o upgrade.',
+                          ? l10n.profilePage_premiumPlanDescription
+                          : l10n.profilePage_freePlanDescription,
                     ),
                   ],
                 ),
@@ -135,7 +152,7 @@ class ProfilePage extends ConsumerWidget {
                 child: Center(
                   child: ElevatedButton(
                     onPressed: () => context.goNamed('buy'),
-                    child: const Text('Fazer Upgrade'),
+                    child: Text(l10n.profilePage_upgrade),
                   ),
                 ),
               ),
@@ -145,28 +162,37 @@ class ProfilePage extends ConsumerWidget {
     );
   }
 
-  Widget _buildQuickActions(BuildContext context) {
+  Widget _buildQuickActions(BuildContext context, AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Ações Rápidas', style: Theme.of(context).textTheme.titleLarge),
+        Text(
+          l10n.profilePage_quickActions,
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
         const SizedBox(height: 16),
         ListTile(
-          leading: const Icon(Icons.edit, semanticLabel: 'Ícone de lápis'),
-          title: const Text('Editar Perfil'),
+          leading: Icon(
+            Icons.edit,
+            semanticLabel: l10n.profilePage_editIconSemanticLabel,
+          ),
+          title: Text(l10n.profilePage_editProfile),
           onTap: () => context.goNamed('edit-profile'),
         ),
         ListTile(
-          leading: const Icon(Icons.history, semanticLabel: 'Ícone de relógio'),
-          title: const Text('Ver Histórico de Currículos'),
+          leading: Icon(
+            Icons.history,
+            semanticLabel: l10n.profilePage_historyIconSemanticLabel,
+          ),
+          title: Text(l10n.profilePage_viewResumeHistory),
           onTap: () => context.goNamed('history'),
         ),
         ListTile(
-          leading: const Icon(
+          leading: Icon(
             Icons.settings,
-            semanticLabel: 'Ícone de engrenagem',
+            semanticLabel: l10n.profilePage_settingsIconSemanticLabel,
           ),
-          title: const Text('Configurações'),
+          title: Text(l10n.profilePage_settings),
           onTap: () => context.goNamed('settings'),
         ),
       ],

@@ -35,105 +35,103 @@ class LocalResumeNotifier extends StateNotifier<ResumeData> {
   }
 
   // Experiências
-  void addExperience(Experience? newExperience) {
-    state = state.copyWith(
-      experiences: [...state.experiences!, newExperience!],
-    );
+  void addExperience(Experience newExperience) {
+    state = state.copyWith(experiences: [...state.experiences, newExperience]);
   }
 
   void updateExperience(int index, Experience experience) {
-    final newExperiences = List<Experience>.from(state.experiences!);
+    final newExperiences = List<Experience>.from(state.experiences);
     newExperiences[index] = experience;
     state = state.copyWith(experiences: newExperiences);
   }
 
   void removeExperience(int index) {
-    final newExperiences = List<Experience>.from(state.experiences!);
+    final newExperiences = List<Experience>.from(state.experiences);
     newExperiences.removeAt(index);
     state = state.copyWith(experiences: newExperiences);
   }
 
   // Projetos
-  void addProject(Project? newProject) {
-    state = state.copyWith(projects: [...state.projects!, newProject!]);
+  void addProject(Project newProject) {
+    state = state.copyWith(projects: [...state.projects, newProject]);
   }
 
   void updateProject(int index, Project project) {
-    final newProjects = List<Project>.from(state.projects!);
+    final newProjects = List<Project>.from(state.projects);
     newProjects[index] = project;
     state = state.copyWith(projects: newProjects);
   }
 
   void removeProject(int index) {
-    final newProjects = List<Project>.from(state.projects!);
+    final newProjects = List<Project>.from(state.projects);
     newProjects.removeAt(index);
     state = state.copyWith(projects: newProjects);
   }
 
   // Certificados
-  void addCertificate(Certificate? newCertificate) {
+  void addCertificate(Certificate newCertificate) {
     state = state.copyWith(
-      certificates: [...state.certificates!, newCertificate!],
+      certificates: [...state.certificates, newCertificate],
     );
   }
 
   void updateCertificate(int index, Certificate certificate) {
-    final newCertificates = List<Certificate>.from(state.certificates!);
+    final newCertificates = List<Certificate>.from(state.certificates);
     newCertificates[index] = certificate;
     state = state.copyWith(certificates: newCertificates);
   }
 
   void removeCertificate(int index) {
-    final newCertificates = List<Certificate>.from(state.certificates!);
+    final newCertificates = List<Certificate>.from(state.certificates);
     newCertificates.removeAt(index);
     state = state.copyWith(certificates: newCertificates);
   }
 
   // Educação
-  void addEducation(Education? newEducation) {
-    state = state.copyWith(educations: [...state.educations!, newEducation!]);
+  void addEducation(Education newEducation) {
+    state = state.copyWith(educations: [...state.educations, newEducation]);
   }
 
   void updateEducation(int index, Education education) {
-    final newEducations = List<Education>.from(state.educations!);
+    final newEducations = List<Education>.from(state.educations);
     newEducations[index] = education;
     state = state.copyWith(educations: newEducations);
   }
 
   void removeEducation(int index) {
-    final newEducations = List<Education>.from(state.educations!);
+    final newEducations = List<Education>.from(state.educations);
     newEducations.removeAt(index);
     state = state.copyWith(educations: newEducations);
   }
 
-  void addSkill(Skill? skill) {
-    state = state.copyWith(skills: [...state.skills!, skill!]);
+  void addSkill(Skill skill) {
+    state = state.copyWith(skills: [...state.skills, skill]);
   }
 
   void updateSkill(int index, Skill skill) {
-    final newSkills = List<Skill>.from(state.skills!);
+    final newSkills = List<Skill>.from(state.skills);
     newSkills[index] = skill;
     state = state.copyWith(skills: newSkills);
   }
 
   void removeSkill(int index) {
-    final newSkills = List<Skill>.from(state.skills!);
+    final newSkills = List<Skill>.from(state.skills);
     newSkills.removeAt(index);
     state = state.copyWith(skills: newSkills);
   }
 
-  void addSocial(Social? social) {
-    state = state.copyWith(socials: [...state.socials!, social!]);
+  void addSocial(Social social) {
+    state = state.copyWith(socials: [...state.socials, social]);
   }
 
   void updateSocial(int index, Social social) {
-    final newSocials = List<Social>.from(state.socials!);
+    final newSocials = List<Social>.from(state.socials);
     newSocials[index] = social;
     state = state.copyWith(socials: newSocials);
   }
 
   void removeSocial(int index) {
-    final newSocials = List<Social>.from(state.socials!);
+    final newSocials = List<Social>.from(state.socials);
     newSocials.removeAt(index);
     state = state.copyWith(socials: newSocials);
   }

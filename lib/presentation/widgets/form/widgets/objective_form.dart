@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intelliresume/generated/app_localizations.dart';
 import '../../../../core/providers/resume/cv_provider.dart';
 
 class ObjectiveForm extends ConsumerStatefulWidget {
@@ -13,6 +14,7 @@ class ObjectiveForm extends ConsumerStatefulWidget {
 
 class _ObjectiveFormState extends ConsumerState<ObjectiveForm> {
   late TextEditingController _objectiveController;
+  late AppLocalizations l10n;
 
   final _objFormKey = GlobalKey<FormState>();
 
@@ -20,6 +22,12 @@ class _ObjectiveFormState extends ConsumerState<ObjectiveForm> {
   void initState() {
     super.initState();
     _objectiveController = TextEditingController(text: widget.objective);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    l10n = AppLocalizations.of(context)!;
   }
 
   @override
@@ -61,9 +69,9 @@ class _ObjectiveFormState extends ConsumerState<ObjectiveForm> {
                 minLines: 1,
                 keyboardType: TextInputType.multiline,
                 controller: _objectiveController,
-                decoration: const InputDecoration(
-                  labelText: 'Objetivo(s) *',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: l10n.objective,
+                  border: const OutlineInputBorder(),
                 ),
               ),
               const SizedBox(height: 16),
@@ -73,12 +81,12 @@ class _ObjectiveFormState extends ConsumerState<ObjectiveForm> {
                   children: [
                     ElevatedButton(
                       onPressed: () => _updateObjective(),
-                      child: const Text('Salvar'),
+                      child: Text(l10n.save),
                     ),
                     Semantics(
-                      label: 'Remover objetivo',
+                      label: l10n.objective,
                       child: IconButton(
-                        tooltip: 'Remover objetivo',
+                        tooltip: l10n.objective,
                         icon: const Icon(Icons.delete, color: Colors.red),
                         onPressed: () {
                           ref

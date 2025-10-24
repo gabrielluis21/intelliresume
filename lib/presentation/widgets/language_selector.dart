@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intelliresume/core/providers/languages/translate_provider.dart';
 import 'package:intelliresume/data/models/cv_data.dart';
+import 'package:intelliresume/generated/app_localizations.dart';
 
 final selectedLanguageProvider = StateProvider<String>((ref) => 'en');
 final translatedResumeProvider = FutureProvider.family<ResumeData, ResumeData>((
@@ -23,19 +24,32 @@ class LanguageSelector extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedLang = ref.watch(selectedLanguageProvider);
     final isLoading = ref.watch(translatedResumeProvider(resume)).isLoading;
+    final l10n = AppLocalizations.of(context)!;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Selecione o Idioma:'),
+        Text(l10n.languageSelector_selectLanguage),
         const SizedBox(height: 8),
         DropdownButton<String>(
           value: selectedLang,
-          items: const [
-            DropdownMenuItem(value: 'en', child: Text('🇺🇸 English')),
-            DropdownMenuItem(value: 'es', child: Text('🇪🇸 Spanish')),
-            DropdownMenuItem(value: 'fr', child: Text('🇫🇷 French')),
-            DropdownMenuItem(value: 'de', child: Text('🇩🇪 German')),
+          items: [
+            DropdownMenuItem(
+              value: 'en',
+              child: Text(l10n.languageSelector_english),
+            ),
+            DropdownMenuItem(
+              value: 'es',
+              child: Text(l10n.languageSelector_spanish),
+            ),
+            DropdownMenuItem(
+              value: 'fr',
+              child: Text(l10n.languageSelector_french),
+            ),
+            DropdownMenuItem(
+              value: 'de',
+              child: Text(l10n.languageSelector_german),
+            ),
           ],
           onChanged: (lang) async {
             if (lang != null) {

@@ -40,20 +40,8 @@ class _ResumePreviewPageState extends ConsumerState<ResumePreviewPage>
 
   @override
   Widget build(BuildContext context) {
-    final tabViews = <Widget>[
-      ResumePreview(
-        resumeData: ref.watch(localResumeProvider),
-        userData: ref.watch(userProfileProvider).value,
-        onSectionEdit: (type, index) {
-          ref.read(editRequestProvider.notifier).state = EditRequest(
-            section: type,
-            index: index,
-          );
-        },
-      ),
-      AIAssistantPanel(),
-      ExportPage(resumeData: ref.watch(localResumeProvider)),
-    ];
+    final userProfileAsync = ref.watch(userProfileProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Editor de Currículo'),
@@ -63,7 +51,27 @@ class _ResumePreviewPageState extends ConsumerState<ResumePreviewPage>
           tabs: _tabs,
         ),
       ),
-      body: TabBarView(controller: _tabController, children: tabViews),
+      body: userProfileAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, stack) => Center(child: Text('Erro: $err')),
+        data: (userData) {
+          final tabViews = <Widget>[
+            ResumePreview(
+              resumeData: ref.read(localResumeProvider),
+              userData: userData,
+              onSectionEdit: (type, index) {
+                ref.read(editRequestProvider.notifier).state = EditRequest(
+                  section: type,
+                  index: index,
+                );
+              },
+            ),
+            AIAssistantPanel(),
+            ExportPage(resumeData: ref.watch(localResumeProvider)),
+          ];
+          return TabBarView(controller: _tabController, children: tabViews);
+        },
+      ),
     );
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intelliresume/core/providers/accessibility/accessibility_provider.dart';
 import 'package:intelliresume/core/providers/languages/locale_provider.dart';
+import 'package:intelliresume/generated/app_localizations.dart';
 import 'package:intelliresume/presentation/widgets/ad_banner.dart';
 import 'package:intelliresume/web_app/pages/sections/about_section.dart';
 import 'package:intelliresume/web_app/pages/sections/contact_section.dart';
@@ -11,6 +12,9 @@ import 'package:intelliresume/web_app/pages/sections/footer_section.dart';
 import 'package:intelliresume/web_app/pages/sections/hero_section.dart';
 import 'package:intelliresume/presentation/widgets/pricing/pricing_section_widget.dart';
 import 'package:intelliresume/web_app/pages/sections/template_gallery_section.dart';
+import 'package:intelliresume/web_app/pages/sections/demo_section.dart';
+import 'package:intelliresume/web_app/pages/sections/testimonials_section.dart';
+import 'package:intelliresume/web_app/pages/sections/cta_section.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class WebLandingPage extends ConsumerStatefulWidget {
@@ -50,6 +54,7 @@ class _WebLandingPageState extends ConsumerState<WebLandingPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return FocusScope(
       node: _focusScopeNode,
       autofocus: true,
@@ -60,27 +65,36 @@ class _WebLandingPageState extends ConsumerState<WebLandingPage> {
           backgroundColor: Colors.white,
           elevation: 0,
           title: Semantics(
-            label: 'Logo IntelliResume',
-            child: const Text.rich(
+            label: l10n.webLandingPage_logoSemanticLabel,
+            child: Text.rich(
               TextSpan(
                 children: [
                   TextSpan(
                     text: 'Intelli',
-                    style: TextStyle(color: Colors.black),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleMedium?.copyWith(color: Colors.black),
                   ),
-                  TextSpan(text: 'Resume', style: TextStyle(color: _brandBlue)),
+                  TextSpan(
+                    text: 'Resume',
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleMedium?.copyWith(color: _brandBlue),
+                  ),
                 ],
               ),
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
           ),
           actions: [
             Semantics(
-              label: 'Abrir menu de configurações e acessibilidade',
+              label: l10n.webLandingPage_openAccessibilityMenuSemanticLabel,
               button: true,
               child: IconButton(
                 icon: const Icon(Icons.accessibility_new, color: _brandBlue),
-                tooltip: 'Configurações e Acessibilidade',
+                tooltip: l10n.webLandingPage_accessibilityTooltip,
                 onPressed: () {
                   _scaffoldKey.currentState?.openDrawer();
                 },
@@ -88,22 +102,22 @@ class _WebLandingPageState extends ConsumerState<WebLandingPage> {
             ),
             const SizedBox(width: 16),
             _buildFocusableButton(
-              'Sobre',
+              l10n.webLandingPage_aboutButton,
               isLink: true,
               () => _scrollToSection(_aboutKey),
             ),
             _buildFocusableButton(
-              'Recursos',
+              l10n.webLandingPage_featuresButton,
               isLink: true,
               () => _scrollToSection(_featuresKey),
             ),
             _buildFocusableButton(
-              'Planos',
+              l10n.webLandingPage_plansButton,
               isLink: true,
               () => _scrollToSection(_pricingKey),
             ),
             _buildFocusableButton(
-              'Contato',
+              l10n.webLandingPage_contactButton,
               isLink: true,
               () => _scrollToSection(_contactKey),
             ),
@@ -112,11 +126,11 @@ class _WebLandingPageState extends ConsumerState<WebLandingPage> {
               child: FocusableActionDetector(
                 child: Semantics(
                   button: true,
-                  label: 'Ir para a página de login',
+                  label: l10n.webLandingPage_loginButtonSemanticLabel,
                   child: ElevatedButton.icon(
                     onPressed: () => context.goNamed('login'),
                     icon: const Icon(Icons.login),
-                    label: const Text('Entrar'),
+                    label: Text(l10n.webLandingPage_loginButton),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _brandBlue,
                       foregroundColor: Colors.white,
@@ -144,12 +158,15 @@ class _WebLandingPageState extends ConsumerState<WebLandingPage> {
                       featuresKey: _featuresKey,
                       onSeeTemplates: () => _scrollToSection(_galleryKey),
                     ),
+                    //const DemoSection(),
                     PricingSectionWidget(
-                      buttonText: 'Cadastrar e Comprar',
+                      buttonText: l10n.webLandingPage_signUpAndBuyButton,
                       onSelectPlan: (_) => context.go('/signup'),
                     ),
                     TemplateGallerySection(galleryKey: _galleryKey),
+                    const TestimonialsSection(),
                     ContactSection(contactKey: _contactKey),
+                    //const CtaSection(),
                     const Divider(height: 1),
                     const FooterSection(),
                     const AdBanner(),
@@ -170,10 +187,11 @@ class _WebLandingPageState extends ConsumerState<WebLandingPage> {
     bool isCTA = false,
     bool isLink = false,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     return FocusableActionDetector(
       child: Semantics(
         button: true,
-        label: 'Ir para a seção $label',
+        label: l10n.webLandingPage_scrollToSectionSemanticLabel(label),
         child:
             isLink
                 ? TextButton(onPressed: onPressed, child: Text(label))
@@ -193,35 +211,44 @@ class _WebLandingPageState extends ConsumerState<WebLandingPage> {
     final settings = ref.watch(accessibilityProvider);
     final notifier = ref.read(accessibilityProvider.notifier);
     final currentLocale = ref.watch(localeProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          const DrawerHeader(
-            decoration: BoxDecoration(color: _brandBlue),
+          DrawerHeader(
+            decoration: const BoxDecoration(color: _brandBlue),
             child: Text(
-              'Configurações e Acessibilidade',
-              style: TextStyle(color: Colors.white, fontSize: 24),
+              l10n.webLandingPage_accessibilityDrawerTitle,
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(color: Colors.white),
             ),
           ),
-          const _DrawerSectionTitle(title: 'Ajustes Visuais'),
+          _DrawerSectionTitle(
+            title: l10n.webLandingPage_visualAdjustmentsTitle,
+          ),
           SwitchListTile(
-            title: const Text('Alto Contraste'),
+            title: Text(l10n.webLandingPage_highContrast),
             value: settings.highContrast,
             onChanged: (bool value) => notifier.toggleHighContrast(value),
             secondary: const Icon(Icons.contrast, color: _brandBlue),
           ),
           SwitchListTile(
-            title: const Text('Texto em Negrito'),
+            title: Text(l10n.webLandingPage_boldText),
             value: settings.boldText,
             onChanged: (bool value) => notifier.toggleBoldText(value),
             secondary: const Icon(Icons.format_bold, color: _brandBlue),
           ),
           ListTile(
             leading: const Icon(Icons.format_size, color: _brandBlue),
-            title: const Text('Tamanho da Fonte'),
-            subtitle: Text('Escala: ${settings.fontScale.toStringAsFixed(1)}x'),
+            title: Text(l10n.webLandingPage_fontSize),
+            subtitle: Text(
+              l10n.webLandingPage_fontScale(
+                settings.fontScale.toStringAsFixed(1),
+              ),
+            ),
           ),
           Slider(
             value: settings.fontScale,
@@ -232,9 +259,11 @@ class _WebLandingPageState extends ConsumerState<WebLandingPage> {
             onChanged: (double value) => notifier.setFontScale(value),
           ),
           const Divider(),
-          const _DrawerSectionTitle(title: 'Idioma e Região'),
+          _DrawerSectionTitle(
+            title: l10n.webLandingPage_languageAndRegionTitle,
+          ),
           RadioListTile<Locale>(
-            title: const Text('🇧🇷 Português (Brasil)'),
+            title: Text(l10n.webLandingPage_portuguese),
             value: const Locale('pt'),
             groupValue: currentLocale,
             onChanged: (Locale? value) {
@@ -244,7 +273,7 @@ class _WebLandingPageState extends ConsumerState<WebLandingPage> {
             },
           ),
           RadioListTile<Locale>(
-            title: const Text('🇺🇸 English'),
+            title: Text(l10n.webLandingPage_english),
             value: const Locale('en'),
             groupValue: currentLocale,
             onChanged: (Locale? value) {
@@ -254,10 +283,12 @@ class _WebLandingPageState extends ConsumerState<WebLandingPage> {
             },
           ),
           const Divider(),
-          const _DrawerSectionTitle(title: 'Recursos Adicionais'),
+          _DrawerSectionTitle(
+            title: l10n.webLandingPage_additionalFeaturesTitle,
+          ),
           ListTile(
             leading: const Icon(Icons.sign_language, color: _brandBlue),
-            title: const Text('Versão em Libras (VLibras)'),
+            title: Text(l10n.webLandingPage_librasVersion),
             onTap: () {
               Navigator.pop(context);
               launchUrl(Uri.parse('assets/landing_page_vlibras.html'));
@@ -279,7 +310,7 @@ class _DrawerSectionTitle extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
       child: Text(
         title.toUpperCase(),
-        style: TextStyle(
+        style: Theme.of(context).textTheme.labelLarge?.copyWith(
           fontWeight: FontWeight.bold,
           color: _WebLandingPageState._brandBlue.withOpacity(0.8),
           letterSpacing: 1.1,
