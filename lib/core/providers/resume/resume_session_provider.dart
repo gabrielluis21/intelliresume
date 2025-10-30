@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:intelliresume/core/providers/domain_providers.dart';
 import 'package:intelliresume/core/providers/resume/cv_provider.dart';
 import 'package:intelliresume/core/providers/user/user_provider.dart';

@@ -126,7 +126,7 @@ class SideMenu extends ConsumerWidget {
                   index: 4,
                 ),
                 // Oculta o botão de sair se o usuário não estiver logado
-                if (userProfileAsync.valueOrNull != null)
+                if (userProfileAsync.value != null)
                   _buildListTile(
                     context,
                     icon: Icons.logout,

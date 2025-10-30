@@ -1,4 +1,4 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 
 /// Modelagem do uso de recursos pelo usuário na sessão atual.
 class UsageTracker {

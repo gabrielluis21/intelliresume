@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:intelliresume/core/providers/languages/translate_provider.dart';
 import 'package:intelliresume/data/models/cv_data.dart';
 import 'package:intelliresume/generated/app_localizations.dart';

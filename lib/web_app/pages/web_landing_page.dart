@@ -11,9 +11,9 @@ import 'package:intelliresume/web_app/pages/sections/features_section.dart';
 import 'package:intelliresume/web_app/pages/sections/footer_section.dart';
 import 'package:intelliresume/web_app/pages/sections/hero_section.dart';
 import 'package:intelliresume/presentation/widgets/pricing/pricing_section_widget.dart';
-import 'package:intelliresume/web_app/pages/sections/template_gallery_section.dart';
+/* import 'package:intelliresume/web_app/pages/sections/template_gallery_section.dart';
 import 'package:intelliresume/web_app/pages/sections/demo_section.dart';
-import 'package:intelliresume/web_app/pages/sections/testimonials_section.dart';
+import 'package:intelliresume/web_app/pages/sections/testimonials_section.dart'; */
 import 'package:intelliresume/web_app/pages/sections/cta_section.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -69,9 +69,9 @@ class _WebLandingPageState extends ConsumerState<WebLandingPage> {
                 children: [
                   TextSpan(
                     text: 'Intelli',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.onBackground),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onBackground,
+                    ),
                   ),
                   TextSpan(
                     text: 'Resume',

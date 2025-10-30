@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:intl/intl.dart';
 
 // Define um StateProvider que irá gerenciar o Locale atual da aplicação.
@@ -7,7 +7,7 @@ import 'package:intl/intl.dart';
 final localeProvider = StateProvider<Locale>((ref) => const Locale('pt'));
 
 // NOVO: Provider para o formatador de moeda
-final currencyFormatProvider = Provider<NumberFormat>((ref) {
+final currencyFormatProvider = StateProvider<NumberFormat>((ref) {
   // Ouve o provider de locale
   final locale = ref.watch(localeProvider);
 

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:intelliresume/core/providers/data/data_provider.dart';
 import 'package:intelliresume/data/repositories/user_profile_repository.dart';
 import 'package:intelliresume/domain/entities/plan_type.dart';
@@ -20,7 +21,7 @@ final userProfileProvider =
       // Ouve o provider de autenticação
       final authState = ref.watch(authStateChangesProvider);
 
-      return UserProfileNotifier(userProfileRepository, authState.valueOrNull);
+      return UserProfileNotifier(userProfileRepository, authState.value);
     });
 
 class UserProfileNotifier extends StateNotifier<AsyncValue<UserProfile?>> {

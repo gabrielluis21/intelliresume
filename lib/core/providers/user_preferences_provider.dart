@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:intelliresume/core/models/user_preferences.dart';
 import 'package:intelliresume/core/repositories/user_preferences_repository.dart';
 
-final userPreferencesRepositoryProvider = Provider((ref) => UserPreferencesRepository());
+final userPreferencesRepositoryProvider = Provider(
+  (ref) => UserPreferencesRepository(),
+);
 
-final userPreferencesNotifierProvider = StateNotifierProvider<UserPreferencesNotifier, UserPreferences>((ref) {
-  return UserPreferencesNotifier(ref.read(userPreferencesRepositoryProvider));
-});
+final userPreferencesNotifierProvider =
+    StateNotifierProvider<UserPreferencesNotifier, UserPreferences>((ref) {
+      return UserPreferencesNotifier(
+        ref.read(userPreferencesRepositoryProvider),
+      );
+    });
 
 class UserPreferencesNotifier extends StateNotifier<UserPreferences> {
   final UserPreferencesRepository _repository;
