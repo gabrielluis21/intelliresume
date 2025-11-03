@@ -5,7 +5,6 @@ import 'package:intelliresume/core/providers/user/user_provider.dart';
 import 'package:intelliresume/generated/app_localizations.dart';
 import 'package:intelliresume/presentation/pages/history_page.dart';
 import 'package:intelliresume/presentation/widgets/recent_resume_card.dart';
-import '../widgets/layout_template.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
@@ -18,37 +17,34 @@ class HomePage extends ConsumerWidget {
     ); // Usando o provider correto
     final userAsync = ref.watch(userProfileProvider);
     final theme = Theme.of(context);
-    return LayoutTemplate(
-      selectedIndex: 0,
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            userAsync.when(
-              data:
-                  (user) => Text(
-                    l10n.home_greeting(user?.name ?? l10n.userNotFound),
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          userAsync.when(
+            data:
+                (user) => Text(
+                  l10n.home_greeting(user?.name ?? l10n.userNotFound),
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
-              loading: () => const SizedBox(),
-              error: (e, s) => Text(l10n.home_greetingFallback),
+                ),
+            loading: () => const SizedBox(),
+            error: (e, s) => Text(l10n.home_greetingFallback),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l10n.home_welcomeBackPrompt,
+            style: theme.textTheme.titleMedium?.copyWith(
+              color: Colors.grey.shade700,
             ),
-            const SizedBox(height: 8),
-            Text(
-              l10n.home_welcomeBackPrompt,
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: Colors.grey.shade700,
-              ),
-            ),
-            const SizedBox(height: 32),
-            _buildRecentResumesSection(context, resumesAsync, l10n),
-            const SizedBox(height: 32),
-            _buildQuickActionsSection(context, l10n),
-          ],
-        ),
+          ),
+          const SizedBox(height: 32),
+          _buildRecentResumesSection(context, resumesAsync, l10n),
+          const SizedBox(height: 32),
+          _buildQuickActionsSection(context, l10n),
+        ],
       ),
     );
   }

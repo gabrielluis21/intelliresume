@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intelliresume/core/providers/data/data_provider.dart';
+
 import 'package:intelliresume/generated/app_localizations.dart';
 
 import 'side_menu.dart';
 
 class LayoutTemplate extends ConsumerStatefulWidget {
-  final Widget child;
-  final int selectedIndex;
+  final StatefulNavigationShell navigationShell;
 
   const LayoutTemplate({
     super.key,
-    required this.child,
-    this.selectedIndex = 0,
+    required this.navigationShell,
   });
 
   @override
@@ -22,14 +20,7 @@ class LayoutTemplate extends ConsumerStatefulWidget {
 
 class _LayoutTemplateState extends ConsumerState<LayoutTemplate> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  int _selectedIndex = 0;
   late AppLocalizations l10n;
-
-  @override
-  void initState() {
-    super.initState();
-    _selectedIndex = widget.selectedIndex;
-  }
 
   @override
   void didChangeDependencies() {
@@ -43,34 +34,12 @@ class _LayoutTemplateState extends ConsumerState<LayoutTemplate> {
       Navigator.of(context).pop();
     }
 
-    // Evita reconstrução desnecessária se o mesmo item for selecionado
-    if (_selectedIndex == index && index != 5) {
-      return; // index 5 é o logout, sempre executa
-    }
-
-    setState(() => _selectedIndex = index);
-
-    switch (index) {
-      case 0:
-        context.goNamed('home');
-        break;
-      case 1:
-        context.goNamed('profile');
-        break;
-      case 2:
-        context.goNamed('history');
-        break;
-      case 3:
-        context.goNamed('editor-new');
-        break;
-      case 4:
-        context.goNamed('settings');
-        break;
-      case 5: // Logout
-        ref.read(signOutUseCaseProvider).call();
-        // A navegação será tratada pelo GoRouter ao detectar a mudança de estado de autenticação
-        break;
-    }
+    // Use goBranch to navigate to the selected branch
+    widget.navigationShell.goBranch(
+      index,
+      // Aims to keep the navigation stack for the selected branch
+      initialLocation: index == widget.navigationShell.currentIndex,
+    );
   }
 
   @override
@@ -94,8 +63,7 @@ class _LayoutTemplateState extends ConsumerState<LayoutTemplate> {
           isMobile
               ? Drawer(
                 child: SideMenu(
-                  selectedIndex: _selectedIndex,
-                  onDestinationSelected: _onDestinationSelected,
+                  navigationShell: widget.navigationShell,
                 ),
               )
               : null,
@@ -103,10 +71,9 @@ class _LayoutTemplateState extends ConsumerState<LayoutTemplate> {
         children: [
           if (!isMobile)
             SideMenu(
-              selectedIndex: _selectedIndex,
-              onDestinationSelected: _onDestinationSelected,
+              navigationShell: widget.navigationShell,
             ),
-          Expanded(child: widget.child),
+          Expanded(child: widget.navigationShell),
         ],
       ),
     );

@@ -16,7 +16,8 @@ import 'widgets/social_form.dart';
 
 class ResumeForm extends ConsumerStatefulWidget {
   final ResumeData? resume;
-  const ResumeForm({super.key, this.resume});
+  final AppLocalizations translate;
+  const ResumeForm({super.key, this.resume, required this.translate});
 
   @override
   ConsumerState<ResumeForm> createState() => _ResumeFormState();
@@ -37,47 +38,50 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
   // Focus Nodes
   // A lógica de gerenciamento de foco foi revertida para estabilidade.
 
-  late AppLocalizations l10n;
+  //late AppLocalizations l10n;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    l10n = AppLocalizations.of(context)!;
+    //l10n = AppLocalizations.of(context)!;
   }
 
   late final _tabs = <Widget>[
     Tab(
       icon: const Icon(Icons.person_search_outlined),
-      text: l10n.resumeForm_aboutMeTab,
+      text: widget.translate.resumeForm_aboutMeTab,
     ),
     Tab(
       icon: const Icon(Icons.person_search_outlined),
-      text: l10n.resumeForm_objectiveTab,
+      text: widget.translate.resumeForm_objectiveTab,
     ),
     Tab(
       icon: const Icon(Icons.work_outline),
-      text: l10n.resumeForm_experienceTab,
+      text: widget.translate.resumeForm_experienceTab,
     ),
     Tab(
       icon: const Icon(Icons.school_outlined),
-      text: l10n.resumeForm_educationTab,
+      text: widget.translate.resumeForm_educationTab,
     ),
     Tab(
       icon: const Icon(Icons.lightbulb_outline),
-      text: l10n.resumeForm_skillsTab,
+      text: widget.translate.resumeForm_skillsTab,
     ),
-    Tab(icon: const Icon(Icons.link_outlined), text: l10n.resumeForm_socialTab),
+    Tab(
+      icon: const Icon(Icons.link_outlined),
+      text: widget.translate.resumeForm_socialTab,
+    ),
     Tab(
       icon: const Icon(Icons.folder_outlined),
-      text: l10n.resumeForm_projectsTab,
+      text: widget.translate.resumeForm_projectsTab,
     ),
     Tab(
       icon: const Icon(Icons.badge_outlined),
-      text: l10n.resumeForm_certificatesTab,
+      text: widget.translate.resumeForm_certificatesTab,
     ),
     Tab(
       icon: const Icon(Icons.accessibility_new_outlined),
-      text: l10n.resumeForm_accessibilityTab,
+      text: widget.translate.resumeForm_accessibilityTab,
     ),
   ];
 
@@ -159,10 +163,10 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
         IconButton(
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: currentIndex > 0 ? onPrevious : null,
-          tooltip: l10n.resumeForm_previous,
+          tooltip: widget.translate.resumeForm_previous,
         ),
         Text(
-          l10n.resumeForm_itemCount(
+          widget.translate.resumeForm_itemCount(
             (currentIndex + 1).toString(),
             itemLabel,
             totalItems.toString(),
@@ -172,7 +176,7 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
         IconButton(
           icon: const Icon(Icons.arrow_forward_ios),
           onPressed: currentIndex < totalItems - 1 ? onNext : null,
-          tooltip: l10n.resumeForm_next,
+          tooltip: widget.translate.resumeForm_next,
         ),
       ],
     );
@@ -196,7 +200,10 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionHeader(l10n.resumeForm_aboutMeTab, context),
+            _buildSectionHeader(
+              widget.translate.resumeForm_aboutMeTab,
+              context,
+            ),
             AboutMeForm(about: resume.about ?? ''),
           ],
         ),
@@ -207,7 +214,10 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionHeader(l10n.resumeForm_professionalObjective, context),
+            _buildSectionHeader(
+              widget.translate.resumeForm_professionalObjective,
+              context,
+            ),
             ObjectiveForm(objective: resume.objective ?? ''),
           ],
         ),
@@ -216,7 +226,7 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
       _buildFocusedEditorTab(
         context: context,
         resume: resume,
-        itemLabel: l10n.resumeForm_experienceTab,
+        itemLabel: widget.translate.resumeForm_experienceTab,
         currentIndex: _currentExperienceIndex,
         totalItems: resume.experiences.length,
         formBuilder:
@@ -250,7 +260,7 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
       _buildFocusedEditorTab(
         context: context,
         resume: resume,
-        itemLabel: l10n.resumeForm_educationTab,
+        itemLabel: widget.translate.resumeForm_educationTab,
         currentIndex: _currentEducationIndex,
         totalItems: resume.educations.length,
         formBuilder:
@@ -281,7 +291,7 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
       _buildFocusedEditorTab(
         context: context,
         resume: resume,
-        itemLabel: l10n.resumeForm_skillsTab,
+        itemLabel: widget.translate.resumeForm_skillsTab,
         currentIndex: _currentSkillIndex,
         totalItems: resume.skills.length,
         formBuilder:
@@ -312,7 +322,7 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
       _buildFocusedEditorTab(
         context: context,
         resume: resume,
-        itemLabel: l10n.resumeForm_socialTab,
+        itemLabel: widget.translate.resumeForm_socialTab,
         currentIndex: _currentSocialIndex,
         totalItems: resume.socials.length,
         formBuilder:
@@ -343,7 +353,7 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
       _buildFocusedEditorTab(
         context: context,
         resume: resume,
-        itemLabel: l10n.resumeForm_projectsTab,
+        itemLabel: widget.translate.resumeForm_projectsTab,
         currentIndex: _currentProjectIndex,
         totalItems: resume.projects.length,
         formBuilder:
@@ -374,7 +384,7 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
       _buildFocusedEditorTab(
         context: context,
         resume: resume,
-        itemLabel: l10n.resumeForm_certificatesTab,
+        itemLabel: widget.translate.resumeForm_certificatesTab,
         currentIndex: _currentCertificateIndex,
         totalItems: resume.certificates.length,
         formBuilder:
@@ -410,11 +420,16 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionHeader(l10n.resumeForm_accessibilitySettings, context),
+            _buildSectionHeader(
+              widget.translate.resumeForm_accessibilitySettings,
+              context,
+            ),
             CheckboxListTile(
               contentPadding: EdgeInsets.zero,
-              title: Text(l10n.resumeForm_includePCDInfo),
-              subtitle: Text(l10n.resumeForm_includePCDInfoSubtitle),
+              title: Text(widget.translate.resumeForm_includePCDInfo),
+              subtitle: Text(
+                widget.translate.resumeForm_includePCDInfoSubtitle,
+              ),
               value: resume.includePCDInfo,
               onChanged: (value) {
                 ref
@@ -436,7 +451,7 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
             child: Center(
               child: Text(
-                l10n.resumeForm_fillYourResume,
+                widget.translate.resumeForm_fillYourResume,
                 style: textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -489,7 +504,7 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
               padding: const EdgeInsets.symmetric(vertical: 32.0),
               child: Center(
                 child: Text(
-                  l10n.resumeForm_noItemAdded(itemLabel),
+                  widget.translate.resumeForm_noItemAdded(itemLabel),
                   style: Theme.of(context).textTheme.bodyLarge,
                   textAlign: TextAlign.center,
                 ),
@@ -501,7 +516,7 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
             children: [
               OutlinedButton.icon(
                 icon: const Icon(Icons.add),
-                label: Text(l10n.resumeForm_add(itemLabel)),
+                label: Text(widget.translate.resumeForm_add(itemLabel)),
                 onPressed: onAdd,
               ),
               if (totalItems > 0)
@@ -510,7 +525,9 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
                     Icons.delete_outline,
                     color: Theme.of(context).colorScheme.error,
                   ),
-                  label: Text(l10n.resumeForm_removeCurrent(itemLabel)),
+                  label: Text(
+                    widget.translate.resumeForm_removeCurrent(itemLabel),
+                  ),
                   onPressed: onRemove,
                 ),
             ],

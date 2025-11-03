@@ -38,3 +38,4 @@ final saveResumeUsecaseProvider = Provider<SaveResumeUseCase>((ref) {
   final repository = ref.watch(resumeRepositoryProvider);
   return SaveResumeUseCase(repository);
 });
+

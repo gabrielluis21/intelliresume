@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:intelliresume/core/providers/user/user_provider.dart';
 import 'package:intelliresume/domain/entities/plan_type.dart';
 import 'package:intelliresume/generated/app_localizations.dart';
-import '../widgets/layout_template.dart';
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
@@ -14,35 +13,32 @@ class ProfilePage extends ConsumerWidget {
     final userProfile = ref.watch(userProfileProvider);
     final l10n = AppLocalizations.of(context)!;
 
-    return LayoutTemplate(
-      selectedIndex: 1,
-      child: userProfile.when(
-        data: (user) {
-          if (user == null) {
-            return Center(child: Text(l10n.profilePage_userNotFound));
-          }
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildProfileHeader(context, user, l10n),
-                const SizedBox(height: 24),
-                _buildSubscriptionCard(context, user, l10n),
-                const SizedBox(height: 24),
-                _buildQuickActions(context, l10n),
-              ],
+    return userProfile.when(
+      data: (user) {
+        if (user == null) {
+          return Center(child: Text(l10n.profilePage_userNotFound));
+        }
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildProfileHeader(context, user, l10n),
+              const SizedBox(height: 24),
+              _buildSubscriptionCard(context, user, l10n),
+              const SizedBox(height: 24),
+              _buildQuickActions(context, l10n),
+            ],
+          ),
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error:
+          (error, stackTrace) => Center(
+            child: Text(
+              l10n.profilePage_errorLoadingProfile(error.toString()),
             ),
-          );
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error:
-            (error, stackTrace) => Center(
-              child: Text(
-                l10n.profilePage_errorLoadingProfile(error.toString()),
-              ),
-            ),
-      ),
+          ),
     );
   }
 

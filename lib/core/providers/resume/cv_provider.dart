@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intelliresume/core/providers/user/user_provider.dart';
+import 'package:intelliresume/di.dart';
 
 import '../../../data/models/cv_data.dart';
 import '../../../domain/entities/user_profile.dart';
@@ -10,7 +11,24 @@ import '../../../domain/entities/user_profile.dart';
 
 import 'dart:async';
 
-// --- PROVIDER DE ESTADO LOCAL ---
+// Provider que busca os dados de um currículo específico por ID.
+final resumeDataProvider = FutureProvider.family<ResumeData, String>((
+  ref,
+  resumeId,
+) async {
+  if (resumeId == 'new') {
+    return ResumeData.initial();
+  }
+
+  final user = ref.watch(userProfileProvider).value;
+  if (user == null) {
+    throw Exception('Usuário não autenticado.');
+  }
+
+  final usecase = ref.read(getResumeByIdUsecaseProvider);
+  final cvModel = await usecase(user.uid!, resumeId);
+  return cvModel.data;
+});
 
 /// Notifier que contém a lógica de estado para o currículo sendo editado na UI.
 class LocalResumeNotifier extends StateNotifier<ResumeData> {

@@ -41,14 +41,15 @@ class HeaderSection extends StatelessWidget {
                 contentPadding: const EdgeInsets.all(16),
                 leading: Semantics(
                   label: l10n.headerSection_profilePictureSemanticLabel(
-                      user?.name ?? l10n.profilePage_defaultUserName), // Internationalized
+                    user?.name ?? l10n.profilePage_defaultUserName,
+                  ), // Internationalized
                   image: true,
                   child: CircleAvatar(
                     radius: 40,
                     backgroundImage:
                         user?.profilePictureUrl == null
                             ? Image.asset(
-                              'assets/images/default_avatar.png', // Updated path
+                              'images/default_avatar.png', // Updated path
                               fit: BoxFit.contain,
                             ).image
                             : Image.network(

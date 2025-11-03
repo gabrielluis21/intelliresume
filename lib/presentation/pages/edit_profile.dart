@@ -7,7 +7,6 @@ import 'package:intelliresume/domain/entities/user_profile.dart';
 import 'package:intelliresume/services/image_upload_service.dart';
 import 'package:intelliresume/core/providers/domain_providers.dart';
 import '../../core/providers/user/user_provider.dart';
-import '../widgets/layout_template.dart';
 import 'package:intelliresume/generated/app_localizations.dart';
 
 class EditProfilePage extends ConsumerStatefulWidget {
@@ -129,47 +128,44 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   Widget build(BuildContext context) {
     final user = ref.watch(userProfileProvider).value;
 
-    return LayoutTemplate(
-      selectedIndex: 1,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child:
-            user == null
-                ? const Center(child: CircularProgressIndicator())
-                : SingleChildScrollView(
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          l10n.editProfile_editProfile,
-                          style: Theme.of(context).textTheme.headlineSmall,
-                        ),
-                        const SizedBox(height: 24),
-                        _buildProfilePictureSection(user.profilePictureUrl),
-                        const SizedBox(height: 24),
-                        _buildTextField(
-                          _nameController,
-                          l10n.editProfile_name,
-                          Icons.person,
-                        ),
-                        const SizedBox(height: 16),
-                        _buildTextField(
-                          _phoneController,
-                          l10n.editProfile_phone,
-                          Icons.phone,
-                          keyboardType: TextInputType.phone,
-                        ),
-                        const SizedBox(height: 16),
-                        _buildAccessibilitySection(),
-                        const SizedBox(height: 32),
-                        _buildSaveButton(),
-                      ],
-                    ),
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child:
+          user == null
+              ? const Center(child: CircularProgressIndicator())
+              : SingleChildScrollView(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.editProfile_editProfile,
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                      const SizedBox(height: 24),
+                      _buildProfilePictureSection(user.profilePictureUrl),
+                      const SizedBox(height: 24),
+                      _buildTextField(
+                        _nameController,
+                        l10n.editProfile_name,
+                        Icons.person,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildTextField(
+                        _phoneController,
+                        l10n.editProfile_phone,
+                        Icons.phone,
+                        keyboardType: TextInputType.phone,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildAccessibilitySection(),
+                      const SizedBox(height: 32),
+                      _buildSaveButton(),
+                    ],
                   ),
                 ),
-      ),
+              ),
     );
   }
 

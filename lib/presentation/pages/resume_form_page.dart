@@ -2,36 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intelliresume/core/providers/data/data_provider.dart';
-import 'package:intelliresume/core/providers/user/user_provider.dart';
-import 'package:intelliresume/di.dart';
+//import 'package:intelliresume/core/providers/user/user_provider.dart';
+//import 'package:intelliresume/di.dart';
 import 'package:intelliresume/presentation/pages/resume_preview_page.dart';
 import 'package:intelliresume/presentation/widgets/ai_assistant_panel.dart';
 import 'package:intelliresume/presentation/widgets/preview_dialog.dart';
-import 'package:intelliresume/presentation/widgets/side_menu.dart';
 import 'package:multi_split_view/multi_split_view.dart';
-import 'package:intelliresume/data/models/cv_data.dart';
+//import 'package:intelliresume/data/models/cv_data.dart';
 import '../../core/providers/resume/cv_provider.dart';
 import 'package:intelliresume/generated/app_localizations.dart';
 import '../widgets/form/resume_form.dart';
-
-// Provider que busca os dados de um currículo específico por ID.
-final resumeDataProvider = FutureProvider.family<ResumeData, String>((
-  ref,
-  resumeId,
-) async {
-  if (resumeId == 'new') {
-    return ResumeData.initial();
-  }
-
-  final user = ref.watch(userProfileProvider).value;
-  if (user == null) {
-    throw Exception('Usuário não autenticado.');
-  }
-
-  final usecase = ref.read(getResumeByIdUsecaseProvider);
-  final cvModel = await usecase(user.uid!, resumeId);
-  return cvModel.data;
-});
 
 class ResumeFormPage extends ConsumerWidget {
   final String resumeId;
@@ -49,7 +29,7 @@ class ResumeFormPage extends ConsumerWidget {
         context.goNamed('history');
         break;
       case 3:
-        context.goNamed('form');
+        context.goNamed('editor-new');
         break;
       case 4:
         context.goNamed('settings');
@@ -82,10 +62,42 @@ class ResumeFormPage extends ConsumerWidget {
         // O layout principal é construído aqui, agora com resumeData garantido
         return Scaffold(
           appBar: AppBar(title: Text(l10n.appTitle)),
-          drawer: SideMenu(
-            selectedIndex: 3, // Hardcoded para a página de formulário
-            onDestinationSelected:
-                (index) => _onDestinationSelected(context, index, ref),
+          drawer: Drawer(
+            child: ListView(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.home),
+                  title: Text(l10n.sideBarMenu_home),
+                  onTap: () => _onDestinationSelected(context, 0, ref),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.person),
+                  title: Text(l10n.sideBarMenu_profile),
+                  onTap: () => _onDestinationSelected(context, 1, ref),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.history),
+                  title: Text(l10n.sideBarMenu_history),
+                  onTap: () => _onDestinationSelected(context, 2, ref),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.add),
+                  title: Text(l10n.sideBarMenu_newCV),
+                  onTap: () => _onDestinationSelected(context, 3, ref),
+                ),
+                const Divider(),
+                ListTile(
+                  leading: const Icon(Icons.settings),
+                  title: Text(l10n.sideBarMenu_settings),
+                  onTap: () => _onDestinationSelected(context, 4, ref),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.logout),
+                  title: Text(l10n.sideBarMenu_logout),
+                  onTap: () => _onDestinationSelected(context, 5, ref),
+                ),
+              ],
+            ),
           ),
           body: LayoutBuilder(
             builder: (context, constraints) {
@@ -100,8 +112,10 @@ class ResumeFormPage extends ConsumerWidget {
                         initialAreas: [
                           Area(
                             builder:
-                                (context, area) =>
-                                    ResumeForm(resume: resumeData),
+                                (context, area) => ResumeForm(
+                                  resume: resumeData,
+                                  translate: l10n,
+                                ),
                           ),
                           Area(builder: (context, area) => ResumePreviewPage()),
                         ],
@@ -114,7 +128,7 @@ class ResumeFormPage extends ConsumerWidget {
                 return SingleChildScrollView(
                   child: Column(
                     children: [
-                      ResumeForm(resume: resumeData),
+                      ResumeForm(resume: resumeData, translate: l10n),
                       const Divider(),
                       const SizedBox(height: 500, child: AIAssistantPanel()),
                       const Divider(),

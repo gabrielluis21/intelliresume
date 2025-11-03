@@ -1,4 +1,4 @@
-*Última atualização: 2025-10-23*
+*Última atualização: 2025-11-01*
 
 Este documento serve como um registro do estado atual do desenvolvimento e das decisões de arquitetura para que qualquer pessoa (ou IA) possa rapidamente entender o contexto e dar continuidade à tarefa.
 
@@ -31,6 +31,7 @@ Uma análise completa do projeto foi realizada para determinar o estado atual de
 
 ### 3.2. Tarefas Concluídas Recentemente
 
+*   **Correção de Erros de Compilação do Riverpod:** Resolvidos múltiplos erros de compilação relacionados à atualização do `flutter_riverpod`, adaptando o código para a nova API.
 *   **Refatoração do Sistema de Internacionalização (i18n):** Migração completa do sistema manual de i18n para o padrão oficial do Flutter, utilizando arquivos `.arb` e a geração automática de código. A maioria das telas e widgets foram internacionalizadas.
 *   **Correção de Erros de Localização:** Corrigidos erros de `undefined_named_parameter`, `not_enough_positional_arguments` e `undefined_getter`, garantindo que as chamadas de internacionalização estejam corretas.
 *   **Refatoração da Camada de Autenticação:** Alinhamento com a Clean Architecture.
@@ -40,11 +41,16 @@ Uma análise completa do projeto foi realizada para determinar o estado atual de
 
 ## 4. Status e Próximos Passos
 
-O projeto possui uma base sólida e funcional. A internacionalização (i18n) foi concluída.
+O projeto atingiu um marco importante, com funcionalidades essenciais agora operacionais.
 
-### 4.1. Internacionalização (i18n)
+### 4.1. Funcionalidades Validadas
 
-**Telas/Widgets com internacionalização concluída:**
+*   **Navegação:** A navegação entre as diferentes telas da aplicação está funcionando corretamente, permitindo um fluxo de usuário coeso.
+*   **Comunicação com IA:** A integração com o serviço de Inteligência Artificial (Gemini) está ativa e funcional, permitindo que o `AIAssistantPanel` se comunique com a API.
+*   **Internacionalização (i18n):** A base do sistema de i18n está completa e implementada na maioria das telas, conforme listado abaixo.
+
+### 4.2. Internacionalização (i18n) - Telas Concluídas
+
 *   `settings_page.dart`
 *   `side_menu.dart`
 *   `home_page.dart`
@@ -79,3 +85,18 @@ O projeto possui uma base sólida e funcional. A internacionalização (i18n) fo
 *   `lib/web_app/pages/sections/contact_section.dart`
 *   `lib/web_app/pages/sections/hero_section.dart`
 *   `lib/web_app/pages/web_landing_page.dart`
+
+### 4.3. Próximas Tarefas
+
+Com a navegação e a IA funcionando, o foco agora se volta para a implementação de novas funcionalidades e refatoração de componentes que ainda não seguem 100% a Clean Architecture.
+
+### 4.4. Melhorias na Visualização da Resposta da IA
+
+*   **Implementação de Visualização com Abas para Traduções:**
+    *   **Objetivo:** Melhorar a experiência do usuário ao exibir traduções, permitindo a comparação fácil entre o texto original e o traduzido.
+    *   **Detalhes:**
+        *   A área de resultado da IA (`_buildResultContent`) será modificada para exibir abas ("Original" e "Tradução") quando a função de tradução for utilizada.
+        *   A aba "Tradução" será a padrão, mostrando o texto traduzido.
+        *   A aba "Original" mostrará o conteúdo do currículo antes da tradução.
+        *   As abas só serão visíveis após a interação com o botão "Traduzir" e a obtenção de um resultado.
+    *   **Status:** Planejado para implementação.

@@ -20,7 +20,6 @@ class _AboutMeFormState extends ConsumerState<AboutMeForm> {
   void initState() {
     super.initState();
     _aboutController = TextEditingController(text: widget.about);
-    l10n = AppLocalizations.of(context)!;
   }
 
   @override
@@ -49,6 +48,7 @@ class _AboutMeFormState extends ConsumerState<AboutMeForm> {
 
   @override
   Widget build(BuildContext context) {
+    l10n = AppLocalizations.of(context)!;
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 12.0),
       child: Padding(

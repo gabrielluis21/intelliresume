@@ -4,7 +4,6 @@ import 'package:intelliresume/core/providers/purchases/purchase_provider.dart';
 import 'package:intelliresume/core/providers/user/user_provider.dart';
 import 'package:intelliresume/domain/entities/plan_type.dart';
 import 'package:intelliresume/generated/app_localizations.dart';
-import 'package:intelliresume/presentation/widgets/layout_template.dart';
 import 'package:intelliresume/presentation/widgets/pricing/pricing_section_widget.dart';
 
 class BuyPage extends ConsumerWidget {
@@ -27,28 +26,25 @@ class BuyPage extends ConsumerWidget {
       }
     });
 
-    return LayoutTemplate(
-      selectedIndex: 4, // Index for BuyPage in the side menu
-      child: userProfile.when(
-        data: (user) {
-          return PricingSectionWidget(
-            currentUserPlan: user?.plan ?? PlanType.free,
-            onSelectPlan: (plan) {
-              // For now, we only support upgrading to premium
-              if (plan == PlanType.premium) {
-                ref
-                    .read(purchaseControllerProvider.notifier)
-                    .initiatePurchase();
-              }
-            },
-          );
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error:
-            (error, stack) => Center(
-              child: Text(l10n.buyPage_genericError(error.toString())),
-            ),
-      ),
+    return userProfile.when(
+      data: (user) {
+        return PricingSectionWidget(
+          currentUserPlan: user?.plan ?? PlanType.free,
+          onSelectPlan: (plan) {
+            // For now, we only support upgrading to premium
+            if (plan == PlanType.premium) {
+              ref
+                  .read(purchaseControllerProvider.notifier)
+                  .initiatePurchase();
+            }
+          },
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error:
+          (error, stack) => Center(
+            child: Text(l10n.buyPage_genericError(error.toString())),
+          ),
     );
   }
 }

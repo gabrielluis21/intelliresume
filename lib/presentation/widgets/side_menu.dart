@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intelliresume/core/providers/user/user_provider.dart';
 import 'package:intelliresume/generated/app_localizations.dart';
 
 class SideMenu extends ConsumerWidget {
-  final int selectedIndex;
-  final ValueChanged<int> onDestinationSelected;
+  final StatefulNavigationShell navigationShell;
 
   const SideMenu({
     super.key,
-    required this.selectedIndex,
-    required this.onDestinationSelected,
+    required this.navigationShell,
   });
 
   @override
@@ -147,7 +146,7 @@ class SideMenu extends ConsumerWidget {
     required String label,
     required int index,
   }) {
-    final bool isSelected = selectedIndex == index;
+    final bool isSelected = navigationShell.currentIndex == index;
     return ListTile(
       leading: Icon(
         icon,
@@ -161,7 +160,18 @@ class SideMenu extends ConsumerWidget {
       ),
       selected: isSelected,
       selectedTileColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-      onTap: () => onDestinationSelected(index),
+      onTap: () {
+        if (index == 3) { // New CV
+          context.goNamed('editor-new');
+        } else if (index == 5) { // Logout
+          // Handle logout
+        } else {
+          navigationShell.goBranch(
+            index,
+            initialLocation: index == navigationShell.currentIndex,
+          );
+        }
+      },
     );
   }
 }

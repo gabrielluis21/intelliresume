@@ -1,14 +1,20 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intelliresume/core/notifiers/router_notify.dart';
 import 'package:intelliresume/data/datasources/remote/auth_resume_ds.dart';
+
 import 'package:intelliresume/presentation/widgets/layout_template.dart';
 import '../../presentation/pages.dart';
+
+final _rootNavigatorKey = GlobalKey<NavigatorState>();
+final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: '/',
     debugLogDiagnostics: true,
+    navigatorKey: _rootNavigatorKey,
     routes: [
       GoRoute(
         name: 'splash',
@@ -26,18 +32,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const SignupPage(),
       ),
       GoRoute(
-        name: 'profile',
-        path: '/profile',
-        builder: (context, state) => const ProfilePage(),
-      ),
-      GoRoute(
         name: 'buy',
         path: '/buy',
         builder: (context, state) => const BuyPage(),
       ),
       GoRoute(
         name: 'editor-new',
-        path: '/editor',
+        path: '/editor/new',
         builder: (context, state) => const ResumeFormPage(resumeId: 'new'),
       ),
       GoRoute(
@@ -48,31 +49,50 @@ final routerProvider = Provider<GoRouter>((ref) {
           return ResumeFormPage(resumeId: resumeId);
         },
       ),
-      GoRoute(
-        name: 'home',
-        path: '/home',
-        builder: (context, state) => const HomePage(),
-      ),
-      GoRoute(
-        name: 'edit-profile',
-        path: '/edit-profile',
-        builder: (context, state) => const EditProfilePage(),
-      ),
-      GoRoute(
-        name: 'history',
-        path: '/history',
-        builder:
-            (context, state) =>
-                LayoutTemplate(selectedIndex: 2, child: const HistoryPage()),
-      ),
-      GoRoute(
-        name: 'settings',
-        path: '/settings',
-        builder:
-            (context, state) => LayoutTemplate(
-              selectedIndex: 4,
-              child: const SettingsPage(), // Implemente esta página
-            ),
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
+          return LayoutTemplate(
+            navigationShell: navigationShell,
+          );
+        },
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                name: 'home',
+                path: '/home',
+                builder: (context, state) => const HomePage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                name: 'profile',
+                path: '/profile',
+                builder: (context, state) => const ProfilePage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                name: 'history',
+                path: '/history',
+                builder: (context, state) => const HistoryPage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                name: 'settings',
+                path: '/settings',
+                builder: (context, state) => const SettingsPage(),
+              ),
+            ],
+          ),
+        ],
       ),
     ],
     redirect: (ctx, state) {
@@ -80,8 +100,7 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       // Define public paths that can be accessed without authentication.
       final publicPaths = ['/login', '/signup', '/'];
-      print(state.matchedLocation);
-      final isPublicPath = publicPaths.contains(state.matchedLocation);
+      final isPublicPath = publicPaths.contains(state.uri.path);
 
       // If the user is not logged in and is trying to access a non-public page,
       // redirect them to the landing page ('/').

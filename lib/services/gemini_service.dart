@@ -26,7 +26,7 @@ class GeminiService implements AIService, TemplateTranslationService {
   @override
   Future<String> evaluate(String text) async {
     final prompt =
-        'Você é um recrutador sênior. Avalie o seguinte texto de currículo, fornecendo sugestões claras e concisas para melhoria em formato de bullet points: "$text"';
+        'Você é um recrutador sênior. Avalie o seguinte texto de currículo. Formate sua resposta usando Markdown. Use títulos (##) para seções como "Pontos Fortes" e "Pontos a Melhorar", e use listas de marcadores (*) para as sugestões. A resposta deve ser clara, concisa e profissional. O currículo é: "$text"';
 
     try {
       final response = await gemini.text(prompt);

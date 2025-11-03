@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intelliresume/core/providers/AI/ai_providers.dart';
 import 'package:intelliresume/core/providers/AI/usage_provider.dart';
@@ -264,7 +265,10 @@ class _AIAssistantPanelState extends ConsumerState<AIAssistantPanel> {
     if (_resultText != null) {
       return Padding(
         padding: const EdgeInsets.all(16.0),
-        child: SelectableText(_resultText!),
+        child: MarkdownBody(
+          data: _resultText!,
+          selectable: true, // Permite que o usuário selecione e copie o texto
+        ),
       );
     }
     // Otherwise, show the original resume content.
