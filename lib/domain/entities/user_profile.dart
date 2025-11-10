@@ -60,7 +60,7 @@ class UserProfile {
       uid: j['uid'],
       email: j['email'],
       phone: j['phone'],
-      name: j['displayName'],
+      name: j['name'],
       profilePictureUrl: j['photoURL'],
       plan: j['plan'] == 'PlanType.premium' ? PlanType.premium : PlanType.free,
       pcdInfo: j['pcdInfo'] != null ? PcdInfo.fromJson(j['pcdInfo']) : null,

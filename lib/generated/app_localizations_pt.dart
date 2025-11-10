@@ -1571,4 +1571,77 @@ class AppLocalizationsPt extends AppLocalizations {
   String resumePreview_socialLinkEditSemanticLabel(Object platform) {
     return 'Link social: $platform. Toque para editar.';
   }
+
+  @override
+  String get error_data_source => 'Ocorreu um erro na fonte de dados.';
+
+  @override
+  String get error_not_found => 'O item solicitado não foi encontrado.';
+
+  @override
+  String error_resume_not_found(Object resumeId) {
+    return 'Currículo com ID $resumeId não foi encontrado.';
+  }
+
+  @override
+  String get error_auth_user_not_found =>
+      'Nenhum usuário encontrado para este e-mail.';
+
+  @override
+  String get error_auth_wrong_password =>
+      'Senha incorreta fornecida para este usuário.';
+
+  @override
+  String get error_auth_invalid_email =>
+      'O endereço de e-mail está mal formatado.';
+
+  @override
+  String get error_auth_generic => 'Ocorreu um erro de autenticação.';
+
+  @override
+  String get error_signup_failed =>
+      'Não foi possível criar a conta de usuário.';
+
+  @override
+  String get error_ai_service =>
+      'Ocorreu um erro ao se comunicar com o serviço de IA.';
+
+  @override
+  String get error_ai_translation => 'Falha ao traduzir o conteúdo.';
+
+  @override
+  String get error_ai_correction => 'Falha ao corrigir o conteúdo.';
+
+  @override
+  String get error_ai_evaluation => 'Falha ao avaliar o conteúdo.';
+
+  @override
+  String get error_image_upload => 'Falha ao enviar a imagem.';
+
+  @override
+  String get error_payment_unauthenticated =>
+      'Usuário não autenticado. Faça login para continuar.';
+
+  @override
+  String get error_payment_generic =>
+      'Ocorreu um erro ao processar o pagamento.';
+
+  @override
+  String get error_payment_data_fetch =>
+      'Falha ao obter os dados de pagamento do servidor.';
+
+  @override
+  String get error_payment_url => 'Não foi possível obter a URL de pagamento.';
+
+  @override
+  String get error_payment_launch_url =>
+      'Não foi possível abrir a URL de pagamento.';
+
+  @override
+  String get error_payment_server =>
+      'Ocorreu um erro no servidor durante o pagamento.';
+
+  @override
+  String get error_payment_cancelled =>
+      'O pagamento foi cancelado pelo usuário.';
 }

@@ -90,6 +90,11 @@ O projeto atingiu um marco importante, com funcionalidades essenciais agora oper
 
 Com a navegação e a IA funcionando, o foco agora se volta para a implementação de novas funcionalidades e refatoração de componentes que ainda não seguem 100% a Clean Architecture.
 
+*   **Funcionalidade de Depoimentos e Avaliações (Pós-Lançamento):**
+    *   **Objetivo:** Permitir que usuários logados enviem depoimentos e avaliações sobre a plataforma.
+    *   **Status:** O planejamento e a implementação desta funcionalidade foram adiados.
+    *   **Condição:** Será desenvolvida **após o primeiro deploy em produção** da aplicação (Web, Google Play Store e Apple App Store).
+
 ### 4.4. Melhorias na Visualização da Resposta da IA
 
 *   **Implementação de Visualização com Abas para Traduções:**

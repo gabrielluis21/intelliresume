@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intelliresume/core/errors/exceptions.dart';
 import 'package:intelliresume/data/models/cv_model.dart';
 
 abstract class ResumeRemoteDataSource {
@@ -41,7 +42,10 @@ class ResumeRemoteDataSourceImpl implements ResumeRemoteDataSource {
             .get();
 
     if (!docSnapshot.exists) {
-      throw Exception('Resume not found');
+      throw NotFoundException(
+        key: 'error_resume_not_found',
+        args: [resumeId],
+      );
     }
 
     final data = docSnapshot.data()!;

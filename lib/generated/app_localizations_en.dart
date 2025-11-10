@@ -1557,4 +1557,72 @@ class AppLocalizationsEn extends AppLocalizations {
   String resumePreview_socialLinkEditSemanticLabel(Object platform) {
     return 'Social link: $platform. Tap to edit.';
   }
+
+  @override
+  String get error_data_source => 'A data source error occurred.';
+
+  @override
+  String get error_not_found => 'The requested item was not found.';
+
+  @override
+  String error_resume_not_found(Object resumeId) {
+    return 'Resume with ID $resumeId not found.';
+  }
+
+  @override
+  String get error_auth_user_not_found => 'No user found for that email.';
+
+  @override
+  String get error_auth_wrong_password =>
+      'Wrong password provided for that user.';
+
+  @override
+  String get error_auth_invalid_email =>
+      'The email address is badly formatted.';
+
+  @override
+  String get error_auth_generic => 'An authentication error occurred.';
+
+  @override
+  String get error_signup_failed => 'Failed to create user account.';
+
+  @override
+  String get error_ai_service =>
+      'An error occurred while communicating with the AI service.';
+
+  @override
+  String get error_ai_translation => 'Failed to translate content.';
+
+  @override
+  String get error_ai_correction => 'Failed to correct content.';
+
+  @override
+  String get error_ai_evaluation => 'Failed to evaluate content.';
+
+  @override
+  String get error_image_upload => 'Failed to upload image.';
+
+  @override
+  String get error_payment_unauthenticated =>
+      'User not authenticated. Please log in to continue.';
+
+  @override
+  String get error_payment_generic =>
+      'An error occurred while processing the payment.';
+
+  @override
+  String get error_payment_data_fetch =>
+      'Failed to get payment data from the server.';
+
+  @override
+  String get error_payment_url => 'Could not get payment URL.';
+
+  @override
+  String get error_payment_launch_url => 'Could not open payment URL.';
+
+  @override
+  String get error_payment_server => 'A server error occurred during payment.';
+
+  @override
+  String get error_payment_cancelled => 'Payment was cancelled by the user.';
 }

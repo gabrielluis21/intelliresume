@@ -68,7 +68,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
         child: Center(
           child: SingleChildScrollView(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 0),
+              constraints: const BoxConstraints(maxWidth: 400),
               child: Padding(
                 padding: const EdgeInsets.all(10),
                 child: Form(
@@ -95,6 +95,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                       ),
                       SizedBox(height: 16),
                       TextFormField(
+                        key: const Key('signup_name_field'),
                         decoration: InputDecoration(
                           labelText: l10n.signup_fullNameLabel,
                           prefixIcon: const Icon(Icons.person),
@@ -110,6 +111,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
+                        key: const Key('signup_email_field'),
                         decoration: InputDecoration(
                           labelText: l10n.email,
                           prefixIcon: const Icon(Icons.email),
@@ -128,6 +130,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                       ),
                       SizedBox(height: 16),
                       TextFormField(
+                        key: const Key('signup_password_field'),
                         obscureText: _obscurePassword,
                         decoration: InputDecoration(
                           labelText: l10n.password,
@@ -161,6 +164,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
+                        key: const Key('signup_confirm_password_field'),
                         obscureText: _obscureConfirm,
                         decoration: InputDecoration(
                           labelText: l10n.confirmPass,
@@ -198,7 +202,9 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(l10n.signup_informDisabilityQuestion),
+                                Expanded(
+                                  child: Text(l10n.signup_informDisabilityQuestion),
+                                ),
                                 Switch(
                                   value: _showDisabilityField,
                                   onChanged: (value) {
@@ -248,6 +254,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                         width: double.infinity,
                         height: 50,
                         child: ElevatedButton(
+                          key: const Key('signup_button'),
                           onPressed: _loading ? null : _signup,
                           child:
                               _loading

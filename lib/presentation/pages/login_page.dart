@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intelliresume/core/errors/exceptions.dart';
 import 'package:intelliresume/core/providers/data/data_provider.dart';
 import 'package:intelliresume/generated/app_localizations.dart';
 
@@ -66,10 +67,31 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           .call(email: email, password: password);
 
       if (mounted) context.goNamed('home');
-    } on Exception catch (e) {
+    } catch (e) {
       if (mounted) {
+        String message;
+        if (e is AppException) {
+          // This is our custom exception! We can use the key to get a
+          // user-friendly, translated message.
+          switch (e.key) {
+            case 'error_auth_user_not_found':
+              message = AppLocalizations.of(context)!.error_auth_user_not_found;
+              break;
+            case 'error_auth_wrong_password':
+              message = AppLocalizations.of(context)!.error_auth_wrong_password;
+              break;
+            case 'error_auth_invalid_email':
+              message = AppLocalizations.of(context)!.error_auth_invalid_email;
+              break;
+            default:
+              message = AppLocalizations.of(context)!.error_auth_generic;
+          }
+        } else {
+          // This is an unexpected error. Show a generic message.
+          message = AppLocalizations.of(context)!.anErrorOccurred;
+        }
         setState(() {
-          _errorMessage = e.toString().replaceFirst('Exception: ', '');
+          _errorMessage = message;
         });
       }
     } finally {
@@ -114,6 +136,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       ),
                       const SizedBox(height: 32),
                       TextFormField(
+                        key: const Key('login_email_field'),
                         decoration: InputDecoration(
                           labelText: AppLocalizations.of(context)!.email,
                           prefixIcon: const Icon(Icons.email),
@@ -130,6 +153,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
+                        key: const Key('login_password_field'),
                         obscureText: _obscurePassword,
                         decoration: InputDecoration(
                           labelText: AppLocalizations.of(context)!.password,
@@ -189,6 +213,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         width: double.infinity,
                         height: 50,
                         child: ElevatedButton(
+                          key: const Key('login_button'),
                           onPressed: _loading ? null : _login,
                           child:
                               _loading

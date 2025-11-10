@@ -2914,6 +2914,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Social link: {platform}. Tap to edit.'**
   String resumePreview_socialLinkEditSemanticLabel(Object platform);
+
+  /// No description provided for @error_data_source.
+  ///
+  /// In en, this message translates to:
+  /// **'A data source error occurred.'**
+  String get error_data_source;
+
+  /// No description provided for @error_not_found.
+  ///
+  /// In en, this message translates to:
+  /// **'The requested item was not found.'**
+  String get error_not_found;
+
+  /// No description provided for @error_resume_not_found.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume with ID {resumeId} not found.'**
+  String error_resume_not_found(Object resumeId);
+
+  /// No description provided for @error_auth_user_not_found.
+  ///
+  /// In en, this message translates to:
+  /// **'No user found for that email.'**
+  String get error_auth_user_not_found;
+
+  /// No description provided for @error_auth_wrong_password.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong password provided for that user.'**
+  String get error_auth_wrong_password;
+
+  /// No description provided for @error_auth_invalid_email.
+  ///
+  /// In en, this message translates to:
+  /// **'The email address is badly formatted.'**
+  String get error_auth_invalid_email;
+
+  /// No description provided for @error_auth_generic.
+  ///
+  /// In en, this message translates to:
+  /// **'An authentication error occurred.'**
+  String get error_auth_generic;
+
+  /// No description provided for @error_signup_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create user account.'**
+  String get error_signup_failed;
+
+  /// No description provided for @error_ai_service.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred while communicating with the AI service.'**
+  String get error_ai_service;
+
+  /// No description provided for @error_ai_translation.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to translate content.'**
+  String get error_ai_translation;
+
+  /// No description provided for @error_ai_correction.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to correct content.'**
+  String get error_ai_correction;
+
+  /// No description provided for @error_ai_evaluation.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to evaluate content.'**
+  String get error_ai_evaluation;
+
+  /// No description provided for @error_image_upload.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload image.'**
+  String get error_image_upload;
+
+  /// No description provided for @error_payment_unauthenticated.
+  ///
+  /// In en, this message translates to:
+  /// **'User not authenticated. Please log in to continue.'**
+  String get error_payment_unauthenticated;
+
+  /// No description provided for @error_payment_generic.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred while processing the payment.'**
+  String get error_payment_generic;
+
+  /// No description provided for @error_payment_data_fetch.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to get payment data from the server.'**
+  String get error_payment_data_fetch;
+
+  /// No description provided for @error_payment_url.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not get payment URL.'**
+  String get error_payment_url;
+
+  /// No description provided for @error_payment_launch_url.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open payment URL.'**
+  String get error_payment_launch_url;
+
+  /// No description provided for @error_payment_server.
+  ///
+  /// In en, this message translates to:
+  /// **'A server error occurred during payment.'**
+  String get error_payment_server;
+
+  /// No description provided for @error_payment_cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment was cancelled by the user.'**
+  String get error_payment_cancelled;
 }
 
 class _AppLocalizationsDelegate

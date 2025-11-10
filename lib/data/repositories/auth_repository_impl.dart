@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intelliresume/core/errors/exceptions.dart';
 import 'package:intelliresume/domain/repositories/auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
@@ -17,10 +18,25 @@ class AuthRepositoryImpl implements AuthRepository {
   User? get currentUser => _auth.currentUser;
 
   @override
-  Future<User> signIn({required String email, required String password}) {
-    return _auth
-        .signInWithEmailAndPassword(email: email, password: password)
-        .then((c) => c.user!);
+  Future<User> signIn({required String email, required String password}) async {
+    try {
+      final credential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return credential.user!;
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case 'user-not-found':
+          throw const AuthException(key: 'error_auth_user_not_found');
+        case 'wrong-password':
+          throw const AuthException(key: 'error_auth_wrong_password');
+        case 'invalid-email':
+          throw const AuthException(key: 'error_auth_invalid_email');
+        default:
+          throw const AuthException(key: 'error_auth_generic');
+      }
+    }
   }
 
   @override
@@ -30,29 +46,34 @@ class AuthRepositoryImpl implements AuthRepository {
     required String displayName,
     String? disabilityInfo,
   }) async {
-    final credential = await _auth.createUserWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-    final user = credential.user;
-    if (user == null) {
-      throw Exception('Não foi possível criar o usuário.');
+    try {
+      final credential = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      final user = credential.user;
+      if (user == null) {
+        throw const AuthException(key: 'error_signup_failed');
+      }
+
+      await user.updateDisplayName(displayName);
+
+      final userData = {
+        'uid': user.uid,
+        'email': email,
+        'displayName': displayName,
+        'createdAt': FieldValue.serverTimestamp(),
+        'plan': 'free', // Adiciona o plano inicial como gratuito
+        if (disabilityInfo != null && disabilityInfo.isNotEmpty)
+          'pcdInfo': {'disabilityDescription': disabilityInfo},
+      };
+
+      await _firestore.collection('users').doc(user.uid).set(userData);
+      return user;
+    } on FirebaseAuthException catch (e) {
+      // You can also map specific sign-up errors here if needed
+      throw AuthException(key: e.code);
     }
-
-    await user.updateDisplayName(displayName);
-
-    final userData = {
-      'uid': user.uid,
-      'email': email,
-      'displayName': displayName,
-      'createdAt': FieldValue.serverTimestamp(),
-      'plan': 'free', // Adiciona o plano inicial como gratuito
-      if (disabilityInfo != null && disabilityInfo.isNotEmpty)
-        'pcdInfo': {'disabilityDescription': disabilityInfo},
-    };
-
-    await _firestore.collection('users').doc(user.uid).set(userData);
-    return user;
   }
 
   @override

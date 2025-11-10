@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:intelliresume/core/errors/exceptions.dart';
 
 class ImageUploadService {
   final FirebaseStorage _storage = FirebaseStorage.instance;
@@ -11,9 +12,9 @@ class ImageUploadService {
       final snapshot = await uploadTask.whenComplete(() {});
       final downloadUrl = await snapshot.ref.getDownloadURL();
       return downloadUrl;
-    } catch (e) {
+    } on FirebaseException catch (e) {
       print('Erro ao fazer upload da imagem: $e');
-      rethrow;
+      throw const DataSourceException(key: 'error_image_upload');
     }
   }
 }

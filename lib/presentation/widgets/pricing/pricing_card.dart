@@ -115,6 +115,7 @@ class PricingCard extends StatelessWidget {
     }
 
     return ElevatedButton(
+      key: Key('select_plan_${planType.name}_button'),
       onPressed: canUpgrade ? () => onSelectPlan(planType) : null,
       style: ElevatedButton.styleFrom(
         minimumSize: const Size.fromHeight(50),

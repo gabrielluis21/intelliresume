@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter_gemini/flutter_gemini.dart';
+import 'package:intelliresume/core/errors/exceptions.dart';
 import 'package:intelliresume/data/models/cv_data.dart';
 import 'package:intelliresume/services/ai_services.dart';
 
@@ -18,8 +19,7 @@ class GeminiService implements AIService, TemplateTranslationService {
       return response?.output ?? text;
     } catch (e) {
       print('Erro ao chamar a API Gemini: $e');
-      // Retorna o texto original em caso de erro
-      throw Exception('Failed to correct text with Gemini: $e');
+      throw const AIServiceException(key: 'error_ai_correction');
     }
   }
 
@@ -33,7 +33,7 @@ class GeminiService implements AIService, TemplateTranslationService {
       return response?.output ?? 'Não foi possível obter uma avaliação.';
     } catch (e) {
       print('Erro ao chamar a API Gemini: $e');
-      throw Exception('Failed to evaluate text with Gemini: $e');
+      throw const AIServiceException(key: 'error_ai_evaluation');
     }
   }
 
@@ -47,7 +47,7 @@ class GeminiService implements AIService, TemplateTranslationService {
       return response?.output ?? text;
     } catch (e) {
       print('Erro ao chamar a API Gemini para tradução: $e');
-      throw Exception('Failed to translate text with Gemini: $e');
+      throw const AIServiceException(key: 'error_ai_translation');
     }
   }
 
@@ -146,8 +146,7 @@ class GeminiService implements AIService, TemplateTranslationService {
       );
     } catch (e) {
       print("Error during Gemini translation: $e");
-      // Em caso de erro, retorna os dados originais
-      return data;
+      throw const AIServiceException(key: 'error_ai_translation');
     }
   }
 }

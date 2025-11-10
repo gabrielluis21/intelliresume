@@ -8,78 +8,74 @@ import 'package:intelliresume/data/repositories/user_profile_repository.dart';
 import 'package:intelliresume/domain/entities/plan_type.dart';
 import 'package:intelliresume/domain/entities/user_profile.dart';
 
-// Provider para o stream de mudanças de autenticação
-final authStateChangesProvider = StreamProvider<User?>((ref) {
+// Original provider for auth state as AsyncValue
+final authStateChangesProvider = StreamProvider.autoDispose<User?>((ref) {
   final getAuthStateChanges = ref.watch(getAuthStateChangesUseCaseProvider);
   return getAuthStateChanges();
 });
 
-// Provider para o perfil do usuário, agora reativo às mudanças de autenticação
-final userProfileProvider =
-    StateNotifierProvider<UserProfileNotifier, AsyncValue<UserProfile?>>((ref) {
-      final userProfileRepository = ref.watch(userProfileRepositoryProvider);
-      // Ouve o provider de autenticação
-      final authState = ref.watch(authStateChangesProvider);
+// New provider that just exposes the raw stream to work around a compiler bug
+final authStreamProvider = Provider<Stream<User?>>((ref) {
+  final getAuthStateChanges = ref.watch(getAuthStateChangesUseCaseProvider);
+  return getAuthStateChanges();
+});
 
-      return UserProfileNotifier(userProfileRepository, authState.value);
-    });
+final userProfileProvider = StateNotifierProvider<UserProfileNotifier, AsyncValue<UserProfile?>>((ref) {
+  final userProfileRepository = ref.watch(userProfileRepositoryProvider);
+  // Watch the new, simple stream provider
+  final authStream = ref.watch(authStreamProvider);
+  
+  final notifier = UserProfileNotifier(userProfileRepository);
+  notifier.init(authStream);
+  
+  return notifier;
+});
 
 class UserProfileNotifier extends StateNotifier<AsyncValue<UserProfile?>> {
   final UserProfileRepository _repository;
-  final User? _user;
+  StreamSubscription? _authSubscription;
   StreamSubscription? _profileSubscription;
 
-  UserProfileNotifier(this._repository, this._user)
-    : super(const AsyncLoading()) {
-    _init();
+  UserProfileNotifier(this._repository) : super(const AsyncValue.loading());
+
+  void init(Stream<User?> authStream) {
+    _authSubscription = authStream.listen((user) {
+      _profileSubscription?.cancel();
+      if (user == null) {
+        state = const AsyncValue.data(null);
+      } else {
+        state = const AsyncValue.loading();
+        _profileSubscription = _repository.watchProfile(user.uid).listen(
+              (profile) => state = AsyncValue.data(profile),
+              onError: (e, st) => state = AsyncValue.error(e, st),
+            );
+      }
+    });
   }
 
-  void _init() {
-    if (_user == null) {
-      state = const AsyncData(null);
-      return;
-    }
-    _profileSubscription = _repository
-        .watchProfile(_user.uid)
-        .listen(
-          (profile) {
-            state = AsyncData(profile);
-          },
-          onError: (error, stackTrace) {
-            state = AsyncError(error, stackTrace);
-          },
-        );
-  }
-
-  // Atualiza o perfil localmente e remotamente
   Future<void> updateUser(UserProfile updatedProfile) async {
-    final currentUser = state.value;
-    if (currentUser == null) return; // Não faz nada se não houver usuário
-
-    state = const AsyncLoading();
+    final originalState = state;
+    state = const AsyncValue.loading();
     try {
       await _repository.saveProfile(updatedProfile);
-      // O stream já irá notificar o estado com o novo perfil,
-      // então não precisamos atualizar manualmente aqui.
+      state = AsyncValue.data(updatedProfile);
     } catch (e, st) {
-      state = AsyncError(e, st);
-      // Se der erro, volta ao estado anterior para manter a UI consistente
-      state = AsyncData(currentUser);
+      state = AsyncValue.error(e, st);
+      Future.delayed(const Duration(seconds: 2), () => state = originalState);
       rethrow;
     }
   }
 
-  // Atualiza apenas a foto de perfil
   Future<void> updateProfilePicture(String photoUrl) async {
     final current = state.value;
     if (current == null) return;
-
     final updatedProfile = current.copyWith(profilePictureUrl: photoUrl);
     await updateUser(updatedProfile);
   }
 
   @override
   void dispose() {
+    _authSubscription?.cancel();
     _profileSubscription?.cancel();
     super.dispose();
   }

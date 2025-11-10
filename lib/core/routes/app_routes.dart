@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -10,11 +11,22 @@ import '../../presentation/pages.dart';
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
+final analyticsProvider = Provider<FirebaseAnalytics>((ref) {
+  return FirebaseAnalytics.instance;
+});
+
+final analyticsObserverProvider = Provider<FirebaseAnalyticsObserver>((ref) {
+  final analytics = ref.watch(analyticsProvider);
+  return FirebaseAnalyticsObserver(analytics: analytics);
+});
+
 final routerProvider = Provider<GoRouter>((ref) {
+  final analyticsObserver = ref.watch(analyticsObserverProvider);
   return GoRouter(
     initialLocation: '/',
     debugLogDiagnostics: true,
     navigatorKey: _rootNavigatorKey,
+    observers: [analyticsObserver],
     routes: [
       GoRoute(
         name: 'splash',

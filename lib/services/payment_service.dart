@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intelliresume/core/errors/exceptions.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// Serviço de pagamento que lida com os fluxos de compra para web e mobile.
@@ -20,7 +21,7 @@ class PaymentService {
   Future<void> purchasePremium() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      throw Exception('Usuário não autenticado. Faça login para continuar.');
+      throw const AuthException(key: 'error_payment_unauthenticated');
     }
 
     try {
@@ -34,15 +35,19 @@ class PaymentService {
     } on StripeException catch (e) {
       if (e.error.code == FailureCode.Canceled) {
         debugPrint('Pagamento cancelado pelo usuário.');
+        throw const PaymentException(key: 'error_payment_cancelled');
       } else {
         debugPrint('Erro do Stripe: ${e.error.localizedMessage}');
-        throw Exception(
-          'Erro ao processar pagamento: ${e.error.localizedMessage}',
+        throw PaymentException(
+          key: 'error_payment_generic',
+          args: [e.error.localizedMessage ?? 'Unknown Stripe Error'],
         );
       }
+    } on AppException {
+      rethrow; // Mantém as exceções personalizadas que já foram tratadas
     } catch (e) {
       debugPrint('Erro ao iniciar a compra: $e');
-      rethrow;
+      throw PaymentException(key: 'error_payment_generic', args: [e.toString()]);
     }
   }
 
@@ -51,7 +56,7 @@ class PaymentService {
     final paymentIntentData = await _createPaymentIntent(user);
 
     if (paymentIntentData == null) {
-      throw Exception('Falha ao obter os dados de pagamento do servidor.');
+      throw const PaymentException(key: 'error_payment_data_fetch');
     }
 
     await Stripe.instance.initPaymentSheet(
@@ -73,53 +78,75 @@ class PaymentService {
     final checkoutUrl = sessionData?['url'];
 
     if (checkoutUrl == null) {
-      throw Exception('Não foi possível obter a URL de pagamento.');
+      throw const PaymentException(key: 'error_payment_url');
     }
 
     if (await canLaunchUrl(Uri.parse(checkoutUrl))) {
       await launchUrl(Uri.parse(checkoutUrl), webOnlyWindowName: '_self');
     } else {
-      throw 'Não foi possível abrir a URL de pagamento: $checkoutUrl';
+      throw const PaymentException(key: 'error_payment_launch_url');
     }
   }
 
   /// Chama o backend para criar um PaymentIntent (para mobile).
   Future<Map<String, dynamic>?> _createPaymentIntent(User user) async {
-    final idToken = await user.getIdToken();
-    final response = await http.post(
-      Uri.parse(_mobileBackendUrl),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $idToken',
-      },
-      body: jsonEncode({'userId': user.uid, 'email': user.email}),
-    );
+    try {
+      final idToken = await user.getIdToken();
+      final response = await http.post(
+        Uri.parse(_mobileBackendUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
+        body: jsonEncode({'userId': user.uid, 'email': user.email}),
+      );
 
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      final errorData = jsonDecode(response.body);
-      throw 'Erro do servidor: ${errorData['error'] ?? response.body}';
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        final errorData = jsonDecode(response.body);
+        throw PaymentException(
+          key: 'error_payment_server',
+          args: [errorData['error'] ?? response.body],
+        );
+      }
+    } catch (e) {
+      debugPrint('Error creating payment intent: $e');
+      throw PaymentException(
+        key: 'error_payment_server',
+        args: [e.toString()],
+      );
     }
   }
 
   /// Chama o backend para criar uma Checkout Session (para web).
   Future<Map<String, dynamic>?> _createCheckoutSession(User user) async {
-    final idToken = await user.getIdToken();
-    final response = await http.post(
-      Uri.parse(_webBackendUrl),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $idToken',
-      },
-      body: jsonEncode({'userId': user.uid, 'email': user.email}),
-    );
+    try {
+      final idToken = await user.getIdToken();
+      final response = await http.post(
+        Uri.parse(_webBackendUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
+        },
+        body: jsonEncode({'userId': user.uid, 'email': user.email}),
+      );
 
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      final errorData = jsonDecode(response.body);
-      throw 'Erro do servidor: ${errorData['error'] ?? response.body}';
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        final errorData = jsonDecode(response.body);
+        throw PaymentException(
+          key: 'error_payment_server',
+          args: [errorData['error'] ?? response.body],
+        );
+      }
+    } catch (e) {
+      debugPrint('Error creating checkout session: $e');
+      throw PaymentException(
+        key: 'error_payment_server',
+        args: [e.toString()],
+      );
     }
   }
 }
