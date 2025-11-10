@@ -18,6 +18,11 @@ jobs:
         with:
           channel: 'stable'
 
+      - name: Create .env file
+        run: |
+          echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> .env
+          echo "STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY }}" >> .env
+
       - name: Set base href
         run: sed -i 's|<base href="$FLUTTER_BASE_HREF">|<base href="/intelliresume/">|' web/index.html
 
