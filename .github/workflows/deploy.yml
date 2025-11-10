@@ -18,8 +18,11 @@ jobs:
         with:
           channel: 'stable'
 
+      - name: Set base href
+        run: sed -i 's|<base href="$FLUTTER_BASE_HREF">|<base href="/intelliresume/">|' web/index.html
+
       - name: Build
-        run: flutter build web --base-href /IntelliResume-PROJECT/
+        run: flutter build web
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
