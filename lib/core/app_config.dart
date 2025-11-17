@@ -13,4 +13,9 @@ class AppConfig {
 
   // Lê o provedor de IA selecionado a partir do arquivo .env
   static final aiProvider = dotenv.env['AI_PROVIDER'] ?? '';
+
+  static final linkedinClientId = dotenv.env['LINKEDIN_CLIENT_ID'] ?? '';
+  static final linkedinClientSecret =
+      dotenv.env['LINKEDIN_CLIENT_SECRET'] ?? '';
+  static final linkedinRedirectUrl = dotenv.env['LINKEDIN_REDIRECT_URL'] ?? '';
 }

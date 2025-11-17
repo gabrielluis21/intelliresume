@@ -35,9 +35,7 @@ class ProfilePage extends ConsumerWidget {
       loading: () => const Center(child: CircularProgressIndicator()),
       error:
           (error, stackTrace) => Center(
-            child: Text(
-              l10n.profilePage_errorLoadingProfile(error.toString()),
-            ),
+            child: Text(l10n.profilePage_errorLoadingProfile(error.toString())),
           ),
     );
   }

@@ -20,16 +20,17 @@ final authStreamProvider = Provider<Stream<User?>>((ref) {
   return getAuthStateChanges();
 });
 
-final userProfileProvider = StateNotifierProvider<UserProfileNotifier, AsyncValue<UserProfile?>>((ref) {
-  final userProfileRepository = ref.watch(userProfileRepositoryProvider);
-  // Watch the new, simple stream provider
-  final authStream = ref.watch(authStreamProvider);
-  
-  final notifier = UserProfileNotifier(userProfileRepository);
-  notifier.init(authStream);
-  
-  return notifier;
-});
+final userProfileProvider =
+    StateNotifierProvider<UserProfileNotifier, AsyncValue<UserProfile?>>((ref) {
+      final userProfileRepository = ref.watch(userProfileRepositoryProvider);
+      // Watch the new, simple stream provider
+      final authStream = ref.watch(authStreamProvider);
+
+      final notifier = UserProfileNotifier(userProfileRepository);
+      notifier.init(authStream);
+
+      return notifier;
+    });
 
 class UserProfileNotifier extends StateNotifier<AsyncValue<UserProfile?>> {
   final UserProfileRepository _repository;
@@ -45,7 +46,9 @@ class UserProfileNotifier extends StateNotifier<AsyncValue<UserProfile?>> {
         state = const AsyncValue.data(null);
       } else {
         state = const AsyncValue.loading();
-        _profileSubscription = _repository.watchProfile(user.uid).listen(
+        _profileSubscription = _repository
+            .watchProfile(user.uid)
+            .listen(
               (profile) => state = AsyncValue.data(profile),
               onError: (e, st) => state = AsyncValue.error(e, st),
             );

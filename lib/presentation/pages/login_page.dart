@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intelliresume/core/errors/exceptions.dart';
 import 'package:intelliresume/core/providers/data/data_provider.dart';
+import 'package:intelliresume/di.dart';
 import 'package:intelliresume/generated/app_localizations.dart';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -92,6 +94,32 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         }
         setState(() {
           _errorMessage = message;
+        });
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _loading = false);
+      }
+    }
+  }
+
+  Future<void> _signInWithLinkedIn() async {
+    setState(() {
+      _loading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      await ref
+          .read(signInWithLinkedInUseCaseProvider)
+          .call(context, nextUrl: '/dashboard');
+      // After this, the app will redirect to LinkedIn, and then the backend will handle the rest.
+      // The user will be redirected back to the app, and the auth state change will be handled by the stream provider.
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _errorMessage =
+              'Erro ao iniciar o login com o LinkedIn: ${e.toString()}';
         });
       }
     } finally {
@@ -227,6 +255,28 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                     style: const TextStyle(fontSize: 16),
                                   ),
                         ),
+                      ),
+                      const SizedBox(height: 24),
+                      Row(
+                        children: [
+                          const Expanded(child: Divider()),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0,
+                            ),
+                            child: Text(
+                              'OU',
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ),
+                          const Expanded(child: Divider()),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      SignInButton(
+                        Buttons.LinkedIn,
+                        text: 'Entrar com LinkedIn',
+                        onPressed: _loading ? () {} : _signInWithLinkedIn,
                       ),
                       const SizedBox(height: 16),
                       TextButton(

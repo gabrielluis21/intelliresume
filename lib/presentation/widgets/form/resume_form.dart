@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intelliresume/core/providers/resume/cv_provider.dart';
 import 'package:intelliresume/core/providers/editor/editor_providers.dart';
 import 'package:intelliresume/data/models/cv_data.dart';
+import 'package:intelliresume/di.dart';
 import 'package:intelliresume/generated/app_localizations.dart';
 import 'package:intelliresume/presentation/widgets/form/widgets/about_me_form.dart';
 import 'package:intelliresume/presentation/widgets/form/widgets/certificate_form.dart';
@@ -100,6 +101,22 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+  Future<void> _importFromLinkedIn() async {
+    // TODO: Add loading state
+    try {
+      final profile =
+          await ref.read(importLinkedInProfileUseCaseProvider).call();
+      ref.read(localResumeProvider.notifier).updateFromLinkedInProfile(profile);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Dados importados com sucesso!')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro ao importar dados: ${e.toString()}')),
+      );
+    }
   }
 
   void _handleEditRequest(EditRequest request) {
@@ -457,6 +474,18 @@ class _ResumeFormState extends ConsumerState<ResumeForm>
                 ),
                 textAlign: TextAlign.center,
               ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: ElevatedButton.icon(
+            icon: const Icon(Icons.cloud_download), // Placeholder icon
+            label: const Text('Importar do LinkedIn'),
+            onPressed: _importFromLinkedIn,
+            style: ElevatedButton.styleFrom(
+              minimumSize: const Size(double.infinity, 40),
             ),
           ),
         ),

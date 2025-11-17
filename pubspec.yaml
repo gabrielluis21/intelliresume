@@ -59,7 +59,7 @@ dependencies:
   hive_flutter: ^1.1.0
   http: ^1.4.0
   image_picker:
-  linkedin_login: ^3.1.3
+  #linkedin_login: ^3.1.3
   path_provider: ^2.1.5
   pdf: ^3.11.3
   printing: ^5.14.2
@@ -81,7 +81,12 @@ dependencies:
   flutter_markdown: ^0.7.7+1
   exception_templates: ^0.3.2
   firebase_analytics: ^12.0.4
+  flutter_svg: ^2.2.2
+  signin_with_linkedin: ^2.0.1
 
+  meta: any
+  riverpod: any
+  flutter_signin_button: ^2.1.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -110,5 +115,6 @@ flutter:
     - assets/images/logo.png
     - assets/images/logo-transparente.png
     - assets/images/default_avatar.png
+    - assets/images/linkedin_icon.svg
 
   generate: true

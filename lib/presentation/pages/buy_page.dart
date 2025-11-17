@@ -33,18 +33,15 @@ class BuyPage extends ConsumerWidget {
           onSelectPlan: (plan) {
             // For now, we only support upgrading to premium
             if (plan == PlanType.premium) {
-              ref
-                  .read(purchaseControllerProvider.notifier)
-                  .initiatePurchase();
+              ref.read(purchaseControllerProvider.notifier).initiatePurchase();
             }
           },
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
       error:
-          (error, stack) => Center(
-            child: Text(l10n.buyPage_genericError(error.toString())),
-          ),
+          (error, stack) =>
+              Center(child: Text(l10n.buyPage_genericError(error.toString()))),
     );
   }
 }

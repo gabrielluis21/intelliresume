@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/legacy.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intelliresume/core/providers/user/user_provider.dart';
 import 'package:intelliresume/di.dart';
+import 'package:intelliresume/domain/entities/linkedin_profile_entity.dart';
 
 import '../../../data/models/cv_data.dart';
 import '../../../domain/entities/user_profile.dart';
@@ -51,6 +52,43 @@ class LocalResumeNotifier extends StateNotifier<ResumeData> {
     // Ensure personalInfo from the current user is merged
     final currentUserProfile = _ref.read(userProfileProvider).value;
     state = initialData.copyWith(personalInfo: currentUserProfile);
+  }
+
+  void updateFromLinkedInProfile(LinkedInProfileEntity profile) {
+    final newExperiences =
+        profile.experiences
+            .map(
+              (e) => Experience(
+                company: e.companyName,
+                position: e.title,
+                description: e.description,
+                startDate:
+                    '${e.startDate.day}/${e.startDate.month}/${e.startDate.year}',
+                endDate:
+                    '${e.endDate?.day}/${e.endDate?.month}/${e.endDate?.year}',
+              ),
+            )
+            .toList();
+
+    final newEducations =
+        profile.educations
+            .map(
+              (e) => Education(
+                school: e.schoolName,
+                startDate:
+                    '${e.startDate.day}/${e.startDate.month}/${e.startDate.year}',
+                endDate:
+                    '${e.endDate?.day}/${e.endDate?.month}/${e.endDate?.year}',
+              ),
+            )
+            .toList();
+
+    state = state.copyWith(
+      about: profile.summary,
+      experiences: newExperiences,
+      educations: newEducations,
+      personalInfo: state.personalInfo?.copyWith(name: profile.name),
+    );
   }
 
   // Experiências

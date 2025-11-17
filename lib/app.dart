@@ -10,7 +10,9 @@ class App extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
-    final userPreferences = ref.watch(userPreferencesNotifierProvider); // Use new provider
+    final userPreferences = ref.watch(
+      userPreferencesNotifierProvider,
+    ); // Use new provider
 
     final textScaler = TextScaler.linear(userPreferences.fontSizeScale);
 
@@ -29,10 +31,12 @@ class App extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       theme: activeLightTheme,
       darkTheme: activeDarkTheme,
-      themeMode: userPreferences.themeMode, // Use themeMode from userPreferences
-      locale: userPreferences.languageCode != null
-          ? Locale(userPreferences.languageCode!)
-          : null, // Use locale from userPreferences
+      themeMode:
+          userPreferences.themeMode, // Use themeMode from userPreferences
+      locale:
+          userPreferences.languageCode != null
+              ? Locale(userPreferences.languageCode!)
+              : null, // Use locale from userPreferences
       routerConfig: router,
       builder: (context, child) {
         return MediaQuery(

@@ -7,10 +7,7 @@ import 'package:intelliresume/generated/app_localizations.dart';
 class SideMenu extends ConsumerWidget {
   final StatefulNavigationShell navigationShell;
 
-  const SideMenu({
-    super.key,
-    required this.navigationShell,
-  });
+  const SideMenu({super.key, required this.navigationShell});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -161,9 +158,11 @@ class SideMenu extends ConsumerWidget {
       selected: isSelected,
       selectedTileColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
       onTap: () {
-        if (index == 3) { // New CV
+        if (index == 3) {
+          // New CV
           context.goNamed('editor-new');
-        } else if (index == 5) { // Logout
+        } else if (index == 5) {
+          // Logout
           // Handle logout
         } else {
           navigationShell.goBranch(

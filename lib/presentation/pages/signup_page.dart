@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intelliresume/core/providers/data/data_provider.dart';
+import 'package:intelliresume/di.dart';
 import 'package:intelliresume/generated/app_localizations.dart';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
 
 class SignupPage extends ConsumerStatefulWidget {
   const SignupPage({super.key});
@@ -59,6 +61,29 @@ class _SignupPageState extends ConsumerState<SignupPage> {
     }
   }
 
+  Future<void> _signUpWithLinkedIn(BuildContext context) async {
+    setState(() {
+      _loading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      // Since the backend is not ready, this will fail, but it's wired up.
+      await ref.read(signInWithLinkedInUseCaseProvider).call(context);
+      if (mounted) context.goNamed('home');
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _errorMessage = 'Erro ao cadastrar com o LinkedIn: ${e.toString()}';
+        });
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _loading = false);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -88,12 +113,12 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                         style: Theme.of(context).textTheme.headlineSmall
                             ?.copyWith(fontWeight: FontWeight.bold),
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text(
                         l10n.signup_createAccountPrompt,
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       TextFormField(
                         key: const Key('signup_name_field'),
                         decoration: InputDecoration(
@@ -128,7 +153,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                         },
                         onSaved: (v) => email = v!.trim(),
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       TextFormField(
                         key: const Key('signup_password_field'),
                         obscureText: _obscurePassword,
@@ -203,7 +228,9 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Expanded(
-                                  child: Text(l10n.signup_informDisabilityQuestion),
+                                  child: Text(
+                                    l10n.signup_informDisabilityQuestion,
+                                  ),
                                 ),
                                 Switch(
                                   value: _showDisabilityField,
@@ -269,7 +296,32 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                                   ),
                         ),
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 24),
+                      Row(
+                        children: [
+                          const Expanded(child: Divider()),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0,
+                            ),
+                            child: Text(
+                              'OU',
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ),
+                          const Expanded(child: Divider()),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      SignInButton(
+                        Buttons.LinkedIn,
+                        text: 'Cadastrar com LinkedIn',
+                        onPressed:
+                            _loading
+                                ? () {}
+                                : () => _signUpWithLinkedIn(context),
+                      ),
+                      const SizedBox(height: 16),
                       TextButton(
                         onPressed: () => context.goNamed('login'),
                         child: Text('${l10n.login_noAccount} ${l10n.login}'),

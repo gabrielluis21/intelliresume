@@ -91,7 +91,8 @@ class ResumePreview extends ConsumerWidget {
       final resumeToSave = CVModel(
         id: resumeId,
         title: l10n.resumePreview_defaultResumeTitle(
-            user?.name ?? l10n.profilePage_defaultUserName), // Internationalized
+          user?.name ?? l10n.profilePage_defaultUserName,
+        ), // Internationalized
         data: data,
         dateCreated: originalCvModel?.dateCreated ?? DateTime.now(),
         lastModified: DateTime.now(),
@@ -150,7 +151,8 @@ class ResumePreview extends ConsumerWidget {
     }) {
       return Semantics(
         label: l10n.resumePreview_sectionEditSemanticLabel(
-            title.toLowerCase()), // Internationalized
+          title.toLowerCase(),
+        ), // Internationalized
         button: true,
         child: InkWell(
           onTap: () => onSectionEdit(sectionType, null),
@@ -245,8 +247,9 @@ class ResumePreview extends ConsumerWidget {
                 data.skills.asMap().entries.map((entry) {
                   return Semantics(
                     label: l10n.resumePreview_skillEditSemanticLabel(
-                        entry.value.name ?? '',
-                        entry.value.level.toString()), // Internationalized
+                      entry.value.name ?? '',
+                      entry.value.level.toString(),
+                    ), // Internationalized
                     button: true,
                     child: InkWell(
                       onTap: () => onSectionEdit(SectionType.skill, entry.key),
@@ -270,7 +273,8 @@ class ResumePreview extends ConsumerWidget {
                 data.socials.asMap().entries.map((entry) {
                   return Semantics(
                     label: l10n.resumePreview_socialLinkEditSemanticLabel(
-                        entry.value.platform ?? ''), // Internationalized
+                      entry.value.platform ?? '',
+                    ), // Internationalized
                     button: true,
                     child: InkWell(
                       onTap: () => onSectionEdit(SectionType.social, entry.key),

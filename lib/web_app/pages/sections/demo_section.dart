@@ -3,7 +3,8 @@ import 'package:intelliresume/generated/app_localizations.dart';
 import 'package:intelliresume/web_app/pages/sections/section_title.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart'; // New import
 
-class DemoSection extends StatefulWidget { // Changed to StatefulWidget
+class DemoSection extends StatefulWidget {
+  // Changed to StatefulWidget
   const DemoSection({super.key});
 
   @override
@@ -18,11 +19,9 @@ class _DemoSectionState extends State<DemoSection> {
     super.initState();
     // Initialize the controller with a placeholder video ID
     _controller = YoutubePlayerController(
-      initialVideoId: 'dQw4w9WgXcQ', // Placeholder: Rick Astley - Never Gonna Give You Up
-      flags: const YoutubePlayerFlags(
-        autoPlay: false,
-        mute: false,
-      ),
+      initialVideoId:
+          'dQw4w9WgXcQ', // Placeholder: Rick Astley - Never Gonna Give You Up
+      flags: const YoutubePlayerFlags(autoPlay: false, mute: false),
     );
   }
 
@@ -81,7 +80,8 @@ class _DemoSectionState extends State<DemoSection> {
               const SizedBox(width: 40, height: 40),
               Expanded(
                 flex: isMobile ? 0 : 1,
-                child: YoutubePlayer( // Replaced Container with YoutubePlayer
+                child: YoutubePlayer(
+                  // Replaced Container with YoutubePlayer
                   controller: _controller,
                   showVideoProgressIndicator: true,
                   progressIndicatorColor: Colors.blueAccent,

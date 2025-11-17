@@ -9,10 +9,7 @@ import 'side_menu.dart';
 class LayoutTemplate extends ConsumerStatefulWidget {
   final StatefulNavigationShell navigationShell;
 
-  const LayoutTemplate({
-    super.key,
-    required this.navigationShell,
-  });
+  const LayoutTemplate({super.key, required this.navigationShell});
 
   @override
   ConsumerState<LayoutTemplate> createState() => _LayoutTemplateState();
@@ -61,18 +58,11 @@ class _LayoutTemplateState extends ConsumerState<LayoutTemplate> {
       ),
       drawer:
           isMobile
-              ? Drawer(
-                child: SideMenu(
-                  navigationShell: widget.navigationShell,
-                ),
-              )
+              ? Drawer(child: SideMenu(navigationShell: widget.navigationShell))
               : null,
       body: Row(
         children: [
-          if (!isMobile)
-            SideMenu(
-              navigationShell: widget.navigationShell,
-            ),
+          if (!isMobile) SideMenu(navigationShell: widget.navigationShell),
           Expanded(child: widget.navigationShell),
         ],
       ),

@@ -42,10 +42,7 @@ class ResumeRemoteDataSourceImpl implements ResumeRemoteDataSource {
             .get();
 
     if (!docSnapshot.exists) {
-      throw NotFoundException(
-        key: 'error_resume_not_found',
-        args: [resumeId],
-      );
+      throw NotFoundException(key: 'error_resume_not_found', args: [resumeId]);
     }
 
     final data = docSnapshot.data()!;

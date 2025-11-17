@@ -47,7 +47,10 @@ class PaymentService {
       rethrow; // Mantém as exceções personalizadas que já foram tratadas
     } catch (e) {
       debugPrint('Erro ao iniciar a compra: $e');
-      throw PaymentException(key: 'error_payment_generic', args: [e.toString()]);
+      throw PaymentException(
+        key: 'error_payment_generic',
+        args: [e.toString()],
+      );
     }
   }
 
@@ -112,10 +115,7 @@ class PaymentService {
       }
     } catch (e) {
       debugPrint('Error creating payment intent: $e');
-      throw PaymentException(
-        key: 'error_payment_server',
-        args: [e.toString()],
-      );
+      throw PaymentException(key: 'error_payment_server', args: [e.toString()]);
     }
   }
 
@@ -143,10 +143,7 @@ class PaymentService {
       }
     } catch (e) {
       debugPrint('Error creating checkout session: $e');
-      throw PaymentException(
-        key: 'error_payment_server',
-        args: [e.toString()],
-      );
+      throw PaymentException(key: 'error_payment_server', args: [e.toString()]);
     }
   }
 }

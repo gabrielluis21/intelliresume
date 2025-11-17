@@ -6,6 +6,7 @@ import 'package:intelliresume/core/notifiers/router_notify.dart';
 import 'package:intelliresume/data/datasources/remote/auth_resume_ds.dart';
 
 import 'package:intelliresume/presentation/widgets/layout_template.dart';
+import 'package:intelliresume/presentation/pages/auth_callback_page.dart';
 import '../../presentation/pages.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -44,6 +45,15 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const SignupPage(),
       ),
       GoRoute(
+        name: 'auth-callback',
+        path: '/auth-callback',
+        builder: (context, state) {
+          final token = state.uri.queryParameters['token'];
+          final next = state.uri.queryParameters['next'];
+          return AuthCallbackPage(token: token, next: next);
+        },
+      ),
+      GoRoute(
         name: 'buy',
         path: '/buy',
         builder: (context, state) => const BuyPage(),
@@ -63,9 +73,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
-          return LayoutTemplate(
-            navigationShell: navigationShell,
-          );
+          return LayoutTemplate(navigationShell: navigationShell);
         },
         branches: [
           StatefulShellBranch(
@@ -111,7 +119,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       final logged = AuthService.instance.currentUser != null;
 
       // Define public paths that can be accessed without authentication.
-      final publicPaths = ['/login', '/signup', '/'];
+      final publicPaths = ['/login', '/signup', '/', '/auth-callback'];
       final isPublicPath = publicPaths.contains(state.uri.path);
 
       // If the user is not logged in and is trying to access a non-public page,

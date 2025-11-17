@@ -14,7 +14,8 @@ class UserPreferencesRepository {
 
   Future<UserPreferences> loadPreferences() async {
     final box = await _openBox();
-    return box.get(_preferencesKey) ?? UserPreferences(); // Return default if not found
+    return box.get(_preferencesKey) ??
+        UserPreferences(); // Return default if not found
   }
 
   Future<void> savePreferences(UserPreferences preferences) async {
